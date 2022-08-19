@@ -1029,6 +1029,10 @@ if (!function_exists('request_error')) {
  */
 spl_autoload_register(function ($class) {
 
+    $pluginPath = plugin_path();
+    if (!is_dir($pluginPath)) {
+        @mkdir($pluginPath,0777);
+    }
     $dirs = traverse_scanDir(plugin_path(), false);
     foreach ($dirs as $index => $dir) {
         $functions = plugin_path($dir) . 'function.php';
@@ -1048,7 +1052,7 @@ if (!function_exists('plugin_path')) {
      */
     function plugin_path(string $string = ''): string
     {
-        return $string ? root_path('plugin/' . $string) : root_path('plugin');
+        return $string ? root_path('plugin' . DIRECTORY_SEPARATOR . $string) : root_path('plugin');
     }
 }
 

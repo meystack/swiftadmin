@@ -16,11 +16,10 @@
 
 <div class="layui-header">
 	<div class="layui-container">
-		<h1 class="logo"><a href="https://www.SwiftAdmin.net"><img class="pic" src="__ADMINIMAGES__/logo.png" alt=""><span>SwiftAdmin</span></a></h1>
+		<h1 class="logo"><a href="https://www.SwiftAdmin.net"><img class="pic" src="__ADMINIMAGES__logo.png" alt=""><span>SwiftAdmin</span></a></h1>
 		<div class="title">安装向导</div>
 	</div>
 </div>
-
 
 <div class="layui-content" style="padding-top: 0px;">
 	<div class="layui-container">
@@ -51,14 +50,8 @@
 					</div>
 					<div class="layui-card-body">
 						<div class="layui-install">
-							<div class="tips">正在安装，请稍后...</div> 	
-							<div class="layui-progress layui-progress-big" lay-showPercent="true">
-	  							<div class="layui-progress-bar layui-bg-blue" lay-percent=""></div>
-							</div>	
-
-							<div class="layui-install-logs"><li>创建数据表...</li></div>			
+							<div class="tips">正在安装，请勿刷新...</div>
 						</div>
-
 						<div class="layui-complete" style="display: none">
 							<div class="layui-success">SWIFTADMIN安装成功</div>
 							<blockquote class="layui-elem-quote layui-text" style="border-left: 0px;text-align: left;margin-bottom: 30px;">
@@ -83,12 +76,10 @@
 <div class="layui-footer">copyright © 2020 SwiftAdmin all rights reserved.</div>
 </body>
 
-
 <script type="text/javascript">
 	layui.use(['jquery','layer','element'],function() {
 		var layer = layui.layer;
 		var jquery = layui.jquery;
-		var element = layui.element;
 
 		// 随机字符串
 		function randomString(len) {
@@ -104,68 +95,18 @@
 
 		// 加载数据信息
 		jquery.get('/install/index/install',{},function(res){
-			if (res.code == 200) {
-				queryProgress();
+			if (res.code === 200) {
+				jquery('.layui-install').remove();
+				var admin = jquery('.layui-admin');
+				admin.attr('href','/manage');
+				admin.html('后台地址：http://'+ location.host +'/manage');
+				jquery('.layui-btn-admin').attr('href','/manage');
+				jquery('.layui-complete').show();
+				jquery.get('/install/index/clear',{},function(res){});
 			} else {
 			    layer.msg(res.msg,'error');
 			}
 		});
-
-		var progress = 1;
-        var queryProgress = function() {
-			
-			jquery.ajax({
-				url: '/install/index/progress',
-				data: {
-					key: progress
-				},
-				type: 'get',
-				async: false,
-				dataType: 'json',
-				success:function(res) {
-				
-					// 设置延时
-					if (!res || typeof res.msg === undefined) {
-						setTimeout(queryProgress, 100);
-						return false;
-					}
-					
-					// 查找元素
-					var html = '';
-					var logsElem = jquery('.layui-install-logs');
-					if (res.code === 200) {
-						if (res.msg) {
-							html += '<li class="'+ res.key +'">'+res.msg+'</li>';
-						}
-						if (progress < res.total) {
-							progress += 1;
-						}
-					} else if (res.code === 101) { // 错误信息
-						html = '<li><font color="red">'+res.msg+'</font></li>';
-					}
-
-					if (parseInt(res.progress) >= 100) {
-						jquery('.layui-install').remove();
-						var admin = jquery('.layui-admin');
-						admin.attr('href','/manage');
-						admin.html('后台地址：http://'+ location.host +'/manage');
-						jquery('.layui-btn-admin').attr('href','/manage');
-						jquery('.layui-complete').show();
-						jquery.get('/install/index/clear',{},function(res){});
-					}
-					else {
-						// 移动焦点
-						logsElem.append(html);
-						if (logsElem[0].scrollHeight >= logsElem[0].clientHeight) {
-							var scrollTop = logsElem[0].scrollHeight-logsElem[0].clientHeight;
-							logsElem.scrollTop(scrollTop);
-						}
-						setTimeout(queryProgress, 10);
-					}
-					jquery('.layui-progress-bar').attr('lay-percent',res.progress) && element.render();
-				}
-			});
-        }
 	})
 </script>
 </html>

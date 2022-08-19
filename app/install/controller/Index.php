@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace app\install\controller;
 
+use app\common\library\DataBase;
 use think\facade\Cache;
 use app\BaseController;
 
@@ -53,7 +54,7 @@ class Index extends BaseController
         }
 
         return view('/index/step1', [
-            'checkEnv'     => $this->checkEnv(),
+            'checkEnv' => $this->checkEnv(),
             'checkDirFile' => $this->checkDirFile(),
         ]);
     }
@@ -187,91 +188,36 @@ class Index extends BaseController
             }
 
             // 读取SQL文件加载进缓存
-            $mysqlPath =  root_path('app/install'). 'install.sql';
+            $mysqlPath = root_path('app/install') . 'install.sql';
             $sqlRecords = file_get_contents($mysqlPath);
-            $sqlRecords = str_replace("\r", "\n", $sqlRecords);
+            $sqlRecords = str_ireplace("\r", "\n", $sqlRecords);
 
             // 替换数据库表前缀
             $sqlRecords = explode(";\n", $sqlRecords);
             $sqlRecords = str_replace(" `__PREFIX__", " `{$mysqlInfo['prefix']}", $sqlRecords);
 
-            // 缓存任务总数
-            $recordCount = count($sqlRecords);
-            if ($recordCount >= 1 && is_numeric($recordCount)) {
-                Cache::set('sqlRecords', $sqlRecords);
-                Cache::set('recordCount', $recordCount);
-            } else {
-                return $this->error('读取install.sql出错');
-            }
-
-            return $this->success('success');
-        }
-    }
-
-    /**
-     * 获取安装进度
-     *
-     * @return \support\Response|void
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function progress()
-    {
-        if (request()->isAjax()) {
-
-            $mysqlInfo = Cache::get('mysqlInfo');
-            $sqlRecords = Cache::get('sqlRecords');
-            $recordCount = Cache::get('recordCount');
-
-            // 链接数据库
             $sqlConnect = @mysqli_connect($mysqlInfo['hostname'] . ':' . $mysqlInfo['hostport'], $mysqlInfo['username'], $mysqlInfo['password']);
             mysqli_select_db($sqlConnect, $mysqlInfo['database']);
             mysqli_query($sqlConnect, "set names utf8mb4");
 
-            $key = input('key') ?? 1;
-            if (isset($sqlRecords[$key - 1])) {
-
-                $sqlLine = trim($sqlRecords[$key - 1]);
+            foreach ($sqlRecords as $index => $sqlLine) {
+                $sqlLine = trim($sqlLine);
                 if (!empty($sqlLine)) {
                     try {
                         // 创建表数据
-                        if (substr($sqlLine, 0, 12) == 'CREATE TABLE') {
-                            $name = preg_replace("/^CREATE TABLE `(\w+)` .*/s", "\\1", $sqlLine);
-                            $msg = "创建数据表 {$name}...";
-
-                            if (mysqli_query($sqlConnect, $sqlLine) !== false) {
-                                $msg .= '成功！';
-                            } else {
-                                $msg .= '失败！';
-                            }
-                        } else {
-                            if (mysqli_query($sqlConnect, $sqlLine) === false) {
-                                throw new \Exception(mysqli_error($sqlConnect));
-                            }
+                        if (mysqli_query($sqlConnect, $sqlLine) === false) {
+                            throw new \Exception(mysqli_error($sqlConnect));
                         }
                     } catch (\Throwable $th) {
                         return $this->error($th->getMessage());
                     }
                 }
-
-                // 修改初始化密码
-                if ($key == ($recordCount - 1)) {
-                    $pwd = encryptPwd($mysqlInfo['pwd']);
-                    mysqli_query($sqlConnect, "UPDATE {$mysqlInfo['prefix']}admin SET pwd='{$pwd}' where id = 1");
-                }
-
-                // 更新进度
-                $progress = round(($key / $recordCount) * 100) . '%';
-                $result = [
-                    'code'     => 200,
-                    'total'    => $recordCount,
-                    'key'      => $key,
-                    'msg'      => $msg ?? '',
-                    'progress' => $progress,
-                ];
-
-                Cache::set('progress', $progress);
-                return json($result);
             }
+
+            $pwd = encryptPwd($mysqlInfo['pwd']);
+            mysqli_query($sqlConnect, "UPDATE {$mysqlInfo['prefix']}admin SET pwd='{$pwd}' where id = 1");
+
+            return $this->success('success');
         }
     }
 
@@ -302,7 +248,7 @@ class Index extends BaseController
 
                 // 清理安装包
                 Cache::clear();
-                recursive_delete(root_path('app/install'));
+                recursive_delete(root_path('app' . DIRECTORY_SEPARATOR . 'install'));
                 system_reload();
             } catch (\Throwable $th) {
                 return $this->error($th->getMessage());

@@ -55,18 +55,25 @@
 
 1、首先将本框架直接clone到你本地,或者直接下载
 ```
-git clone https://gitee.com/meystack/swiftadmin.git
+ * git clone https://gitee.com/meystack/swiftadmin.git
+ * 请使用宝塔面板或其他PHP集成环境
+ * 安装Apache或者NGINX服务器
+ * 安装PHP，版本 >= 7.3 <= 8.1
+ * 安装PHP扩展fileinfo opcache redis imagemagick exif
+ * 开发环境下关闭禁用PHP函数exec、putenv、proc_open、proc_get_status、pcntl_signal[如果存在]
 ```
 <font color="#dd0000">2、Windows环境下启动开发服务</font>
 ```
-找到根目录下的Windows.bat文件，执行该文件即可启动服务。
+找到根目录下的Windows.bat文件，双击执行该文件即可启动服务。
 ```
 3、Linux环境下启动开发服务
 ```
 执行命令：php start.php start        # 启动开发服务
 执行命令：php start.php stop         # 停止开发服务
 执行命令：php start.php restart      # 重启开发服务
-守护进程：php start.php start -d     # 启动守护进程 一般为生产环境
+守护进程：php start.php start -d     # 启动守护进程 一般为生产环境/修改文件后无法自动重载
+
+注：当前默认只有app、config文件夹下文件内容被修改后才会自动重启，全局监听方案，请参考开发文档
 ```
 4、打开浏览器输入网址，访问项目
 ```
@@ -99,9 +106,6 @@ http://demo.swiftadmin.net/manage </a> </b><br/>
 	<tr>
 		<td><img src="https://www.swiftadmin.net/static/images/sademo/135519_aa76fdcf_904542.gif"/></td>
 	</tr>
-	<tr>
-		<td><img src="https://gitee.com/meystack/swiftadmin/raw/master/public/upload/1.gif"/></td>
-	</tr>	
 	<tr>
 		<td><img src="https://www.swiftadmin.net/static/images/sademo/140708_8baf92f1_904542.gif"/></td>
 	</tr>	

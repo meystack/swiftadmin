@@ -1,0 +1,21 @@
+	<div class="layui-container" >
+		<div class="layui-logo">
+			<a href="/"><img src="/static/system/images/logo.png" alt="logo" height="26">SWIFTADMIN</a>
+		</div>
+		<ul class="layui-nav">
+			<li class="layui-nav-item active"><a href="/" class="nav-link">主页</a></li>
+			<li class="layui-nav-item "><a href="#" onclick="layer.msg('感谢您使用SAPHP<br><br>您可以尽情在此框架上二次开发');" class="nav-link">关于</a></li>
+			<li class="layui-nav-item "><a href="https://www.swiftadmin.net/plugin/" class="nav-link">插件市场</a></li>
+			<li class="layui-nav-item layui-hide-xs"><a href="https://www.swiftadmin.net/agreement.html" class="nav-link">使用协议</a></li>
+			<li class="layui-nav-item layui-hide-xs"><a href="https://doc.swiftadmin.net/help/" class="nav-link">帮助文档</a></li>
+			<li class="layui-nav-item layui-hide-xs"><a href="https://ask.swiftadmin.net/" class="nav-link">社区中心</a></li>
+			<li class="layui-nav-item layui-hide-xs"><a href="https://qm.qq.com/cgi-bin/qm/qr?k=rUxEL3_DV8PnflvZiJamjED0dfHwpiMw&jump_from=webapi" target="_blank" class="nav-link">联系我们</a></li>
+		</ul>
+
+		<div class="layui-nav layui-hide-xs fr" id="login">
+			<notempty name="$user.id"> <li class="layui-nav-item"><a class="" href="/user/index" >会员中心</a></li> <else/>
+			<li class="layui-nav-item"><a href="javascript:;" lay-open data-title="用户注册" data-area="490px" data-url="/user/register" >注册</a></li>
+			<li class="layui-nav-item"><a href="javascript:;" lay-open data-title="用户登录" data-area="450px,420px" data-url="/user/login" >登录</a></li>
+			</notempty>
+		</div>
+	</div>

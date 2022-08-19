@@ -1,0 +1,116 @@
+body {
+    background: #fff;
+}
+
+body a:hover {
+    color: #777;
+}
+
+.layui-tab-brief {
+    padding: 5px 0;
+    margin: 0;
+}
+
+.layui-message-list-item:hover, .layui-message-footer a:hover, .message-btn-more:hover {
+    background: #F2F2F2;
+}
+
+.layui-message-list {
+    position: absolute;
+    top: 51px;
+    bottom: 44px;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    clear: both;
+}
+
+.layui-message-list-item {
+    padding: 10px 24px;
+    border-bottom: 1px solid #e8e8e8;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    display: flex;
+    -ms-flex: 1 1;
+    flex: 1 1;
+}
+
+.layui-message-list-item:hover, .message-btn-clear:hover, .message-btn-more:hover {
+    background: #F2F2F2;
+}
+
+.layui-message-item-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 16px;
+    display: block;
+    margin-top: 4px;
+}
+
+.layui-message-item-right {
+    display: block;
+    flex: 1 0;
+    line-height: 24px;
+}
+
+.layui-message-item-title {
+    font-size: 13px;
+    color: rgba(0, 0, 0, .65);
+}
+
+.layui-message-item-text {
+    color: rgba(0, 0, 0, .45);
+    font-size: 12px;
+}
+
+.pull-right {
+    float: right;
+}
+
+.layui-message-btn-clear, .layui-message-btn-more {
+    display: block;
+    padding: 10px 5px;
+    text-align: center;
+    line-height: 24px;
+    color: #333;
+}
+
+.layui-message-btn-more {
+    color: #666;
+    font-size: 13px;
+}
+
+.layui-message-list-empty {
+    text-align: center;
+    color: rgba(0, 0, 0, .45);
+    padding: 73px 0 88px;
+}
+
+.layui-message-list-empty img {
+    height: 76px;
+    margin-bottom: 16px;
+}
+
+.layui-message-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: white;
+    right: 0;
+    border-top: 1px solid #e8e8e8;
+    text-align: center;
+}
+
+.layui-message-footer a {
+    display: inline-block;
+    text-align: center;
+    color: #333;
+    width: 49%;
+    height: 42px;
+    line-height: 42px;
+}
+
+.layui-icon-email {
+    font-size: 40px;
+}

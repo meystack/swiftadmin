@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="cn">
+<head>
+<meta charset="UTF-8">
+<title>跳转提示</title>
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<style>
+*{ padding: 0; margin: 0; }
+body{font-family: '微软雅黑',serif; color: #CCC; font-size: 16px;background:#f2f2f2 }
+.system-message{ text-align: center; padding: 24px 48px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2)!important; top:50%; width:500px; border-radius:5px;
+-moz-border-radius:10px; /* Old Firefox */
+    margin: 12% auto auto;
+    background: #fff;}
+.system-message .jump{ padding-top: 10px; color: #999;text-align: center;}
+.system-message .success,.system-message .error{ line-height: 1.8em;  color: #000; font-size: 18px;font-weight: bold; text-align: center;}
+
+.status-ico {width: 72px;height: 72px;line-height: 72px;font-size: 42px;color: #fff;text-align: center;border-radius: 50%;display: inline-block;margin-bottom: 24px;background-color: #52c41a!important;}
+.status-error {background-color: #ff4d4f!important;}
+</style>
+</head>
+<body>
+    <div class="system-message">
+        <switch name="$code">
+            <case value="200">
+            <div class="status-ico layui-icon layui-icon-ok">
+                <?xml version="1.0" encoding="UTF-8"?><svg width="33" height="33" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4 24L9 19L19 29L39 9L44 14L19 39L4 24Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="success">{$msg|strip_tags=###}</p>
+            </case>
+            <default />
+            <div class="status-ico status-error layui-icon layui-icon-close">
+                <?xml version="1.0" encoding="UTF-8"?><svg width="33" height="33" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6 11L11 6L24 19L37 6L42 11L29 24L42 37L37 42L24 29L11 42L6 37L19 24L6 11Z" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="error">{$msg|strip_tags=###}</p>
+        </switch>
+        <p class="jump">{:__('页面自动')} <a id="href" href="{$url}" target="_self">{:__('跳转')}</a> {:__('等待时间')}：<b id="wait">{$wait}</b>
+        </p>
+    </div>
+</body>
+<!-- 公共js部分 -->
+
+<script type="text/javascript">
+    let wait = document.getElementById('wait'),
+        href = document.getElementById('href').href,
+        target = document.getElementById('href').target;
+    let interval = setInterval(function(){
+        let time = --wait.innerHTML;
+            if(time <= 0) {
+                if (window.top !== window.self) {
+                    if ('_parent' === target) {
+                        parent.location.href = href;
+                    } else {
+                        location.href = href;
+                    }
+                }
+                else {
+                    if ('_parent' === target) {
+                        parent.location.href = href;
+                    } else {
+                        location.href = href;
+                    }
+                }
+                clearInterval(interval);
+            }
+        }, 1000);
+</script>
+</html>

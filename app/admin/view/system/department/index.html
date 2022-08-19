@@ -1,0 +1,254 @@
+<include file="/public/header" />
+<!-- // 重定位style -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+        <div class="layui-form">
+            <div class="layui-form-item">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="status">
+                        <option value="">{:__('按状态查询')}</option>
+                        <option value="2" >{:__('正常')}</option>                                 
+                        <option value="1" >{:__('停用')}</option>
+                    </select>
+                </div>  
+            </div>
+            <!-- // 这里只是搜索部门负责人 -->
+            <div class="layui-inline"><div class="layui-input-inline ">
+                <input name="head" class="layui-input" type="text" placeholder="{:__('关键字搜索')}"/></div>
+            </div>
+
+            <div class="layui-inline" >
+                <!-- // 默认搜索 -->
+                <button class="layui-btn icon-btn" lay-filter="treeSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}</button>
+                <!-- // 打开添加页面 -->
+                <button class="layui-btn icon-btn" 
+                    lay-open="" data-title="{:__('新增部门')}" callback="edit" data-area="680px" data-url="#editforms" >
+                    <i class="layui-icon layui-icon-add-1"></i>{:__('新增')}
+                </button>
+            </div>
+            </div>
+        </div>   
+        </div>
+
+        <!-- // 创建数据实例 -->
+        <table id="lay-tableList" lay-filter="lay-tableList"></table>        
+    </div>
+</div>
+<!-- // 添加编辑数据 -->
+<script type="text/html" id="editforms" >
+<div class="layui-fluid layui-bg-white">
+    <form class="layui-form" lay-filter="editforms" >
+    <input type="text" name="id" hidden="">
+    <div class="layui-form-item">
+        <label class="layui-form-label"><font color="red">* </font>{:__('上级部门')}</label>
+        <div class="layui-input-inline" >
+            <div id="pidNode" name="pid" lay-filter="pidNode"></div>
+        </div>
+        <label class="layui-form-label">{:__('排序号')}</label>
+        <div class="layui-input-inline">
+            <input name="sort" placeholder="{:__('默认自动生成')}" type="number" class="layui-input"   />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><font color="red">* </font>{:__('部门名称')}</label>
+        <div class="layui-input-inline">
+            <input name="title" placeholder="{:__('请输入部门名称')}" type="text" class="layui-input"  lay-verify="required" />
+        </div>
+        <label class="layui-form-label">{:__('部门区域')}</label>
+        <div class="layui-input-inline">
+            <input name="address" placeholder="{:__('请输入部门区域')}" class="layui-input" />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><font color="red">* </font>{:__('负责人')}</label>
+        <div class="layui-input-inline">
+            <input name="head" placeholder="{:__('请输入部门负责人')}" type="text" class="layui-input"  />
+        </div>
+        <label class="layui-form-label"><font color="red">* </font>{:__('手机号')}</label>
+        <div class="layui-input-inline">
+            <input name="mobile" placeholder="{:__('请输入负责人手机号')}" type="number" class="layui-input" lay-verify="required|mobile"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('负责人邮箱')}</label>
+        <div class="layui-input-inline">
+            <input name="email" placeholder="{:__('请输入负责人邮箱')}" type="text" class="layui-input" lay-verify="required|email"/>
+        </div>
+        <label class="layui-form-label">{:__('部门状态')}</label>
+        <div class="layui-input-inline">
+            <input name="status" type="radio" value="1" title="{:__('正常')}" checked/>
+            <input name="status" type="radio" value="0" title="{:__('停用')}"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('部门简介')}</label>
+        <div class="layui-input-inline" style="width: 500px">
+            <input name="content" placeholder="{:__('请输入部门简介')}" type="text" class="layui-input"  />
+        </div>
+    </div>
+
+    <div class="layui-footer layui-form-item layui-center "  >
+        <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
+        <button class="layui-btn" lay-add="{:url('/system/Department/add')}" lay-edit="{:url('/system/Department/edit')}" lay-filter="submitPage"  lay-submit>{:__('提交')}</button>
+    </div>
+    </form>
+</div>
+</script>
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar"> 
+    <a class="layui-table-text" data-title="{:__('编辑')}" data-area="668px" data-url="#editforms" lay-event="edit" callback="edit" >{:__('编辑')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-url="{:url('/system/Department/del')}?id={{d.id}}" lay-event="del" >{:__('删除')}</a>
+</script>
+
+<include file="/public/footer" />
+<script src="__STATICADMIN__module/xmselect/xmselect.js"></script>
+<script>
+    layui.use(['admin','form','treetable'], function () {
+
+        var jquery = layui.jquery;
+        var admin = layui.admin;
+        var form = layui.form;
+        var table = layui.table;
+        var treetable = layui.treetable;
+        var tableURL = "{:url('/system/Department/index')}";
+
+        // 渲染初始化表格
+        var renderTable = function (tableURL) {
+
+            var ss = treetable.render({
+                elem: '#lay-tableList',
+                treeColIndex: 1,
+                treeSpid: 0,
+                treeIdName: 'id',
+                treePidName: 'pid',
+                url: tableURL,
+                cellMinWidth: 100,
+                cols: [[
+                    {type: 'numbers'},
+                    {field: 'title', title: '{:__("部门名称")}'},
+                    {field: 'head', align: 'center',title: '{:__("负责人")}'},
+                    {field: 'mobile', align: 'center',title: '{:__("手机号")}'},
+                    {field: 'email', align: 'center',title: '{:__("邮箱")}'},
+                    {field: 'address', width: 220,title: '{:__("部门地址")}'},
+                    {field: 'sort',  width: 80, align: 'center',title: '{:__("排序")}'},
+                    {field: 'create_time', align: 'center',width: 160,title: '{:__("创建时间")}'},
+                    {align: 'center', toolbar: '#tableBar', width: 160,title: '{:__("操作")}'},
+                ]]
+            });
+        }
+
+        // 监听搜索 serialize
+        form.on('submit(treeSearch)',function(data) {
+        
+            var whereURL = '',
+                field = data.field;
+            for (var key in field ) {
+                whereURL += key + '=' + field[key];
+                whereURL += '&';
+            }
+
+            // 拼接字符串
+            whereURL = whereURL.replace(/(.*)&/,'$1 ');
+            whereURL = tableURL + '?' + whereURL;
+            renderTable(whereURL);
+        })
+
+        // 回调函数
+        admin.callback.edit = function(clickthis,colletction,config) {
+
+            var tableThis = colletction.tableThis;
+            var checkedId = [];
+            if (typeof(tableThis) !== "undefined") {
+                // 这里需要自己判断pid是否等于0，否则会报错！
+                if (tableThis.data.pid !== 0) {
+                    checkedId.push(tableThis.data.pid);
+                }
+            }
+
+            var select = xmSelect.render({
+                el: '#pidNode',
+                tips: '请选择上级部门',
+                name: 'pid',
+                height: 'auto',
+                data: table.cache.depart,
+                radio: true,
+                clickClose: true,
+                initValue: checkedId,
+                prop: {
+                    value: 'id',
+                    name:'title'
+                },
+                tree: {
+                    show: true,
+                    strict: false,
+                    showLine: false,
+                    clickExpand: false,
+                },
+                model: { 
+                    icon: 'hidden',
+                    label: { 
+                        type: 'text' 
+                    } 
+                },
+                theme: {
+                    color: '#1890FF'
+                }
+            })
+
+            // 监听提交
+            form.on("submit(submitPage)",function(post){
+
+                var pageThat = jquery(this);
+                pageThat.attr("disabled",true);
+                 // 获取提交地址
+                if (typeof(tableThis) !== 'undefined') {
+                    _pageUrl = tableThis.event === 'edit' ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
+                }else {
+                     _pageUrl = pageThat.attr('lay-add');
+                }
+                
+                
+                if (typeof(_pageUrl) === 'undefined') { 
+                    layer.msg('按钮缺少 url 属性','info'); 
+                    return false;
+                }
+                
+                // 开始POST提交数据
+                jquery.post(_pageUrl, 
+                    post.field, function(res){
+                        if (res.code == 200) {
+                            layer.msg(res.msg);
+                            // 更新列数据
+                            if (typeof(tableThis) !== 'undefined') {
+                                if (tableThis.event === 'edit')
+                                    tableThis.update(JSON.parse(JSON.stringify(post.field)));
+                            }else { // 添加则更新列表
+                                renderTable(tableURL);
+                            }
+
+                            // 关闭当前窗口
+                            layer.close(colletction.index);
+                        }
+                        else {
+                            layer.error(res.msg);                             
+                        }
+                }, 'json');
+
+                return false;                        
+            })
+        }
+
+        // 执行初始化
+        renderTable(tableURL);
+    });
+
+</script>

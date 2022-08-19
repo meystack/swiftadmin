@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SwiftAdmin 用户登录</title>
+    <include file="public:header"/>
+</head>
+<body>
+<style>
+    .layui-form-checked[lay-skin="primary"] i {
+        border-color: #1890ff !important;
+        background-color: #1890ff;
+        color: #fff;
+    }
+
+    .forget-link {
+        margin-top: 7px;
+        color: #1890ff;
+    }
+</style>
+<div id="userLogin" class="layui-fluid">
+    <div class="login-link">
+        <span class="other">第三方账号登录：</span>
+        <span>
+			<a href="{:url('/third/login',['type'=>'qq'])}&ref={$referer}" class="qq" target="_top"></a>
+			<a href="{:url('/third/login',['type'=>'weixin'])}&ref={$referer}" class="wx" target="_top"></a>
+			<a href="{:url('/third/login',['type'=>'weibo'])}&ref={$referer}" class="sina" target="_top"></a>
+		</span>
+    </div>
+    <form class="layui-form" action="/user/login" method="post" style="height: auto">
+        <input type="hidden" name="__token__" value="{:token()}"/>
+        <div class="layui-form-item">
+            <div class="item">
+                <label class="user-login-icon layui-icon layui-icon-username"></label>
+                <input type="text" id="nickname" name="nickname" lay-verify="required|email"
+                       placeholder="{:__('请输入邮箱或手机号')}" class="layui-input" value="test@swiftadmin.net">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="item">
+                <label class="user-login-icon layui-icon layui-icon-password"></label>
+                <input type="password" id="pwd" name="pwd" lay-verify="required" placeholder="{:__('密码')}"
+                       class="layui-input" value="admin888">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-bottom: 20px;">
+            <div class="fl">
+                <input type="checkbox" name="remember" lay-skin="primary" title="{:__('记住密码')}" checked>
+            </div>
+            <a lay-open data-title="找回密码" data-area="510px,360px" data-object="top" data-url="/user/forgot" class="forget-link fr" style="margin-top: 7px;">{:__('忘记密码？')}</a>
+        </div>
+
+        <div class="layui-form-item">
+            <input type="submit" value="{:__('立即登录')}" lay-submit="" lay-filter="submitIframe" data-reload="top"
+                   class="layui-btn layui-btn-fluid layui-btn-normal">
+        </div>
+    </form>
+</div>
+</body>
+</html>

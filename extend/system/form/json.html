@@ -1,0 +1,21 @@
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>变量值</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <notempty name="data.{%field%}">
+                        <volist name="data.{%field%}" id="vo" key="i">
+                            <tr>
+                                <td><input type="text" class="layui-input" name="{%field%}[key][]" value="{$key}" ></td>
+                                <td><input type="text" class="layui-input" name="{%field%}[value][]" value="{$vo}"></td>
+                                <td><i class="layui-icon fa-times" data-name="{%field%}" onclick="layui.admin.resetInput(this);"></i></td>
+                            </tr>
+                        </volist>
+                    </notempty>
+                </tbody>
+            </table>
+            <button type="button" class="layui-btn layui-btn-normal layui-jsonvar-add" data-name="{%field%}">追加</button>

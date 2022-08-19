@@ -1,0 +1,137 @@
+
+xm-select > .xm-label .scroll .label-content {
+    padding-right: 10px;
+}
+
+.layui-card {
+    overflow: hidden!important;
+}
+
+.layui-form-item .layui-input-inline {
+    width: 320px;
+}
+
+.layui-fluid .layui-form {
+    padding-bottom: 35px;
+}
+
+.layui-rate {
+    padding: 0px;
+    padding-top: 3px;
+}
+
+.layui-rate .layui-inline{
+    margin-bottom: 0px;
+}
+
+.layui-rate li i.layui-icon {
+    font-size: 16px;
+    margin-right: 0px
+}
+
+.layui-fluid .layui-footer {
+    margin-top: 50px;
+}
+
+p.layui-clear {
+    height: 10px;
+}
+
+.layui-imagesbox {
+    width: 810px;
+    overflow: hidden;
+}
+
+.layui-imagesbox input {
+    text-align: center;
+}
+
+.layui-imagesbox .layui-input-inline {
+    margin-bottom: 15px;
+}
+
+.layui-imagesbox .layui-input-inline span {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
+    width: 30px;
+    height: 20px;
+    font-size: 10px;
+    line-height: 20px;
+    padding: 0;
+}
+
+@media screen and (min-width: 787px) {
+
+    .layui-form-item-fixed .layui-input-inline {
+        width: 181px;
+    }
+
+    .layui-form-video .layui-input-inline:nth-of-type(n+2) {
+        width: 108px;
+    }
+
+    .layui-form-fixday .layui-input-inline:nth-of-type(n+2) {
+        width: 270px;
+    }
+
+    .layui-form-video .layui-form-label:nth-of-type(n+2),.layui-form-fixday .layui-form-label:nth-of-type(n+2){
+        width: 62px;
+        padding-left: 0px;
+    }
+
+    .layui-form-soft .layui-input-inline:nth-of-type(n+2) {
+        width: 108px;
+    }
+
+    .layui-form-soft .layui-form-label:nth-of-type(n+2) {
+        width: 31px;
+        padding-left: 0px;
+    }
+
+    .layui-form-item-fixed .layui-form-label:not(:first-child) {
+        padding-left: 0;
+        width: auto!important;
+    }
+
+    .layui-form-item .wid550 {
+        width: 550px;
+    }
+
+    .layui-form-item .wid650 {
+        width: 650px;
+    }
+}
+
+@media screen and (max-width: 787px) {
+
+    .layui-form-item .layui-input-inline {
+        width: 200px!important;
+    }
+
+    .layui-form-item .layui-inline {
+        display: inline-block;
+    }
+
+    .layui-imagesbox {
+        width: auto;
+    }
+
+    .layui-imagesbox img {
+        width: 208px;
+    }
+
+    .layui-imagesbox .layui-input-inline {
+        width: auto!important;
+        margin-left: 6px;
+    }
+
+    .layui-form-item .picker,.layui-form-item  .stars {
+        margin-bottom: 0px;
+    }
+
+    p.layui-clear {
+        height: auto;
+    }
+}

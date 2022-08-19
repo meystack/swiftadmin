@@ -1,0 +1,22 @@
+.treeTable-empty {
+    width: 20px;
+    display: inline-block;
+}
+
+.treeTable-icon {
+    cursor: pointer;
+}
+
+table .treeTable-icon i.layui-icon {
+    font-size: 14px;
+}
+
+.treeTable-icon .layui-icon-right:before {
+    content: "\e602";
+}
+
+.treeTable-icon.open .layui-icon-right:before {
+    content: "\e61a";
+    background-color: transparent;
+}
+

@@ -1,0 +1,100 @@
+/*!
+ * tags标签组件
+ * by meystack to www.swiftadmin.net
+ * Apache2.0 Licensed
+ */
+ 
+.layui-tags {
+    border: 1px solid #e3e7f1;
+    height: 31px;
+    line-height: 31px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    border-radius: 2px;
+    cursor: text;
+    padding-left: 10px;
+}
+
+.layui-tags input {
+    width: 118px;
+    font-family: helvetica;
+    font-size: 13px;
+    border: 1px solid transparent;
+    background: 0 0;
+    color: #000;
+    outline: 0;
+    height: 31px;
+    float: left;
+
+}
+
+.layui-tags span.tag-elem {
+    float: left;
+    height: 25px;
+    line-height: 16px;
+    font-size: 12px;
+    box-sizing: border-box;
+    margin-right: 5px;
+    padding: 5px;
+    margin-top: 4px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    font-family: helvetica;
+    color: #1890ff;
+    background: #e6f7ff;
+    border: 1px solid #91d5ff;
+    cursor: pointer;
+}
+
+.layui-tags span.tag-elem i {
+    font-family: Verdana;
+    color: #0084ff;
+    margin-left: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.layui-tags span.tag-elem i:hover {
+    color: red;
+}
+
+#layui-tags-ajax {
+    text-align: left;
+    cursor: default;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    -moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-clip: padding-box;
+    position: absolute;
+    display: none;
+    z-index: 1029;
+    max-height: 254px;
+    overflow: hidden;
+    overflow-y: auto;
+    width: 138px;
+    box-sizing: border-box;
+}
+
+#layui-tags-ajax li {
+    position: relative;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1em;
+    color: #333;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#layui-tags-ajax li:hover,#layui-tags-ajax .layui-tag-this {
+    background: #f0f0f0;
+}
+
+#layui-tags-ajax li b {
+    color: red;
+}

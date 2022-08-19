@@ -1,0 +1,140 @@
+<include file="/public/header"/>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+            <div class="layui-form">
+                <!-- // 自定义搜索参数 -->
+                <div id="laytable-search" class="layui-form-item">
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('访问ID')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="id" class="layui-input" type="text" placeholder="{:__('访问ID')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('用户昵称')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="nickname" class="layui-input" type="text" placeholder="{:__('用户昵称')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('用户 IP')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="user_ip" class="layui-input" type="text" placeholder="{:__('用户 IP')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('浏览器 UA')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="user_agent" class="layui-input" type="text" placeholder="{:__('浏览器 UA')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('操作系统')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="user_os" class="layui-input" type="text" placeholder="{:__('操作系统')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('浏览器')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="user_browser" class="layui-input" type="text" placeholder="{:__('浏览器')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('更新时间')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="update_time" lay-datetime data-range="true" data-type="date"
+                                   data-dateformat="yyyy/MM/dd" class="layui-input" type="text"
+                                   placeholder="{:__('更新时间')}"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('登录时间')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="create_time" lay-datetime data-range="true" data-type="date"
+                                   data-dateformat="yyyy/MM/dd" class="layui-input" type="text"
+                                   placeholder="{:__('登录时间')}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <select name="status">
+                            <option value="">{:__('按状态查询')}</option>
+                            <option value="2">{:__('正常')}</option>
+                            <option value="1">{:__('关闭')}</option>
+                        </select>
+                    </div>
+
+
+                    <div class="layui-inline">
+                        <div class="layui-form-label">{:__('账号')}</div>
+                        <div class="layui-input-inline ">
+                            <input name="name" class="layui-input" type="text" placeholder="{:__('账号')}"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <!-- // 默认搜索 -->
+                        <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i
+                                class="layui-icon layui-icon-search"></i>{:__('搜索')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- // 创建数据实例 -->
+        <table id="lay-tableList" lay-filter="lay-tableList"></table>
+    </div>
+</div>
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-table-text" data-url="{:url('/system/LoginLog/del')}?id={{d.id}}" lay-event="del">{:__('删除')}</a>
+</script>
+
+<include file="/public/footer"/>
+<script>
+    layui.use(['admin', 'table'], function () {
+
+        var table = layui.table;
+
+        var isTable = table.render({
+            elem: "#lay-tableList"
+            , url: "{:url('/system/LoginLog/index')}"
+            , toolbar: '#tableButton'
+            , defaultToolbar: ['filter', 'exports', 'print', 'search']
+            , cellMinWidth: 160
+            , page: true
+            , limit: 18
+            , cols: [[
+                {type: 'checkbox', width: 50},
+                {field: 'id', align: 'center', sort: true, width: 80, title: 'ID'},
+                {field: 'name',width: 120, title: '{:__("账号")}'},
+                {field: 'nickname', width: 120, title: '{:__("用户昵称")}'},
+                {field: 'user_agent', title: '{:__("浏览器 UA")}'},
+                {field: 'user_os',width: 160,  title: '{:__("操作系统")}'},
+                {field: 'user_browser', title: '{:__("浏览器")}'},
+                {field: 'status', width: 90, templet:function (d) {
+                        let arr = [
+                            '<span class="layui-badge">失败</span>',
+                            '<span class="layui-badge layui-bg-blue">成功</span>',
+                        ];
+                        return arr[d.status]
+                    }, title: '{:__("登录状态")}'},
+                {field: 'user_ip', width: 139, title: '{:__("用户 IP")}'},
+                {field: 'create_time',width: 160, title: '{:__("登录时间")}'},
+                {align: 'center', toolbar: '#tableBar', width: 160, fixed: 'right', title: '{:__("操作")}'},
+            ]]
+        })
+
+    })
+</script>

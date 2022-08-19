@@ -1,0 +1,468 @@
+<include file="/public/header"/>
+<style>
+    .layui-row {
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .echartsOrder {
+        margin-right: 10px;
+    }
+
+    .echartsOrder:hover, .echartsOrder.active {
+        color: #1890ff;
+    }
+</style>
+
+<div class="layui-fluid ">
+
+    <div class="layui-row layui-col-space10">
+
+        <div class="layui-col-md8">
+            <!-- 填充内容 -->
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 20px;">
+                    <div class="layui-row">
+                        <div class="layui-col-md8">
+                            <img src="{$AdminLogin.face}" class="layui-admin-avatar">
+                            <div class="layui-admin-content">
+                                <span class="h4">早安，{$AdminLogin.nickname|default=$AdminLogin.name}，开始您一天的工作吧！</span>
+                                <span>今日多云转阴，18℃ - 22℃，出门记得穿外套哦~</span>
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-admin-workplace">
+                                <div class="workplace-header">
+                                    <span><i class="layui-icon layui-icon-list"></i>文章数</span>
+                                </div>
+                                <div class="workplace-content">{$workplace.article|default=26}</div>
+                            </div>
+
+                            <div class="layui-admin-workplace">
+                                <div class="workplace-header">
+                                    <span><i class="layui-icon layui-icon-date date"></i>待审核</span>
+                                </div>
+                                <div class="workplace-content">{$workplace.check|default="12/56"}</div>
+                            </div>
+                            <div class="layui-admin-workplace">
+                                <div class="workplace-header">
+                                    <span><i class="layui-icon layui-icon-notice notice"></i>评论数</span>
+                                </div>
+                                <div class="workplace-content">{$workplace.comment|default="2,352"}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 20px;">
+                    <div style="height: 78px">
+                        <ul>
+                            <a href="javascript:;" class="workplace-action" sa-event="tabs"
+                               data-url="{:url('/system/plugin/index')}"
+                               title="插件管理">插件管理</a>
+                            <a href="javascript:;" class="workplace-action" sa-event="tabs"
+                               data-url="{:url('/system/attachment/index')}"
+                               title="附件管理">附件管理</a>
+                            <a href="javascript:;" class="workplace-action" sa-event="tabs"
+                               data-url="{:url('/system/dictionary/index')}"
+                               title="字典管理">字典管理</a>
+                            <a href="javascript:;" class="workplace-action" sa-event="tabs"
+                               data-url="{:url('/system/department/index')}"
+                               title="部门管理">部门管理</a>
+                            <a href="javascript:;" class="workplace-action" sa-event="tabs"
+                               data-url="{:url('/system/jobs/index')}"
+                               title="岗位管理">岗位管理</a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space10" style="margin-bottom: 0;">
+
+        <div class="layui-col-md4">
+            <div class="layui-row layui-col-space10" style="margin-bottom: 5px;">
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/system/User/index')}"
+                         data-title="{:__('会员管理')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon fa-user"></i></div>
+                                <div class="layui-small-block-title">用户</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/analysis')}"
+                         data-title="{:__('分析页')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon fa-line-chart " style="color: #b0e689"></i></div>
+                                <div class="layui-small-block-title">分析</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-row layui-col-space10" style="margin-bottom: 5px;">
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/monitor')}"
+                         data-title="{:__('监控页')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon layui-icon-chart-screen" style="color: #fe9c6e"></i></div>
+                                <div class="layui-small-block-title">监控</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/system/Dictionary/index')}"
+                         data-title="{:__('字典管理')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon fa-th-list" style="color: #b37eeb"></i></div>
+                                <div class="layui-small-block-title">字典</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-row layui-col-space10" style="margin-bottom: 5px;">
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/system/SystemLog/index')}"
+                         data-title="{:__('操作日志')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon fa-file-text" style="color: #88e4de"></i></div>
+                                <div class="layui-small-block-title">日志</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6 layui-col-sm6">
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/baseCfg')}"
+                         data-title="{:__('基本设置')}">
+                        <div class="layui-card-body">
+                            <div class="layui-small-block">
+                                <div><i class="layui-icon fa-gear" style="color: #ffc069"></i></div>
+                                <div class="layui-small-block-title">设置</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space10">
+
+        <div class="layui-col-md8">
+            <div class="layui-card">
+                <div class="layui-card-header">注册登录概览
+                    <span class="pull-right">
+                        <a class="echartsOrder" data-cycle="week">周</a>
+                        <a class="echartsOrder" data-cycle="month">月</a>
+                        <a class="echartsOrder" data-cycle="year">年</a>
+                    </span>
+
+                </div>
+                <div class="layui-card-body">
+                    <div id="RegisterCharts" style="height: 250px"></div>
+                    <div id="RegisterChartsData" style="display: none">{$RegisterChartsOptions|raw}</div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">用户统计（组）</div>
+                <div class="layui-card-body">
+                    <div id="userGroupCharts" style="height: 250px"></div>
+                    <div id="userGroupData" style="display: none">{$userGroupData|raw}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space10">
+
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">热搜统计 (CMS)</div>
+                <div class="layui-card-body">
+                    <div id="searchWordCharts" style="height: 250px;"></div>
+                    <div id="searchWordData" style="display: none">{$searchWords|raw}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">资产报表</div>
+                <div class="layui-card-body" style="height: 250px;overflow: hidden">
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-plug"></i></div>
+                                    <div class="layui-small-block-title">本地插件 {$assetsInfo.pluginCount} 个</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-database"></i></div>
+                                    <div class="layui-small-block-title">数据表 {$assetsInfo.tableCount} 张</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-file"></i></div>
+                                    <div class="layui-small-block-title">附件记录 {$assetsInfo.attachmentCount} 条</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-codepen" style="color: #ee6666"></i></div>
+                                    <div class="layui-small-block-title">正在运行 {$assetsInfo.pluginRunning} 个</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-hdd-o" style="color: #ee6666"></i></div>
+                                    <div class="layui-small-block-title">数据库 {$assetsInfo.dbSize}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs4 layui-col-sm4">
+                        <div class="layui-card smallblock">
+                            <div class="layui-card-body">
+                                <div class="layui-small-block">
+                                    <div><i class="layui-icon fa-mixcloud" style="color: #ee6666"></i></div>
+                                    <div class="layui-small-block-title">附件大小 {$assetsInfo.attachmentSize}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md4">
+            <div class="layui-card" id="console">
+                <div class="layui-card-header">DEVOPS 统计<span class="layui-badge layui-badge-blue pull-right">总</span></div>
+                <div class="layui-card-body">
+                    <div id="devOpsCharts" style="height: 250px;"></div>
+                    <div id="devOpsData" style="display: none">{$devOpsData|raw}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__STATICADMIN__module/echarts/echarts.js"></script>
+<script src="__STATICADMIN__module/echarts/echarts-wordcloud.js"></script>
+<script src="__STATICADMIN__module/echarts/china.js"></script>
+
+<include file="/public/footer"/>
+
+<script>
+    layui.use(['jquery','layer'], function () {
+
+        let $ = layui.jquery;
+        let layer = layui.layer;
+
+        /**
+         * 用户统计报表
+         * @type {string}
+         */
+        let RegisterChartsCharts = echarts.init(document.getElementById('RegisterCharts'));
+        RegisterChartsCharts.setOption(JSON.parse($('#RegisterChartsData').text()));
+        /**
+         * 查询注册报表
+         * @param page
+         */
+        $('.echartsOrder').click(function (e) {
+            let that = $(this);
+            let cycle = $(this).data('cycle');
+            $.ajax({
+                url: '{:url("/Index/console")}',
+                type: 'post',
+                data: {cycle: cycle},
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 200) {
+                        RegisterChartsCharts.setOption(res.data);
+                        $('.echartsOrder').removeClass('active');
+                        $(that).addClass('active');
+                    }
+                    else {
+                        layer.info(res.msg);
+                    }
+                }
+            })
+        })
+
+        /**
+         * 组别报表
+         * @type {[type]}
+         */
+        let userGroupCharts = echarts.init(document.getElementById('userGroupCharts'));
+        let userGroupOptions = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: '30px',
+                top: '30px'
+            },
+            series: [
+                {
+                    name: '用户组别',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '14px',
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: JSON.parse($('#userGroupData').text())
+                }
+            ]
+        }
+        userGroupCharts.setOption(userGroupOptions);
+
+        /**
+         * 搜索词报表
+         * @type {[type]}
+         */
+        var searchWordCharts = echarts.init(document.getElementById('searchWordCharts'));
+        var searchWordOption = {
+            tooltip: {show: true},
+            series: [{
+                type: 'wordCloud',
+                shape: 'circle',
+                keepAspect: false,
+                left: 'center',
+                top: 'center',
+                width: '80%',
+                height: '80%',
+                right: null,
+                bottom: null,
+                sizeRange: [12, 23],
+                rotationRange: [-90, 90],
+                rotationStep: 45,
+                gridSize: 6,
+                drawOutOfBound: false,
+                layoutAnimation: true,
+                textStyle: {
+                    color: function () {
+                        // Random color
+                        return 'rgb(' + [
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160),
+                            Math.round(Math.random() * 160)
+                        ].join(',') + ')';
+                    }
+                },
+                emphasis: {shadowBlur: 10, shadowColor: '#333'},
+                data: JSON.parse($('#searchWordData').text())
+            }]
+        };
+
+        searchWordCharts.setOption(searchWordOption);
+        /**
+         * 系统数据报表
+         * @type {[type]}
+         */
+        let devOpsCharts = echarts.init(document.getElementById('devOpsCharts'));
+        let devOpsOptions = {
+            color: ['#1890ff'],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['全部日志', '错误日志', '常规日志', '邮件验证','手机验证',  '用户统计', '登录绑定'],
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            yAxis: {
+                type: 'value'
+            },
+            grid: {
+                left: '3%',
+                right: '3%',
+                bottom: '5%',
+                top: '3%',
+                containLabel: true
+            },
+            series: [
+                {
+                    type: 'bar',
+                    barWidth: '50%',
+                    data: JSON.parse($('#devOpsData').text())
+                }
+            ]
+        };
+
+        devOpsCharts.setOption(devOpsOptions);
+        // 窗口大小改变事件
+        window.onresize = function () {
+            RegisterChartsCharts.resize();
+            devOpsCharts.resize();
+            searchWordCharts.resize();
+            userGroupCharts.resize();
+        };
+    })
+
+</script>
+</body>
+</html>

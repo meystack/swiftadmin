@@ -1,0 +1,14 @@
+{
+    "name"  : "workerman/redis-queue",
+    "type"  : "library",
+    "homepage": "http://www.workerman.net",
+    "license" : "MIT",
+    "description": "Message queue system written in PHP based on workerman and backed by Redis.",
+    "require": {
+        "php": ">=5.4",
+        "workerman/redis" : "^1.0"
+    },
+    "autoload": {
+        "psr-4": {"Workerman\\RedisQueue\\": "./src"}
+    }
+}

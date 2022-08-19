@@ -1,0 +1,450 @@
+
+.fl {
+	float: left;
+}
+
+.fr {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}
+
+i {
+	cursor: pointer;
+}
+
+.layui-nav {
+	color: #000;
+}
+
+.layui-nav .layui-this:after, .layui-nav-bar {
+	background: 0!important;
+}
+
+body {
+	background-color: #eee;
+}
+
+.layui-layout-admin .layui-header {
+	background-color: #fff!important;
+	box-shadow: 0 1px 2px 0 rgb(0 0 0 / 15%);
+}
+
+.layui-layout-admin .layui-header .layui-nav-item a {
+	color: #0C1021!important;
+}
+
+.layui-layout-admin .layui-logo {
+	box-shadow: 0 0px 2px 0 rgb(0 0 0 / 15%);
+}
+
+.logo-text, layui-logo {
+	color: #959890!important;
+}
+
+.logo-text {
+	font-size: 20px;
+}
+
+.layui-btn-primary {
+	background: 0 0!important;
+}
+
+.layui-btn-primary:hover {
+	border-color: #1890ff;
+}
+
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+	background-color: #1890ff;
+}
+
+.layui-form-fixed {
+	padding-right: 35px;
+	padding-top: 30px;
+}
+
+.layui-center {
+	text-align: center;
+}
+
+.layui-nav {
+	background-color: unset;
+}
+.layui-bg-white {
+	background-color: #fff!important;
+}
+
+.layui-nav-tree .layui-nav-item a {
+	padding-left: 30px!important;
+}
+
+.layui-bg-white .layui-nav-tree .layui-nav-child a,.layui-bg-white .layui-nav-tree a {
+	color: #000!important;
+}
+
+.layui-bg-white .layui-nav .layui-nav-item a {
+	color: #000!important;
+}
+
+.layui-bg-white .layui-nav-tree dl.layui-nav-child {
+	background-color: #fafafa!important;
+}
+
+.layui-bg-white .layui-nav-tree li dl.layui-nav-child dd {
+	padding-left: 15px;
+}
+
+.layui-bg-white .layui-nav-tree .layui-nav-item .layui-icon {
+	position: absolute;
+	left: 22px;
+	color: #000;
+	top: 2px;
+	z-index: 99999;
+}
+
+.layui-bg-white .layui-nav-tree li.layui-nav-item:hover>a,
+.layui-bg-white .layui-nav-tree li.layui-nav-item dl dd:hover>a,
+.layui-bg-white .layui-nav-tree li.layui-nav-item dl dd:hover>i {
+	color: #1890ff!important;
+}
+
+.layui-bg-white .layui-nav-tree .layui-nav-child dd.layui-this,
+.layui-bg-white .layui-nav-tree .layui-nav-child dd.layui-this a,
+.layui-bg-white .layui-nav-tree .layui-this,.layui-bg-white .layui-nav-tree .layui-this>a {
+	background-color: #e6f7ff!important;;
+	border-right: 1px solid #1890ff!important;;
+	color: #1890ff!important;
+}
+
+.layui-bg-white .layui-nav-tree .layui-this i,
+.layui-bg-white .layui-nav-tree .layui-this a {
+	color: #1890ff!important;
+}
+
+.layui-nav-tree li a {
+	cursor: pointer;
+}
+
+.layui-nav-tree li.layui-nav-item a>span {
+	position: absolute;
+	right: 32px;
+}
+
+/* 内容开始 */
+#content {
+	padding: 15px;
+	overflow: hidden;
+	margin: 0!important;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: unset;
+}
+
+#iframe {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+
+#content .goindex {
+	padding: 20px;
+	overflow: hidden;
+}
+
+#content .goindex .tips {
+	font-size: 18px;
+	margin-top: 15px;
+}
+
+#content .goindex div img {
+	width: 80%;
+}
+
+#content #profile {
+	padding: 20px;
+	overflow: hidden;
+}
+
+#profile .contract-title {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	line-height: 24px;
+	margin: 20px 0 6px;
+	font-size: 14px;
+	color: #a2a0a0;
+}
+
+#content #profile .layui-col-md3 {
+	margin-bottom: 15px;
+}
+
+#content #profile i {
+	cursor: pointer;
+}
+
+#content #profile i:hover {
+	color: #2a94de;
+}
+
+#content #account {
+	background: #2a94de;
+	border-radius: 3px;
+	color: #fff;
+	padding: 48px 48px 20px;
+}
+
+#content #account .layui-btn {
+	background-color: #6ebbf1!important;
+}
+
+#content #account .layui-bind-third {
+	background-color: #dde9f3 !important;
+}
+
+#imgHead img {
+	width: 90px;
+	height: 90px;
+	border-radius: 50px;
+	cursor: pointer;
+}
+
+.layui-user-avatar {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	text-align: center;
+}
+
+#content .nickname {
+	font-size: 23px;
+	margin-top: 36px;
+	color: #fff;
+	margin-bottom: 10px;
+}
+
+#content #thrid {
+	margin-top: 20px;
+}
+
+#content #appkey {
+	overflow: hidden;
+}
+
+#user-detail {
+	height: 120px;
+	border: 1px solid #eee;
+	padding-left: 28px;
+	padding-top: 38px;
+	background: #f7f9fa ;
+	color: #333;
+	font-size: 12px;
+}
+
+#user-detail .layui-user-avatar img {
+	width: 90px;
+	height: 90px;
+	border-radius: 50px;
+	cursor: pointer;
+}
+
+#user-detail .u-info {
+	line-height: 32px;
+}
+
+#user-detail .label {
+	display: inline-block;
+	width: 68px;
+	color: #a0a2a3;
+}
+
+#user-detail .layui-progress {
+	display: inline-block;
+	width: 300px;
+}
+
+#user-detail .layui-progress-big, .layui-progress-big .layui-progress-bar {
+	height: 12px;
+	line-height: 12px;
+}
+
+#user-detail .text-stress {
+	margin-left: 20px;
+	color: #ff6600;
+}
+
+#content .settings-tier {
+	clear: both;
+	height: 80px;
+	line-height: 79px;
+	border-bottom: 1px dashed #e6e6e6;
+	white-space: nowrap;
+}
+
+#content .settings-tier a {
+	cursor: pointer;
+}
+
+#content .setting-status {
+	height: 24px;
+	width: 24px;
+	background: no-repeat left center;
+	vertical-align: middle;
+}
+
+#content .setting-status i.layui-icon {
+	font-size: 30px;
+	margin-left: 20px;
+	color: #999;
+}
+
+#content .setting-status i.fa-check {
+	color: #0b8235;
+}
+
+#content .setting-status i.fa-warning {
+	color: #ffa200;
+}
+
+#content .setting-name {
+	display: inline-block;
+	margin-left: 16px;
+	font-size: 12px;
+}
+
+#content .setting-intro {
+	color: #999;
+	margin-left: 30px;
+}
+
+#content .setting-operate {
+	width: 80px;
+	white-space: nowrap;
+	text-align: center;
+}
+
+#content .setting-operate a {
+	color: #1890ff;
+}
+
+#cardInfo {
+	background-color: #fcf8e3;
+	border-color: #faf3cd;
+	color: #c09853;
+	padding: 20px;
+}
+
+#cardInfo span {
+	display: block;
+}
+
+#cardInfo .urls  {
+	width: 500px;
+	margin-top: 15px;
+	display: inline-block;
+}
+
+#cardInfoList {
+	margin-top: 10px;
+	padding: 10px 10px 20px;
+}
+
+#cardInfoList .cardInfoUsers {
+	overflow: hidden;
+}
+
+#cardInfoList .cardInfoUsers li {
+	display: inline-block;
+	width: 100px;
+	text-align: center;
+	overflow: hidden;
+	margin-bottom: 15px;
+}
+
+#cardInfoList .cardInfoUsers li img.media-object {
+	border-radius: 120px;
+	height: 40px;
+	width: 40px;
+}
+
+#cardInfoList .cardInfoUsers li a.truncate {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.layui-comment {
+	padding-top: 15px!important;
+}
+
+.layui-table-cell div {
+	display: inline-block;
+}
+
+a.layui-table-text {
+	cursor: pointer;
+}
+
+a[lay-event="del"] {
+	color: #FE232D;
+}
+
+.layui-form-footer {
+	background-color: #fff;
+	box-shadow: 0 -1px 5px rgba(0,0,0,.15);
+	padding: 15px;
+	z-index: 9999;
+	margin-bottom: 0px;
+	margin-top: 10px;
+	text-align: center;
+}
+
+.layui-imagesbox .layui-upload-drag {
+	height: 88px;
+	padding-top: 20px;
+}
+
+.layui-upload-drag {
+	padding: 15px;
+}
+
+.layui-imagesbox {
+	width: 810px;
+	overflow: hidden;
+}
+
+.layui-imagesbox .layui-input-inline {
+	width: 181px!important;
+}
+
+.layui-imagesbox .layui-input-inline span {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	cursor: pointer;
+	width: 30px;
+	height: 20px;
+	font-size: 10px;
+	line-height: 20px;
+	padding: 0;
+}
+
+.layui-imagesbox img {
+	width: 100%;
+	height: 116px;
+	cursor: pointer;
+}
+
+.layui-project .layui-project-text {
+	height: auto;
+}

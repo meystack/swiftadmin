@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>控制台 | 用户中心</title>
+    <include file="user:include"/>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-side-body layui-hide-xs layui-bg-black">
+<!--            // 可以增加LOGO-->
+            <img src="/static/system/images/logo.png" style="margin-bottom: 8px;margin-right: 10px" alt="logo" width="22" height="22" >
+            <span class="logo-text">用户中心</span>
+        </div>
+        <ul class="layui-nav layui-layout-left">
+            <li id="shrink" class="layui-nav-item layui-show-xs-inline-block" >
+                <i class="layui-icon layui-icon-shrink-right"></i>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+
+            <li class="layui-nav-item" lay-unselect="">
+                <a href="/" title="主页">
+                    <i class="layui-icon fa-home"></i>
+                </a>
+            </li>
+
+            <li class="layui-nav-item" >
+                <a href="javascript:;" id="notice">
+                    <i class="layui-icon fa-bell-o"></i>
+                    <span class="layui-badge-dot"></span>
+                </a>
+            </li>
+
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;"><img src="{$user.avatar}" alt="{$user.nickname}" class="layui-nav-img">{$user.nickname}</a>
+                <dl class="layui-nav-child">
+                    <dd><a lay-open data-title="修改密码" data-url="/user/changepwd" data-area="470px,330px" href="javascript:;">修改密码</a>
+                    </dd>
+                    <dd><a href="/user/logout">退出</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+                <a href="javascript:;">
+                    <i id="skin" class="layui-icon fa-moon-o"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side layui-side-body layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <include file="user:userNav"/>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <iframe id="iframe" src="/user/profile" frameborder="0" class="layui-layer-load" onload="this.className='';" ></iframe>
+    </div>
+    <include file="user:footer"/>
+</div>
+
+<script !src="">
+
+    layui.use(['jquery','upload'],function(){
+        let $ = layui.jquery;
+        let upload = layui.upload;
+
+        // 默认展现首个菜单栏
+        $('.layui-nav-tree .layui-nav-item').each(function (k,e) {
+            if ($(e).find('dl.layui-nav-child').length) {
+                $(e).addClass('layui-nav-itemed');
+                return false;
+            }
+        })
+
+        // 点击切换页面地址
+        $('body').on('click', '.layui-nav-tree a', function () {
+            let href = $(this).attr('lay-href');
+            if (href && href !== 'javascript:;') {
+                $('#iframe').attr('class','layui-layer-load');
+                $('#iframe').attr('src',href);
+            }
+        })
+
+        // 上传头像
+        upload.render({
+            elem: '.layui-user-avatar'
+            ,url: '/user/avatars'
+            ,method: 'post'
+            ,accept: 'file'
+            ,before: function(res) {
+                layer.msg('上传中');
+            },done: function(res, index, upload) {
+                // 上传成功
+                if (res.code == 200) {
+                    layer.msg(res.msg);
+                    $('#imgHead img').attr('src',res.url);
+                } else {
+                    layer.msg(res.msg,'error');
+                }
+            }
+        })
+
+        let leftAnimate = function (action = true) {
+            if (action) {
+                $('.layui-side').animate({width: '0px'});
+                $('.layui-body,.layui-footer').animate({left: '5px'});
+            } else {
+                $('.layui-side').animate({width: '200px'});
+                $('.layui-body,.layui-footer').animate({left: '200px'});
+            }
+        }
+
+        $('#shrink i.layui-icon').click(function () {
+            let right = 'layui-icon-shrink-right',
+                left = 'layui-icon-spread-left';
+            if ($(this).hasClass(right)) {
+                leftAnimate();
+                $(this).removeClass(right).addClass(left);
+
+            }else {
+                leftAnimate(false);
+                $(this).removeClass(left).addClass(right);
+            }
+        })
+
+        // 初始化宽度
+        if ($(window).width() <= 992) {
+            $('#shrink i.layui-icon-shrink-right').removeClass('layui-icon-shrink-right').addClass('layui-icon-spread-left');
+        }
+
+        let skin = layui.data('skin').theme || undefined;
+        if (skin === 'layui-bg-white') {
+            $('.layui-side-body').removeClass('layui-bg-black').addClass(skin);
+            $('#skin').removeClass('fa-moon-o').addClass('fa-sun-o');
+        }
+
+        // 切换皮肤
+        $('#skin').on('click',function () {
+            let value = $(this).hasClass('fa-moon-o');
+            console.log(value)
+            if (value) {
+                $(this).removeClass('fa-moon-o').addClass('fa-sun-o');
+                $('.layui-side-body').removeClass('layui-bg-black').addClass('layui-bg-white');
+                layui.data('skin',{
+                    key: 'theme',
+                    value: 'layui-bg-white'
+                });
+            } else {
+                $(this).removeClass('fa-sun-o').addClass('fa-moon-o');
+                $('.layui-side-body').removeClass('layui-bg-white').addClass('layui-bg-black');
+                layui.data('skin',{
+                    key: 'theme',
+                    value: 'layui-bg-black'
+                });
+            }
+        })
+
+    })
+</script>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<include file="/public/header" />
+<style>
+    .layui-form-select dl{
+        top: auto;
+        bottom: 36px;
+    }
+
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+        <div class="layui-form">
+            <div class="layui-form-item">
+
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="group_id">
+                        <option value="">{:__('按用户组查询')}</option>
+                        <volist name="UserGroup" id="vo"><option value="{$vo.id}" >{$vo.title}</option></volist>
+                    </select>
+                </div>
+            </div> 
+
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select name="status">
+                        <option value="">{:__('按状态查询')}</option>
+                        <option value="2" >{:__('已审核')}</option>                                 
+                        <option value="1" >{:__('未审核')}</option>                             
+                    </select>
+                </div>  
+            </div>
+
+            <div class="layui-inline"><div class="layui-input-inline ">
+                <input name="nickname" class="layui-input" type="text" placeholder="{:__('关键字搜索')}"/></div>
+            </div>
+
+            <div class="layui-inline" >
+                <!-- // 默认搜索 -->
+                <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}</button>
+                <!-- // 打开添加页面 -->
+                <button class="layui-btn icon-btn" lay-open="" data-title="{:__('添加')}{:__('会员')}" data-area="500px" data-url="#editforms" >
+                    <i class="layui-icon layui-icon-add-1"></i>{:__('添加')}
+                </button>
+            </div>
+            </div>
+        </div>   
+        </div>
+
+        <!-- // 创建数据实例 -->
+        <table id="lay-tableList" lay-filter="lay-tableList"></table>        
+    </div>
+</div>
+
+<!-- // 添加编辑数据 -->
+<script type="text/html" id="editforms" >
+<div class="layui-fluid layui-bg-white" >
+    <form class="layui-form layui-form-fixed" lay-filter="editforms" >
+    <input type="text" name="id" hidden="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('昵称')}</label>
+        <div class="layui-input-block">
+            <input name="nickname" placeholder="{:__('请输入昵称')}" type="text" class="layui-input"  lay-verify="required" />
+        </div>
+    </div>                
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('密码')}</label>
+        <div class="layui-input-block">
+            <input name="pwd" placeholder="{:__('请输入密码')}" type="password" class="layui-input"   />
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('邮箱')}</label>
+        <div class="layui-input-block">
+            <input name="email" placeholder="{:__('请输入邮箱')}" type="text" class="layui-input"  lay-verify="required" />
+        </div>
+    </div>                
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('状态')}</label>
+        <div class="layui-input-block">
+            <input name="status" type="radio" value="1" title="{:__('正常')}" checked/>
+            <input name="status" type="radio" value="0" title="{:__('关闭')}"/>
+        </div>
+    </div>  
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('组别')}</label>
+        <div class="layui-input-block">
+            <select name="group_id" lay-search>
+                <option value="">{:__('请选择组别')}</option>
+                <volist name="UserGroup" id="vo">
+                     <option value="{$vo.id}" >{$vo.title}</option>
+                </volist>
+            </select>
+        </div>
+    </div>
+    <div class="layui-footer layui-form-item layui-center "  >
+        <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
+        <button class="layui-btn" lay-add="{:url('/system/User/add')}" lay-edit="{:url('/system/User/edit')}" lay-filter="submitPage"  lay-submit>{:__('提交')}</button>
+    </div>
+    </form>
+</div>
+</script>
+
+<!-- // 列表状态栏 -->
+<script type="text/html" id="columnStatus">
+    <input type="checkbox" lay-filter="switchStatus" data-url="{:url('/system/User/status')}" value="{{d.id}}" lay-skin="switch"
+     {{d.status==1?'checked':''}}  />
+</script>
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar"> 
+    <a class="layui-table-text" data-title="{:__('编辑会员')}" data-area="500px" data-url="#editforms" lay-event="edit">{:__('编辑')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-url="{:url('/system/User/del')}?id={{d.id}}" lay-event="del">{:__('删除')}</a>
+</script>
+
+<include file="/public/footer" />
+<script>
+    layui.use(['table'], function () {
+
+        var table = layui.table;
+        /*
+         * 初始化表格
+        */
+        var isTable = table.render({
+            elem: "#lay-tableList"
+            ,url: "{:url('/system/User/index')}"
+            ,page: true
+            ,limit: 18
+            ,cols: [[
+                {type: 'checkbox', width:50},
+                {field: 'id', align: 'center',sort: true,width: 80,  title: 'ID'},
+                {field: 'nickname', align: 'left', title: '{:__("昵称")}'},
+                {field: 'avatar', align: 'center',width:80,templet:function(d) {
+                    return d.avatar ? '<div><img src="'+d.avatar+'" width="32" height="32" lay-image-hover="" lay-size="100,100" ></div>':'<div></div>';
+                },title: '头像'},                
+                {field: 'group', align: 'center',width:120,title: '用户组'},
+                {field: 'email', align: 'center',width:180,title: '{:__("邮箱")}'},
+                {field: 'status', align: 'center',width:120,templet:'#columnStatus',title: '{:__("状态")}'},
+                {field: 'login_count', align: 'center',width:100,title: '{:__("登录次数")}'},
+                {field: 'login_ip', align: 'center',width:160,title: '{:__("登录IP")}'},
+                {field: 'region', align: 'center',width:160,title: '{:__("登录地址")}'},
+                {field: 'login_time', align: 'center', width:180, title: '{:__("登录时间")}'},
+                {align: 'center', toolbar: '#tableBar', width:160, title: '{:__("操作")}'},
+            ]]
+        })
+    })
+</script>

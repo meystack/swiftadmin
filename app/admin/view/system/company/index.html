@@ -1,0 +1,63 @@
+<include file="/public/header" />
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+        <div class="layui-form">
+            <div class="layui-form-item">
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input name="title" class="layui-input" type="text" placeholder="{:__('公司查询')}"/>
+                </div>
+            </div>
+            <div class="layui-inline" >
+                <!-- // 默认搜索 -->
+                <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}</button>
+                <!-- // 打开添加页面 -->
+                <button class="layui-btn icon-btn" lay-open="" data-title="{:__('添加信息')}" data-area="762px,430px" data-url="{:url('/system/company/add')}" >
+                    <i class="layui-icon layui-icon-add-1"></i>{:__('添加')}
+                </button>
+            </div>
+            </div>
+        </div>   
+        </div>
+
+        <!-- // 创建数据表实例 -->
+        <table id="lay-tableList" lay-filter="lay-tableList"></table>        
+    </div>
+</div>  
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-table-text" data-title="{:__('编辑')} {{d.title}}" 
+        data-area="762px,430px" data-url="{:url('/system/company/edit')}?id={{d.id}}"  lay-event="edit" >{:__('编辑')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-url="{:url('/system/company/del')}?id={{d.id}}" lay-event="del" >{:__('删除')}</a>
+</script>
+<include file="/public/footer" />
+<script>
+    layui.use(['table'], function () {
+
+        var table = layui.table;
+
+        /*
+         * 初始化表格
+        */
+        var isTable = table.render({
+            elem: "#lay-tableList"
+            ,url: "{:url('/system/company/index')}"
+            ,page: true
+            ,cols: [[
+                {type: 'checkbox', width:50},
+                {field: 'id', align: 'center', sort: true,width: 80,  title: 'ID'},
+                {field: 'title', align: 'center', title: "{:__('公司名称')}"},
+                {field: 'alias', align: 'center', title: "{:__('公司标识')}"},
+                {field: 'address',align: 'center', title: "{:__('公司地址')}"},
+                {field: 'create_time', align: 'center',title: "{:__('创建时间')}"},
+                {align: 'center', toolbar: '#tableBar',width: 160, title: "{:__('操作')}"},
+            ]]
+        })
+    });
+
+</script>

@@ -1,0 +1,51 @@
+
+<include file="/public/header" />
+
+<div class="layui-fluid">
+    <div class="layui-card" >
+        <div class="layui-card-body">
+            <table class="layui-table layui-text">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>路径</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+				<tbody><volist name="$list" id="vo">
+                    <tr>
+                        <td>{$key}</td>
+                        <td>{$vo.name}</td>
+                        <td>{$vo.path}</td>
+                        <td><a href="javascript:void(0)" class="editTpl"data-url="{:url('/Tpl/editTpl')}?p={$vo.param}" >编辑</a></td>
+                    </tr></volist>
+                </tbody>
+            </table>
+        </div>
+    </div>	        
+</div>
+
+<include file="/public/footer" />
+
+<script>
+    layui.use(['layer','jquery'],function(){
+        var $ = layui.jquery;
+        var layer = layui.layer;
+   
+        // 提交数据
+        $('.editTpl').on('click',function(){
+            var url = $(this).data('url');
+            top.layer.open({
+                type:2
+                ,area: ['80%','80%']
+                ,title: '编辑模板'
+                ,content: url
+                ,success: function() {
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

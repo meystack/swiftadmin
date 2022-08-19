@@ -1,0 +1,115 @@
+<layout name="layout:layout"/>
+<div id="content">
+    <div class="layui-card">
+        <div class="layui-card-header"><h5>安全设置</h5></div>
+        <div class="layui-card-body">
+            <div id="user-detail">
+                <div class="layui-user-avatar fl" >
+                    <img src="{$user.avatar}" alt="" width="80">
+                </div>
+                <div class="fl" style="margin-left: 35px">
+                    <div class="u-info"><span class="label">会员ID:</span>{$user.id}</div>
+                    <div class="u-info"><span class="label">注册日期:</span>{$user.create_time}</div>
+                    <div class="u-info">
+                        <span class="label">安全级别:</span>
+                        <div class="layui-progress layui-progress-big">
+                            <div class="layui-progress-bar layui-bg-blue" lay-percent="{$progress}%"></div>
+                        </div>
+                        <span class="text-stress">建议您启动全部安全设置，以保障账户及资金安全。</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-tier">
+                <div class="settings-detail fl">
+                    <span class="setting-status">
+                        <i class="layui-icon fa-check"></i>
+                    </span>
+                    <span class="setting-name">修改密码</span>
+                    <span class="setting-intro">安全性高的密码可以使账户更安全；互联网账号存在被盗风险，建议您定期更换密码</span>
+                </div>
+                <div class="setting-operate fr">
+                    <a lay-open="" data-title="修改密码" data-url="/user/changepwd" data-area="470px,330px" href="javascript:;">修改</a>
+                </div>
+            </div>
+
+            <div class="settings-tier">
+                <div class="settings-detail fl">
+                    <span class="setting-status">
+                        <empty name="$user['mobile']">
+                            <i class="layui-icon fa-warning"></i>
+                            <else/>
+                            <i class="layui-icon fa-check"></i>
+                        </empty>
+                    </span>
+                    <span class="setting-name">手机绑定</span>
+                    <span class="setting-intro">您的手机：
+                        <empty name="$user['mobile']">
+                            未绑定
+                            <else/>
+                            {:hide_str($user['mobile'])}
+                        </empty>。绑定认证后可用于手机找回密码、接收手机动态验证码等，保障您的账户安全。
+                    </span>
+                </div>
+
+                <div class="setting-operate fr">
+                    <a lay-open data-title="修改手机" data-url="/user/mobile" data-area="500px,300px">修改</a>
+                </div>
+            </div>
+
+            <div class="settings-tier">
+                <div class="settings-detail fl">
+                    <span class="setting-status">
+                        <empty name="$user['email']">
+                            <i class="layui-icon fa-warning"></i>
+                        <else/>
+                            <i class="layui-icon fa-check"></i>
+                        </empty>
+                    </span>
+                    <span class="setting-name">邮箱绑定 </span>
+                    <span class="setting-intro">您的邮箱：
+                        <empty name="$user['email']">
+                            未绑定
+                            <else/>
+                            {:hide_str($user['email'])}
+                        </empty>。绑定认证后可用于邮箱找回密码、接收订单提醒等，保障您的账户安全。
+                    </span>
+                </div>
+
+                <div class="setting-operate fr">
+                    <a lay-open data-title="修改邮箱" data-url="/user/email" data-area="500px,300px">修改</a>
+                </div>
+            </div>
+
+            <div class="settings-tier">
+                <div class="settings-detail fl">
+                    <span class="setting-status">
+                        <empty name="$user['answer']">
+                            <i class="layui-icon fa-warning"></i>
+                        <else/>
+                            <i class="layui-icon fa-check"></i>
+                        </empty>
+                    </span>
+                    <span class="setting-name">密保问题  </span>
+                    <span class="setting-intro">设置密保问题可以进一步提升您的账户安全性。是您找回登录密码的方式之一。</span>
+                </div>
+
+                <div class="setting-operate fr">
+                    <a lay-open data-title="设置密保" data-url="/user/protection" data-area="500px,300px">设置</a>
+                </div>
+            </div>
+
+            <div class="settings-tier">
+                <div class="settings-detail fl">
+                    <span class="setting-status">
+                        <i class="layui-icon fa-wechat"></i>
+                    </span>
+                    <span class="setting-name">微信绑定</span>
+                    <span class="setting-intro">暂未绑定。 绑定认证后可用于快捷登录、接收微信通知</span>
+                </div>
+                <div class="setting-operate fr"><a href="">绑定</a></div>
+            </div>
+
+        </div>
+    </div>
+</div>

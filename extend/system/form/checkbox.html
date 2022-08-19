@@ -1,0 +1,10 @@
+        
+        <volist name="{%varlist%}" id="vo">
+        <input  type="checkbox" {%attributes%}  value="{$vo.value}" title="{$vo.title}"
+            <if (isset($data['id']) && $data['id']) >
+            <in name="$vo.value" value="$data.{%field%}">checked</in>
+            <else/>
+            <eq name="$vo.checked" value="true">checked</eq>
+            </if>
+        >
+        </volist>

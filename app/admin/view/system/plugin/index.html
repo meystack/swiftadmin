@@ -1,0 +1,228 @@
+<include file="/public/header"/>
+<link rel="stylesheet" type="text/css" href="__STATICADMIN__css/plugin.css?v={:release()}">
+
+<!-- // 展示数据 -->
+<div class="layui-fluid" id="swiftadmin-plugin">
+    <div class="layui-card layui-elem">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+            <blockquote class="layui-elem-quote pluginCenter"> 插件管理：
+                <span style="margin-left: 12px">在线安装、卸载、禁用、启用、配置、升级插件，插件升级前请做好备份并确保服务器读写权限正确</span>
+                <span class="fr"><i class="layui-icon fa-user" onclick="layui.plugin.clearLogin();"
+                                    title="退出登录"></i></span>
+            </blockquote>
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">插件分类：</label>
+                    <div class="layui-input-block" name="type">
+                        <span class="layui-plugin-select active first" data-value="">全部</span>
+                        <span class="layui-plugin-select" data-value="1">完整应用</span>
+                        <span class="layui-plugin-select" data-value="2">SEO优化</span>
+                        <span class="layui-plugin-select" data-value="3">开发测试</span>
+                        <span class="layui-plugin-select" data-value="4">小程序</span>
+                        <span class="layui-plugin-select" data-value="5">管理增强</span>
+                        <span class="layui-plugin-select" data-value="6">信息安全</span>
+                        <span class="layui-plugin-select" data-value="7">接口整合</span>
+                        <span class="layui-plugin-select" data-value="8">辅助增强</span>
+                        <span class="layui-plugin-select" data-value="9">扩展程序</span>
+                        <span class="layui-plugin-select" data-value="10">未归类</span>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标签选项：</label>
+                    <div class="layui-input-block" name="pay">
+                        <span class="layui-plugin-select active first">全部</span>
+                        <span class="layui-plugin-select" data-value="1">免费</span>
+                        <span class="layui-plugin-select" data-value="2">收费</span>
+                        <div class="layui-divider layui-divider-vertical"></div>
+                        <span name="label">
+							<span class="layui-plugin-select layui-hot" data-value="hot">热门</span>
+							<span class="layui-plugin-select" data-value="official">官方</span>
+						</span>
+                        <div class="layui-divider layui-divider-vertical"></div>
+                        <span name="label">
+							<button type="button" class="layui-btn layui-btn-sm" id="pluginInstall">本地安装插件</button>
+							<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" id="pluginCache">更新插件缓存</button>
+						</span>
+
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input name="title" class="layui-input layui-input-key" type="text"
+                                       placeholder="{:__('关键字搜索')}"/>
+                            </div>
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-btn-sm" lay-filter="formSearch" lay-submit>
+                                    <i class="layui-icon layui-icon-search"></i> {:__('搜索')}
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- // 创建数据表实例 -->
+        <table id="lay-tableList" lay-filter="lay-tableList"></table>
+    </div>
+</div>
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar">
+    {{# let item = plugins[d.name]; }}
+    {{# if(typeof item !== 'undefined') { }}
+    {{# if(item.config) { }}
+    <a class="layui-table-text"
+       data-title="{:__('配置插件')}"
+       data-area="{{item.area}}"
+       data-maxmin="true"
+       data-url="{:url('/system/plugin/config')}?name={{d.name}}" lay-event="edit">{:__('配置')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    {{# } }}
+    {{# if(d.version > item.version) { }}
+    <span class="layui-upgrade-elem">
+			<a class="layui-table-text upgrade"
+               data-url="{:url('/system/plugin/config')}?name={{d.name}}">{:__('升级')} <span
+                    class="layui-badge-dot"></span></a>
+			<div class="layui-divider layui-divider-vertical"></div>
+			</span>
+    {{# } }}
+    <a class="layui-table-text uninstall" style="color:red"
+       data-url="{:url('/system/plugin/uninstall')}?name={{d.name}}">{:__('卸载')}</a>
+    {{# } else { }}
+    <a class="layui-table-text install" data-url="{:url('/system/plugin/install')}?name={{d.name}}">{:__('安装')}</a>
+    {{# if(d.demourl) { }}
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" target="_blank" href="{{d.demourl}}">{:__('演示')}</a>
+    {{# } }}
+    {{# } }}
+</script>
+
+<include file="/public/footer"/>
+<script>
+    layui.use(['admin', 'table', 'plugin', 'dropdown', 'jquery'], function () {
+
+        let plugin = layui.plugin;
+        let $ = layui.jquery;
+        let table = layui.table;
+        let dropdown = layui.dropdown;
+        window.plugins = {$plugin|raw};
+        /*
+         * 初始化表格
+        */
+        let isTable = table.render({
+            elem: "#lay-tableList"
+            , url: plugin.apiUrl + "plugin/index"
+            , method: 'post'
+            , page: true
+            , limit: 15
+            , cols: [[
+                {type: 'checkbox', width: 50},
+                {
+                    field: 'id', align: 'center', templet: function (d) {
+                        let html = '', item = plugins[d.name];
+                        if (typeof item !== 'undefined' && item.home) {
+                            html = '<a href="' + item.home + '" target="_blank">';
+                            html += '<i class="layui-icon fa-home" style="color:#1890ff;"></i></a>';
+                            return html;
+                        } else {
+                            return '<i class="layui-icon fa-home" ></i>';
+                        }
+
+                    }, width: 80, title: '前台'
+                },
+                {
+                    field: 'title', align: 'left', width: 200, templet: function (d) {
+                        let html = '<a target="_blank" href="' + d.readurl + '">' + d.title + '</a>';
+                        if (d.album) {
+                            html += '<i class="layui-icon layui-icon-picture"></i>';
+                        }
+                        return html;
+                    }, title: '{:__("名称")}'
+                },
+                {field: 'intro', align: 'left', title: '{:__("介绍")}'},
+                {field: 'author', align: 'center', width: 180, title: '{:__("作者")}'},
+                {
+                    field: 'price', align: 'center', templet: function (d) {
+                        if (d.price > 0) {
+                            return '<span style="color: red">￥' + d.price + '</span>';
+                        } else {
+                            return '免费';
+                        }
+                    }, width: 180, title: '{:__("价格")}'
+                },
+                {
+                    field: 'status', align: 'center', templet: function (d) {
+
+                        let html = '', item = plugins[d.name], status = d.status;
+                        if (typeof d.download !== 'undefined') {
+                            if (typeof item !== 'undefined') {
+                                status = item.status;
+                            } else {
+                                html += '<span>--</span>';
+                            }
+                        }
+                        if (!html) {
+                            html += '<input type="checkbox" lay-filter="pluginStatus"';
+                            html += 'data-url="{:url(\'/system/plugin/status\')}" lay-skin="switch" value="' + d.name + '"';
+                            if (status) {
+                                html += 'checked';
+                            }
+                            html += '>';
+                        }
+                        return html;
+                    }, width: 80, title: '{:__("状态")}'
+                },
+                {
+                    field: 'download', align: 'center', width: 80, templet: function (d) {
+                        return d.download || '--';
+                    }, title: '{:__("下载")}'
+                },
+                {field: 'version', align: 'center', width: 180, title: '{:__("版本")}'},
+                {
+                    align: 'center', toolbar: '#tableBar', width: 220, title: '{:__("操作")}'
+                }
+            ]]
+            , done: function (res, curr, count) {
+
+                let data = res.data;
+                for (const dataKey in data) {
+                    let dropArray = [];
+                    let item = plugins[data[dataKey].name];
+                    if (typeof item == 'undefined') {
+                        continue;
+                    }
+
+                    let verInfo = data[dataKey].verInfo;
+                    for (const verInfoKey in verInfo) {
+                        let v1 = item.version.replaceAll('.', '');
+                        let v2 = verInfo[verInfoKey].version.replaceAll('.', '');
+                        if (v2 > v1) {
+                            dropArray.push({
+                                name: data[dataKey].name,
+                                title: verInfo[verInfoKey].version,
+                                v: verInfo[verInfoKey].version,
+                                pluginName: data[dataKey].title,
+                            });
+                        }
+                    }
+
+                    if (dropArray.length >= 1) {
+                        dropdown.render({
+                            elem: $('tr[data-index="' + dataKey + '"]').find('.upgrade')
+                            , trigger: 'hover'
+                            , align: 'center'
+                            , data: dropArray
+                            , click: function (data) {
+                                plugin.upgrade(data);
+                            }
+                            , className: 'upgrade-version'
+                        });
+                    }
+                }
+            }
+        })
+    });
+</script>

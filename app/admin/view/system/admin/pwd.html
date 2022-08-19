@@ -1,0 +1,32 @@
+<include file="/public/header" />
+<div class="layui-fluid layui-bg-white">
+    <form action="{:url('/system/admin/pwd')}" class="layui-form layui-form-fixed">
+        <input type="text" name="id" hidden="">
+        <div class="layui-form-item">
+            <label class="layui-form-label"><font color="red">* </font>{:__('原密码')}</label>
+            <div class="layui-input-block">
+                <input name="pwd" placeholder="{:__('请输入原密码')}" type="password" class="layui-input"  lay-verify="required" />
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:__('新密码')}</label>
+            <div class="layui-input-block">
+                <input name="pass" placeholder="{:__('请输入新密码')}" type="password" class="layui-input"  lay-verify="required"/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:__('确认密码')}</label>
+            <div class="layui-input-block">
+                <input name="repass" placeholder="{:__('请确认密码')}" type="password" class="layui-input"  lay-verify="required"/>
+            </div>
+        </div>
+
+        <div class="layui-footer layui-form-item layui-center "  >
+            <button class="layui-btn layui-btn-primary" type="button" sa-event="closeDialog" >{:__('取消')}</button>
+            <button class="layui-btn" lay-filter="submitIframe" type="button"  lay-submit>{:__('提交')}</button>
+        </div>        
+    </form>
+</div>
+<include file="/public/footer" />

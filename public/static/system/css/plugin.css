@@ -1,0 +1,183 @@
+body,.layui-fluid {
+	height: 100%;
+    /*background: #fff;*/
+}
+
+.layui-col-md3 {
+	width: 20%;
+}
+
+.website,.website:hover {
+	color: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+.pluginCenter {
+	position: relative;
+	border: 0;
+	text-indent: 1em;
+}
+
+.pluginCenter .fa-user {
+	position: absolute;
+	right: 15px;
+	font-size: 18px;
+	top: 6px;
+}
+
+.pluginCenter .fa-user:hover {
+	color: #FF5722;
+}
+
+@media screen and (max-width: 450px) {
+	.layui-col-md3 {
+		width: 100%;
+	}
+}
+
+.layui-project .layui-project-cover {
+	height: 150px;
+}
+
+.layui-project-body {
+	padding: 10px;
+}
+
+.layui-dropdown.upgrade-version {
+	min-width: 80px!important;
+}
+
+.upgrade-version .layui-menu li {
+	width: 80px;
+	line-height: 15px;
+	text-align: center;
+	font-size: 12px;
+}
+
+.layui-project .layui-project-body > h2 {
+	font-size: 15px;
+}
+
+.layui-elem .layui-plugin-select,.layui-elem .layui-template-select {
+	cursor: pointer;
+	border-radius: 2px;
+	padding: 1px 10px 3px;
+}
+
+.layui-elem .layui-plugin-select:hover,.layui-elem .layui-template-select:hover {
+	color: #fff;
+	background: #1890ff;
+}
+
+.layui-elem .layui-plugin-select.active,.layui-elem .layui-template-select.active {
+	color: #fff;
+	background: #1890ff;
+}
+
+.layui-elem .layui-hot.active,.layui-elem .layui-hot:hover  {
+	background: #FE232D;
+}
+
+span .layui-btn {
+	margin-bottom: 2px;
+}
+
+.lay-upgrade {
+	line-height: 30px;
+}
+
+i.layui-icon-picture {
+	color: #1890ff;
+	margin-left:3px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.layui-badge-dot {
+	margin-bottom: 2px;
+	margin-left: 2px;
+}
+
+.layui-input-key {
+	margin-left: 10px;
+}
+
+button[lay-filter="formSearch"] {
+	margin-left: 10px;
+    margin-bottom: 4px;
+    padding: 0px 12px;
+}
+
+.layui-fluid {
+    overflow: hidden;
+}
+
+.layui-form-item .layui-input-inline {
+    width: 243px;
+}
+
+.layui-form-item .layui-btn {
+	margin: 0px 10px;
+}
+
+.layui-elem-quote {
+    padding: 10px;
+}
+
+.layui-elem-plugin {
+	color: red;
+	background: url('/static/images/plugin-login.png');
+	border-radius: 3px;
+	height: 53px;
+    border: none;
+}
+
+.layui-elem-uninstall {
+	background: #FF5722;
+	color: #fff;
+	border-color: #FF5722;
+}
+
+.layui-elem-upgrade {
+	color: #1890ff;
+	background: #e6f7ff;
+	border: 1px solid #91d5ff;
+	padding: 15px 20px;
+	border-radius: 3px;
+}
+
+.layui-elem-upgrade .upgrade-title {
+	font-size: 15px;
+	color: #f5222d;
+}
+
+.layui-elem-tips {
+	background: #FFB800;
+	color: #fff;
+	border-color: #FFB800;
+}
+
+.layui-form-fixed {
+    padding: 15px;
+}
+
+.layui-layer-title {
+    height: 50px;
+    line-height: 50px;
+	border-bottom: 1px solid #f6f6f6;
+}
+
+.layui-plugin-tables {
+	display: none;
+	overflow: hidden;
+	margin-top: 10px;
+	width: 343px;
+	padding-left: 3px;
+	padding-bottom: 3px;
+}
+
+.layui-plugin-tables span {
+	padding-top:2px;
+	padding-left: 3px;
+	display: inline-block;
+}

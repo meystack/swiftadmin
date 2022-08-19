@@ -1,0 +1,25 @@
+
+            <div class="layui-imagesbox">
+
+                <!-- // 循环输出代码 -->
+                <notempty name="$data['{%field%}']" >
+                <volist name="$data['{%field%}']" id="vo">
+                    <div class="layui-input-inline layui-uplpad-image">
+                        <img src="{$vo.src}" lay-image-hover >
+                        <input type="text" name="{%field%}[{$key}][src]" class="layui-hide" value="{$vo.src}" >
+                        <input type="text" name="{%field%}[{$key}][title]" class="layui-input" value="{$vo.title}" placeholder="图片简介">
+                        <span class="layui-badge layui-badge-red" data-name="{%field%}" onclick="layui.admin.resetInput(this,'images');">删除</span>
+                    </div>
+                </volist>
+                </notempty>
+                <div class="layui-input-inline layui-uplpad-image">
+                    <div class="layui-upload-drag" lay-upload="{%field%}" data-type="multiple" data-accept="{%accept%}" data-size="{%size%}">
+                        <i class="layui-icon layui-icon-upload"></i>
+                        <p>点击上传，或将文件拖拽到此处</p>
+                        <div class="layui-hide"></div>
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-xs layui-btn-fluid" lay-choose="{%field%}" data-name="{%field%}" data-type="multiple">
+                        <i class="layui-icon layui-icon-windows"></i> 选择
+                    </button>
+                </div>
+            </div>

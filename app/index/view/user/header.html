@@ -1,0 +1,40 @@
+<div class="layui-header">
+    <div class="layui-logo layui-hide-xs layui-bg-black">
+        <span class="logo-text">SAPHP <span style="font-size: medium ">用户后台</span></span>
+    </div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+        <!-- 移动端显示 -->
+        <li class="layui-nav-item layui-show-xs-inline-block" lay-header-event="menuLeft">
+            <i class="layui-icon layui-icon-spread-left"></i>
+        </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+
+        <li class="layui-nav-item" lay-unselect="">
+            <a href="{$site_http}" lay-text="主页">
+                <i class="layui-icon layui-icon-website"></i>
+            </a>
+        </li>
+
+        <li class="layui-nav-item" lay-unselect="">
+            <a href="javascript:;" sa-event="message" lay-text="消息中心" data-url="/admin.php/system.admin/message">
+                <i class="layui-icon fa-bell-o"></i>
+                <!-- 如果有新消息，则显示小圆点 -->
+                <span class="layui-badge-dot"></span>
+            </a>
+        </li>
+
+        <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+            <a href="javascript:;"><img src="{$user.avatar}" alt="{$user.nickname}" class="layui-nav-img">{$user.nickname}</a>
+            <dl class="layui-nav-child">
+                <dd><a lay-open lay-title="修改密码" lay-url="/user/changepwd" lay-area="470px,330px" href="javascript:;">修改密码</a>
+                </dd>
+                <dd><a href="/user/logout" >退出</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+            <a href="javascript:;"><i class="layui-icon layui-icon-more-vertical"></i></a>
+        </li>
+    </ul>
+</div>

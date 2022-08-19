@@ -1,0 +1,14 @@
+{
+  "name": "webman/think-orm",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "workerman/webman-framework": "^1.2.1",
+    "topthink/think-orm": "^2.0.53"
+  },
+  "autoload": {
+    "psr-4": {
+      "Webman\\ThinkOrm\\": "src"
+    }
+  }
+}

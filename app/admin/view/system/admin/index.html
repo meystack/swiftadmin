@@ -1,0 +1,408 @@
+<include file="/public/header" />
+<!-- // 重定位Style -->
+<style>
+
+    .layui-card-header.layadmin-card-header-auto {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .layui-card-body {
+        padding: 0 30px;
+    }
+
+    .layui-card-header h5 {
+        font-size: 16px;
+    }
+
+    .layui-card-header i.layui-icon-list {
+        font-size: 22px;
+        margin-top: 5px;
+        position: relative;
+        top: 2px;
+    }
+
+</style>
+<div class="layui-col-md3">
+    <div class="layui-fluid" >
+        <div class="layui-card" style="height: 500px">
+            <div class="layui-card-header layadmin-card-header-auto">
+                <h5> <i class="layui-icon layui-icon-user"></i> {:__('公司结构')}</h5>
+            </div>
+            <div class="layui-card-body">
+                <div id="tree"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layui-col-md9" >
+    <!-- // 展示数据 -->
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <!-- // 默认操作按钮 -->
+            <div class="layui-card-header layadmin-card-header-auto ">
+            <div class="layui-form">
+                <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="group_id">
+                            <option value="">{:__('按用户组查询')}</option>
+                            <volist name="group" id="vo"><option value="{$vo.id}" >{$vo.title}</option></volist>
+                        </select>
+                    </div>
+                </div> 
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="status">
+                            <option value="">{:__('按状态查询')}</option>
+                            <option value="2" >{:__('正常')}</option>                                 
+                            <option value="1" >{:__('关闭')}</option>                             
+                        </select>
+                    </div>  
+                </div>
+
+                <div class="layui-inline"><div class="layui-input-inline ">
+                    <input name="name" class="layui-input" type="text" placeholder="{:__('关键字搜索')}"/></div>
+                </div>
+
+                <div class="layui-inline" >
+                    <!-- // 默认搜索 -->
+                    <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}</button>
+                    <!-- // 打开添加页面 -->
+                    <button class="layui-btn icon-btn" lay-open="" data-title="{:__('添加')}{:__('管理员')}" callback="edits" data-area="710px,550px" data-url="#adminforms" >
+                        <i class="layui-icon layui-icon-add-1"></i>{:__('添加')}
+                    </button>
+                </div>
+                </div>
+            </div>   
+            </div>
+
+            <!-- // 创建数据实例 -->
+            <table id="lay-tableList" lay-filter="lay-tableList"></table>        
+        </div>
+    </div>
+</div>
+
+<!-- // 添加编辑数据 -->
+<script type="text/html" id="adminforms" >
+<div class="layui-fluid layui-bg-white">
+    <form class="layui-form layui-form-fixed" lay-filter="adminforms">
+    <input type="text" name="id" hidden="">
+    <div class="layui-form-item">
+        <label class="layui-form-label"><font color="red">* </font>{:__('用户名')}</label>
+        <div class="layui-input-inline">
+            <input name="name" placeholder="{:__('请输入用户名')}" type="text" class="layui-input"  lay-verify="required" />
+        </div>
+
+        <label class="layui-form-label">{:__('手机号')}</label>
+        <div class="layui-input-inline">
+            <input name="mobile" placeholder="{:__('请输入手机号')}" type="text" class="layui-input"  lay-verify="required|phone" />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('密码')}</label>
+        <div class="layui-input-inline">
+            <input name="pwd" placeholder="{:__('无需修改可留空')}" type="password" class="layui-input"  />
+        </div>
+        <label class="layui-form-label">{:__('邮箱')}</label>
+        <div class="layui-input-inline">
+            <input name="email" placeholder="{:__('请输入邮箱地址')}" type="text" class="layui-input"  lay-verify="required|email"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('性别')}</label>
+        <div class="layui-input-inline">
+            <select name="sex"  lay-verify="required" >
+                <option value="">{:__('请选择性别')}</option>
+                <option value="1" >{:__('男')}</option>
+                <option value="0" >{:__('女')}</option>
+            </select>
+        </div>
+        <label class="layui-form-label">{:__('昵称')}</label>
+        <div class="layui-input-inline">
+            <input name="nickname" placeholder="{:__('请输入用户昵称')}" type="text" class="layui-input" />
+        </div>
+    </div>   
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('角色权限')}</label>
+        <div class="layui-input-inline">
+            <div class="group" name="group_id" ></div>
+        </div>
+
+        <label class="layui-form-label">{:__('状态')}</label>
+        <div class="layui-input-inline">
+            <input name="status" type="radio" value="1" title="{:__('正常')}" checked/>
+            <input name="status" type="radio" value="0" title="{:__('关闭')}"/>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('归属部门')}</label>
+        <div class="layui-input-inline">
+            <div class="deps" name="department_id" ></div>
+        </div>
+        <label class="layui-form-label">{:__('岗位分配')}</label>
+        <div class="layui-input-inline">
+            <div class="jobs" name="jobs_id" ></div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('用户备注')}</label>
+        <div class="layui-input-block">
+            <textarea name="content" id="content" style="min-height: 110px;" 
+            placeholder="{:__('请输入用户备注')}" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-footer layui-form-item layui-center "  >
+        <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
+        <button class="layui-btn" lay-add="{:url('/system/admin/add')}" lay-edit="{:url('/system/admin/edit')}" lay-filter="submitPage"
+        lay-submit>{:__('提交')}</button>
+    </div>
+
+    </form>
+</div>
+</script>
+
+<!-- // 编辑权限列表 -->
+<script type="text/html" id="authForms">
+<div class="layui-fluid layui-bg-white" >
+    <form class="layui-form" action="{:url('/system/admin/index')}">
+    <div class="layui-authtree"><div id="authTree"></div></div>
+    <div class="layui-footer layui-form-item layui-center "  >
+        <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
+        <button class="layui-btn" lay-filter="submitPage" lay-submit>{:__('提交')}</button>
+    </div>
+    </form>
+</div>
+</script>
+
+<!-- // 列表编辑框 -->
+<script type="text/html" id="tableBar"> 
+    <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="710px,550px" lay-event="edit" >{:__('编辑')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-title="{:__('访问权限')}"
+        callback="rulecates" data-url="#authForms" data-area="300px" lay-event="rules" >{:__('权限')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-title="{:__('栏目授权')}" 
+        callback="rulecates" data-url="#authForms" data-area="300px" lay-event="cates" >{:__('栏目')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-url="{:url('/system/admin/del')}?id={{d.id}}" lay-event="del" >{:__('删除')}</a>
+</script>
+
+<!-- // 列表状态栏 -->
+<script type="text/html" id="userStatus">
+    <input type="checkbox" lay-filter="switchStatus" data-url="{:url('/system/Admin/status')}" value="{{d.id}}" lay-skin="switch"
+     {{d.status==1?'checked':''}}  />
+</script>
+
+<!-- // 列表分组 -->
+<script type="text/html" id="userGroup">
+    {{# layui.each(d.group, function(index, item){ }}
+        <span class="layui-badge {{ item.color }}" >{{ item.title }}</span>
+    {{# }); }}
+</script>
+
+<include file="/public/footer" />
+<include file="/public/static" />
+<script>
+    layui.use(['admin','layer','table','form','tree'], function () {
+
+        var admin = layui.admin;
+        var layer = layui.layer;
+        var table = layui.table;        // 表格
+        var tree = layui.tree;          // 权限树
+        var form = layui.form;
+
+        // 定义表格URL
+        var tableURL = "{:url('/system/admin/index')}";
+        var department = {$department|raw};
+
+        // 基础表格
+        var isTable = table.render({
+            elem: "#lay-tableList"
+            ,url: tableURL
+            ,page: true
+            ,cols: [[
+                {type: 'checkbox'},
+                {field: 'id', align: 'center',sort: true,width: 80,  title: 'ID'},
+                {field: 'name', align: 'center', title: '{:__("用户名")}'},
+                {field: 'status', align: 'center',templet: '#userStatus', width: 135, title: '{:__("状态")}'},
+                {field: 'group', align: 'center', templet:'#userGroup', title: '{:__("用户组")}'},
+                {field: 'login_ip', align: 'center',width: 180, title: '{:__("登录 IP")}'},
+                {field: 'create_time', align: 'center', width: 180,title: '{:__("创建时间")}'},
+                {align: 'center', toolbar: '#tableBar',width: 250, title: '{:__("操作")}'},
+            ]]
+        })
+
+        tree.render({
+            elem: '#tree',
+            data: department,
+            spread: true,
+            click: function (event) {
+                var url = tableURL + '?dep=' + event.data.id;
+                table.reload('lay-tableList', {
+                    url: url
+                });
+            }
+        })
+
+        // 添加 / 编辑用户
+        admin.callback.edits = function(clickthis,colletction,config) {
+
+            // 获取表格对象
+            var tableThis = colletction.tableThis,
+                status = typeof(tableThis) === "undefined" ? true : false;
+
+            // 渲染用户组
+            xmSelect.render({
+                el: '.group',
+                name: 'group_id',
+                size: 'small',
+                prop: {
+                    value: 'id',
+                    name:'title'
+                }
+                ,theme: {
+                    color: '#0081ff',
+                }
+                ,data: {:json_encode($group)}
+                ,initValue: !status ? tableThis.data.group_id.split(',') : []
+            })
+
+            // 渲染岗位
+            xmSelect.render({
+                el: '.jobs',
+                name: 'jobs_id',
+                size: 'small',
+                prop: {
+                    value: 'id',
+                    name:'title'
+                }
+                ,theme: {
+                    color: '#0081ff',
+                }
+                ,data: {:json_encode($jobs)}
+                ,initValue: !status ? tableThis.data.jobs_id.split(',') : []
+            })
+
+            // 渲染部门
+            var select = xmSelect.render({
+                el: '.deps',
+                tips: '请选择部门',
+                name: 'department_id',
+                data: department,
+                radio: true,
+                clickClose: true,
+                initValue: !status ? tableThis.data.department_id.split(',') : [],
+                prop: {
+                    value: 'id',
+                    name:'title'
+                },
+                tree: {
+                    show: true,
+                    strict: false,
+                    showLine: false,
+                    clickExpand: false,
+                },
+                model: {
+                    icon: 'hidden',
+                    label: {
+                        type: 'text'
+                    }
+                },
+                theme: {
+                    color: '#1890FF'
+                }
+            })
+
+            // 监听权限提交
+            form.on("submit(submitPage)",function(post){
+
+                // 获取用户id
+                var pageThat = layui.$(this),
+                _pageUrl = !status ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
+                pageThat.attr("disabled",true);
+                // 开始POST提交数据
+                layui.$.post(_pageUrl,
+                    post.field, function(res){
+                        if (res.code == 200) {
+                            layer.msg(res.msg);
+                            // 关闭当前窗口
+                            table.reload('lay-tableList');
+                            layer.close(colletction.index);
+                        }
+                        else {
+                            layer.error(res.msg);
+                        }
+
+                }, 'json');
+
+                return false;
+            })
+        }
+
+        // 编辑用户权限/栏目权限回调函数
+        admin.callback.rulecates = function(clickthis,colletction,config) {
+
+            var tableThis = colletction.tableThis, event = tableThis.event;
+
+            var rules = _ajax(event);
+            if (typeof rules.code != "undefined") {
+                return layer.msg(rules.msg,'info');
+            }
+
+            // 创建实例
+            tree.render({
+                id: 'authTree',
+                elem: '#authTree',
+                data: rules,
+                showCheckbox: true,
+                checkids: tableThis.data[event].map(Number)
+            })
+
+            // 监听权限提交
+            form.on("submit(submitPage)", function (post) {
+
+                // 获取用户id
+                post.field.admin_id = tableThis.data.id;
+                // 增加节点数据
+                post.field[event] = tree.getChecked('authTree', true);
+                // 开始POST提交数据
+                clickthis.attr("disabled", true);
+                layui.$.post("{:url('/system/admin/edit" + event + "')}",
+                    post.field, function (res) {
+                        if (res.code === 200) {
+                            // 更新本地规则
+                            tableThis.update({
+                                [event]: post.field[event]
+                            });
+
+                            // 关闭当前窗口
+                            layer.msg(res.msg);
+                            layer.close(colletction.index);
+                        } else {
+                            layer.error(res.msg);
+                        }
+                    }, 'json');
+
+                return false;
+            })
+        }
+
+        // 同步加载函数
+        var _ajax = function (type) {
+            var func = '{:url("/system/Admin/getRuleCateTree")}';
+            return admin.event.ajax(func,{
+                type   : type,
+            },false)
+        }
+    });
+</script>

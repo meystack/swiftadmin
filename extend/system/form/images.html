@@ -1,0 +1,24 @@
+                <input class="layui-input layui-input-upload {%field%}" name="{%field%}" value="{%value%}">
+                <button type="button" class="layui-btn" lay-choose="{%field%}" data-type="images" >
+                    <i class="layui-icon layui-icon-windows"></i> 选择
+                </button>
+                <div class="clear"></div>
+                <notempty name="$data['{%field%}']" >
+                    <div class="layui-upload-drag layui-uplpad-image mt10" lay-upload="{%field%}" data-type="images" data-accept="{%accept%}" data-size="{%size%}">
+                        <i class="layui-icon layui-icon-upload layui-hide"></i>
+                        <p class="layui-hide">点击上传，或将文件拖拽到此处</p>
+                        <div >
+                            <hr><img src="{%value%}" class="layui-upload-dragimg {%field%}" alt="上传成功后渲染" >
+                            <span class="layui-badge layui-upload-clear">删除</span>
+                        </div>
+                    </div>
+                <else/>
+                <div class="layui-upload-drag layui-uplpad-image mt10" lay-upload="{%field%}" data-type="images" data-accept="{%accept%}" data-size="{%size%}">
+                    <i class="layui-icon layui-icon-upload"></i>
+                    <p>点击上传，或将文件拖拽到此处</p>
+                    <div class="layui-hide">
+                        <hr><img src="{%value%}" class="layui-upload-dragimg {%field%}" alt="上传成功后渲染" >
+                        <span class="layui-badge layui-upload-clear">删除</span>
+                    </div>
+                </div>
+                </notempty>

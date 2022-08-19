@@ -1,0 +1,13 @@
+{
+    "name"  : "workerman/redis",
+    "type"  : "library",
+    "homepage": "http://www.workerman.net",
+    "license" : "MIT",
+    "require": {
+        "php": ">=5.4",
+        "workerman/workerman": ">=4.0.5"
+    },
+    "autoload": {
+        "psr-4": {"Workerman\\Redis\\": "./src"}
+    }
+}

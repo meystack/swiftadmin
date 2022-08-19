@@ -1,0 +1,81 @@
+<include file="/public/header" />
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!-- // 默认操作按钮 -->
+        <div class="layui-card-header layadmin-card-header-auto ">
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline ">
+                            <input id="filename" name="filename" class="layui-input" type="text" placeholder="{:__('关键字查询')}" />
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <!-- // 默认搜索 -->
+                        <button class="layui-btn icon-btn" id="file-search">
+                            <i class="layui-icon layui-icon-search"></i> {:__('搜索')}</button>
+                        <!-- // 打开添加页面 -->
+                        <button class="layui-btn icon-btn" lay-open="" data-title="{:__('上传附件')}" data-url="#addforms">
+                            <i class="layui-icon fa-upload"></i> {:__('上传附件')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="files" class="layui-card">
+            <div class="layui-card-body" >
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" >全部</li>
+                        <li data-type="images">图片</li>
+                        <li data-type="video">视频</li>
+                        <li data-type="document">文档</li>
+                        <li data-type="files">其他</li>
+                    </ul>
+                    <div id="files-content"></div>
+                </div>
+
+                <div id="files-page"></div>
+            </div>
+        </div>
+        <div id="choose" data-status="{$choose}"></div>
+    </div>
+</div>
+
+<!-- // 添加编辑附件 -->
+<script type="text/html" id="addforms">
+    <div class="layui-fluid layui-bg-white" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:__('附件地址')}</label>
+            <div class="layui-input-inline" style="width: 322px">
+                <input name="pic" placeholder="{:__('附件地址')}" type="text" class="layui-input pic" autocomplete="off" />
+            </div>
+            <button type="button" class="layui-btn layui-btn-normal" lay-upload="pic" >{:__('上传附件')}</button>
+        </div>
+
+        <div class="layui-footer layui-form-item layui-center"  >
+            <button id="refresh" class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('提交')}</button>
+        </div>
+        </form>
+    </div>
+</script>
+<include file="/public/footer" />
+<script>
+    layui.use(['jquery','fileManager'], function () {
+        let $ = layui.jquery,
+            fileManager = layui.fileManager;
+        var render = function () {
+            fileManager.render({
+                elem: '#files',
+                url: '{:url("/system/Attachment/")}',
+                limit: 30,
+                choose: $('#choose').data('status') ? true: false
+            })
+        }
+
+        render();
+        $(document).on('click','#refresh',function () {
+            render();
+        })
+    })
+</script>

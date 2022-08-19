@@ -1,0 +1,26 @@
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+<link href="/static/js/layui/css/font-awesome.css?v={:config('app.version')}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/static/css/center.css?v={:release()}">
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js?v={:release()}"></script>
+<!-- // 加载font-awesome图标 -->
+
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<style>
+    /* 移动端 */
+    @media screen and (max-width: 768px) {
+        .layui-layout-admin .layui-layout-left,
+        .layui-layout-admin .layui-body,
+        .layui-layout-admin .layui-footer{left: 0;}
+        .layui-layout-admin .layui-side{width: 0px;}
+    }
+</style>

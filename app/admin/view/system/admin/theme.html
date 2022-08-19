@@ -1,0 +1,256 @@
+<include file="/public/header" />
+<link href="__STATICADMIN__css/theme.css" rel="stylesheet" type="text/css" />
+
+<div class="layui-fluid layui-bg-white layui-form" >
+    
+    <div class="layui-card">
+        <div class="layui-card-header">{:__('风格设置')}</div>
+        <div class="layui-card-body">
+            <div class="drawer-item"  data-style="dark">
+                <img src="__ADMINIMAGES__dark.svg" lay-tips="暗色系风格" data-value="dark">
+            </div>
+            <div class="drawer-item" data-style="light" >
+                <img src="__ADMINIMAGES__light.svg" lay-tips="亮色系风格" data-value="light">
+            </div>
+
+        </div>
+
+        <div class="layui-card-header">{:__('主题色')}</div>
+        <div class="layui-card-body" >
+            <div class="theme-item layui-bg-blue" data-theme="blue"  lay-tips="拂晓蓝" ></div>
+            <div class="theme-item layui-bg-red"  data-theme="firered"  lay-tips="火山红" ></div>
+            <div class="theme-item layui-bg-orange"  data-theme="orange"  lay-tips="日暮" ></div>
+            <div class="theme-item layui-bg-green"  data-theme="green"  lay-tips="极光绿" ></div>
+            <div class="theme-item" style="background: #32A2D4" data-theme="geek" lay-tips="极客蓝" ></div>
+            <div class="theme-item layui-bg-cyan"  data-theme="cyan"  lay-tips="藏青色" ></div>
+        </div>
+
+        <div class="layui-clear"></div>
+
+        <div class="layui-card-header">{:__('导航模式')}</div>
+        <div class="layui-card-body" >
+            <div class="drawer-menu" lay-layout="left" ><img src="__ADMINIMAGES__dark.svg" lay-tips="左侧菜单布局" data-value="left"></div>
+            <div class="drawer-menu" lay-layout="top" ><img src="__ADMINIMAGES__top.svg" lay-tips="顶部菜单布局"  data-value="top"></div>
+            <div class="drawer-menu" lay-layout="hybrid" ><img src="__ADMINIMAGES__hybrid.svg" lay-tips="混合菜单布局" data-value="hybrid"></div>
+        </div>
+        
+        <div class="layui-card-body layui-form">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"><font color="red">* </font>{:__('内容区域铺满')}</label>
+                <div class="layui-input-inline ">
+                    <input type="checkbox" class="fluid"  lay-filter="fluid" lay-skin="switch" checked  />
+                </div>
+            </div>
+
+            <fieldset class="layui-elem-field layui-field-title" >
+                <legend>{:__('其他设置')}</legend>
+            </fieldset>
+            
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('开启多标签')}</label>
+                <div class="layui-input-inline">
+                    <input type="checkbox" class="moreLabel" lay-filter="moreLabel" lay-skin="switch" checked  />
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('开启页头')}</label>
+                <div class="layui-input-inline ">
+                    <input type="checkbox"  class="openHeader" lay-filter="openHeader" lay-skin="switch" checked  />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('开启页脚')}</label>
+                <div class="layui-input-inline ">
+                    <input type="checkbox"  class="openFooter" lay-filter="openFooter"  lay-skin="switch" checked  />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('刷新重载标签')}</label>
+                <div class="layui-input-inline ">
+                    <input type="checkbox"  class="refreshClearTab" lay-filter="refreshClearTab"  lay-skin="switch" checked  />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('菜单下拉样式')}</label>
+                <div class="layui-input-inline" >
+                <div class="layui-input-inline"  >
+                    <select class="dropstyle" lay-filter="dropstyle" >
+                        <option value="arrow2">{:__('默认')}</option>
+                        <option value="arrow1">{:__('三角')}</option>
+                        <option value="arrow3">{:__('加号')}</option>
+                    </select>
+                </div>
+                </div>
+            </div>
+            <fieldset class="layui-elem-field layui-field-title">
+            <legend>{:__('版权信息')}</legend>
+            </fieldset>
+            <div class="layui-form-item">
+                <blockquote class="layui-elem-quote layui-quote-tips" style="padding-right: 0px">
+                    <i class="layui-icon layui-icon-speaker"></i>
+                    <div class="bugao">该功能可实时预览各种布局效果, 修改后会缓存在本地, 下次打开会记忆主题配置.</div>
+                </blockquote>
+            </div>
+            
+            <div class="layui-form-item">
+                <button type="button" id="reset" class="layui-btn layui-btn-primary layui-btn-fluid">重 置</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<include file="/public/footer" />
+<script>
+    layui.use(['admin','form','layer'], function () {
+
+        let $ = layui.jquery;
+        let form = layui.form;
+        let layer = layui.layer;
+        let admin = layui.admin;
+        let html = '<i class="layui-icon layui-icon-ok"></i>';
+
+        // 风格选择
+        let style = admin.getStorage('style') || admin.options.style;
+        $('*[data-style='+ style +']').append(html);
+        $('.drawer-item').click(function(obj) {
+            $('.drawer-item>.layui-icon-ok').remove();
+            $(this).append(html);
+
+            let stylesheet = $(this).data('style');
+            if (stylesheet == 'light') {
+                top.layui.$('head').append(admin.globalStyleCss());
+            }
+            else {
+                top.layui.$('#style-light').remove();
+            }
+            
+            admin.setStorage('style',stylesheet);
+        })
+
+        // 主题选择
+        let theme = admin.getStorage('theme') || admin.options.theme;
+        $('*[data-theme='+ theme +']').append(html);
+        $('body').attr('id',theme);
+        $('.theme-item').click(function(obj) {
+
+            $('.theme-item>.layui-icon-ok').remove();
+            $(this).append(html);
+            theme = $(this).data('theme');
+            $('body').attr('id',theme);
+            admin.setStorage('theme',theme);
+            admin.setTheme();
+        })
+        
+        // 导航选择
+        let layout = admin.getStorage('layout') || admin.options.layout;
+        $('*[lay-layout='+ layout +']').append(html);
+        $('.drawer-menu').click(function(obj) {
+            $('.drawer-menu>.layui-icon-ok').remove();
+            $(this).append(html);
+            layout = $(this).attr('lay-layout');
+            if (layout === 'top' || layout === 'hybrid') {
+                admin.setStorage('moreLabel',true);
+            }
+            admin.setStorage('layout', layout);
+            top.layui.admin.BasicLayout(null, undefined, false);
+        })
+
+        // 内容铺满
+        let fluid = admin.getStorage('fluid')
+        if (fluid === 'undefined') {
+            fluid= admin.options.fluid;
+        }
+        $('.fluid').prop('checked', fluid);
+        form.on('switch(fluid)',function(obj) {
+            admin.setStorage('fluid',obj.elem.checked);
+            top.layui.admin.setlayFluid();
+        })
+
+        // 菜单下拉样式
+        let dropstyle = admin.getStorage('dropstyle');
+        if (typeof dropstyle !== "undefined") {
+            layui.each($('.dropstyle').children('option'),function(index,elem) {
+                if ($(elem).val() == dropstyle) {
+                    $(elem).attr("selected",true);
+                }
+            })
+        }
+
+        layui.form.on('select(dropstyle)',function(obj) {
+            admin.setStorage('dropstyle',obj.value);
+            top.layui.admin.setDropStyle();
+        })  
+
+        // 多标签选项卡
+        let moreLabel = admin.getStorage('moreLabel');
+        if (moreLabel === 'undefined') {
+            moreLabel = admin.options.moreLabel;
+        }
+
+        // 是否开启多标签
+        $('.moreLabel').prop('checked', moreLabel);
+        form.on('switch(moreLabel)',function(obj) {
+
+            let layout = admin.getStorage('layout')
+            if (layout === 'top' || layout === 'hybrid') {
+                $(".moreLabel").prop("checked", true);
+                layer.msg('当前菜单布局不支持该操作！','error');
+                form.render();
+                return false;
+            }
+
+            admin.setStorage('layout','left');
+            admin.setStorage('moreLabel',obj.elem.checked);
+            let element = "div[lay-filter='swiftadmin-tabs']>.layui-tab-title,#tabs-control";
+            obj.elem.checked ? top.layui.$(element).show() : top.layui.$(element).hide();
+            top.layui.admin.BasicLayout(null, undefined);
+        })
+
+        // 开启页头
+        let openHeader = admin.getStorage('openHeader');
+        if (typeof openHeader == 'undefined') {
+            openHeader = admin.options.openHeader;
+        }
+
+        $('.openHeader').prop('checked', openHeader);
+        form.on('switch(openHeader)',function(obj) {
+            admin.setStorage('openHeader',obj.elem.checked);
+            top.layui.admin.setPageHeaderFooter('header');
+        })
+
+        // 开启页脚
+        let openFooter = admin.getStorage('openFooter');
+        if (typeof openFooter == 'undefined') {
+            openFooter = admin.options.openFooter;
+        }
+
+        $('.openFooter').prop('checked', openFooter);
+        form.on('switch(openFooter)',function(obj) {
+            admin.setStorage('openFooter',obj.elem.checked);
+            top.layui.admin.setPageHeaderFooter('footer');
+        })
+
+        // 是否关闭标签
+        let refreshClearTab = admin.getStorage('refreshClearTab');
+        if (typeof refreshClearTab == 'undefined') {
+            refreshClearTab = admin.options.refreshClearTab;
+        }
+
+        $('.refreshClearTab').prop('checked', refreshClearTab);
+        form.on('switch(refreshClearTab)',function(obj) {
+            admin.setStorage('refreshClearTab',obj.elem.checked);
+        })
+
+        // 重置选项
+        $('#reset').click(function(params) {
+
+            layer.msg('重置成功');
+            layui.data(admin.options.tplName+'_system',null);
+        })
+
+        form.render();
+    })
+</script>

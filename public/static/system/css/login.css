@@ -1,0 +1,49 @@
+body,html{height:100%}
+body{min-height:100%;background:#f0f2f5 url(/static/images/background.svg) no-repeat 60%;background-size:100%;position:relative;text-align:center}
+body{margin:0;color:rgba(0,0,0,.65);font-size:14px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;font-variant:tabular-nums;line-height:1.5;-webkit-font-feature-settings:"tnum";font-feature-settings:"tnum"}
+img,input,svg{vertical-align:middle}
+body a{color:#1890ff;text-decoration:none;background-color:transparent;outline:0;cursor:pointer;-webkit-transition:color .3s;transition:color .3s;-webkit-text-decoration-skip:objects}
+.layui-layout-body{overflow:auto}
+.swiftadmin-user-display-show{display:block!important}
+.swiftadmin-login{position:relative;left:0;top:0;padding:110px 0;min-height:100%;box-sizing:border-box}
+.swiftadmin-login-main{width:390px;margin:0 auto;box-sizing:border-box}
+.swiftadmin-login-box{padding:20px 3px}
+.swiftadmin-login-header{text-align:center;padding-right:20px}
+.swiftadmin-login-header h2{margin-bottom:10px;font-weight:300;font-size:30px;color:#000;font-size:33px;color:rgba(0,0,0,.85);font-family:Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;font-weight:600;position:relative;top:2px}
+.swiftadmin-login-header p{font-weight:300;color:#999}
+.swiftadmin-login-body .layui-form-item{position:relative;margin-bottom:25px}
+.swiftadmin-login-icon{position:absolute;left:1px;top:2px;width:38px;line-height:36px;text-align:center;color:#d2d2d2}
+.swiftadmin-login-body .layui-form-item .layui-input{padding-left:38px;height:40px;line-height:40px;border-radius:5px;border:0}
+.swiftadmin-login-codeimg{max-height:38px;width:100%;cursor:pointer;box-sizing:border-box}
+.swiftadmin-login-other{position:relative;font-size:0;line-height:38px;padding-top:20px}
+.swiftadmin-login-other>*{display:inline-block;vertical-align:middle;margin-right:10px;font-size:14px}
+.swiftadmin-login-other .layui-icon{position:relative;top:2px;font-size:26px}
+.swiftadmin-login-other a:hover{opacity:.8}
+.swiftadmin-user-jump-change{float:right}
+.swiftadmin-login-footer{position:absolute;left:0;bottom:0;width:100%;line-height:30px;padding:20px;text-align:center;box-sizing:border-box;color:rgba(0,0,0,.5)}
+.swiftadmin-login-footer span{padding:0 5px}
+.swiftadmin-login-footer a{padding:0 5px;color:rgba(0,0,0,.5)}
+.swiftadmin-login-footer a:hover{color:#000}
+.swiftadmin-login-main[bgimg]{background-color:#fff;box-shadow:0 0 5px rgba(0,0,0,.05)}
+@media screen and (max-width:768px){
+    .swiftadmin-login{padding-top:60px}
+    .swiftadmin-login-main{width:300px}
+    .swiftadmin-login-box{padding:10px}
+}
+.fl{float:left}
+.fr{float:right}
+.swiftadmin-login .logo{height:44px;vertical-align:top;margin-right:16px;border-style:none;display:inline}
+.swiftadmin-login .captcha{width:97%;padding:2px;border-radius:5px;border:1px solid #d9d9d9;background-color:#fff}
+.swiftadmin-login .captcha img{width:100%}
+.swiftadmin-login .layui-col-xs7{width:65%}
+.swiftadmin-login .captcha:hover,.swiftadmin-login .item:hover,.swiftadmin-login .layui-col-xs7:hover{border:1px solid #1890ff}
+.swiftadmin-login .item,.swiftadmin-login layui-col-xs7{border:1px solid #d9d9d9;border-radius:5px}
+.swiftadmin-login .other-login .layui-icon{color:#d9d9d9}
+.swiftadmin-login .other-login a{margin-left:6px;display:inline-block}
+.swiftadmin-login .other-login .layui-icon:hover{color:#1890ff}
+.swiftadmin-login .layui-col-xs3{width:33%}
+.layui-btn-fixed,.swiftadmin-login .layui-btn{border-radius:5px}
+.swiftadmin-login .layui-btn-fixed{height:40px;line-height:36px;width:100%;padding:1px}
+.layui-form-checkbox[lay-skin=primary]:hover i{border-color:#1890ff;color:#fff}
+.layui-form-checked[lay-skin=primary] i{border-color:#1890ff!important;background-color:#1890ff;color:#fff}
+.layui-form-pane .layui-form-checkbox {margin-left: 0;}

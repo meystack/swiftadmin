@@ -1,0 +1,13 @@
+{
+  "name": "webman/think-cache",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "topthink/think-cache": "^2.0.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Webman\\ThinkCache\\": "src"
+    }
+  }
+}

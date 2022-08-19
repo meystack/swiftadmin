@@ -1,0 +1,86 @@
+<include file="/public/header" />
+
+<style>
+    .layui-card-body {
+        padding-left: 0;
+    }
+    .layui-form-item .layui-input-inline {
+        width: 220px;
+    }
+</style>
+
+<div class="layui-fluid" >
+    <form class="layui-form layui-form-fixed" >
+    <gt name="$data.id" value="0"><input type="text" name="id" value="{$data.id}" hidden=""></gt>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><font color="red">* </font>{:__('公司名称')}</label>
+        <div class="layui-input-inline">
+            <input name="title" value="{$data.title}" placeholder="{:__('请输入公司名称')}" type="text" class="layui-input"  lay-verify="required" />
+        </div>
+        <label class="layui-form-label">{:__('公司标识')}</label>
+        <div class="layui-input-inline">
+            <input name="alias" value="{$data.alias}" placeholder="{:__('请输入公司标识')}"  type="text" class="layui-input"  lay-verify="required" />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('联系人')}</label>
+        <div class="layui-input-inline">
+            <input name="contact" placeholder="{:__('请输入联系人')}" value="{$data.contact}"
+                type="text" class="layui-input"   lay-verify="required" />
+        </div>
+        <label class="layui-form-label">{:__('手机号码')}</label>
+        <div class="layui-input-inline">
+            <input name="mobile" placeholder="{:__('请输入手机号码')}" value="{$data.mobile}"
+                type="number" class="layui-input"   lay-verify="phone" />
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('邮政编码')}</label>
+        <div class="layui-input-inline">
+            <input name="postcode" placeholder="{:__('请输入邮政编码')}" value="{$data.postcode}" type="number" class="layui-input"  />
+        </div>
+        <label class="layui-form-label">{:__('邮箱地址')}</label>
+        <div class="layui-input-inline">
+            <input name="email" placeholder="{:__('请输入邮箱地址')}" value="{$data.email}" class="layui-input"  lay-verify="email" />
+        </div>
+    </div> 
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('固定电话')}</label>
+        <div class="layui-input-inline">
+            <input name="phone" placeholder="{:__('请输入固定电话')}" value="{$data.phone}" class="layui-input"  />
+        </div>
+        <label class="layui-form-label">{:__('执照代码')}</label>
+        <div class="layui-input-inline">
+            <input name="blicense" placeholder="{:__('请输入营业执照代码')}" value="{$data.blicense}"  class="layui-input"   />
+        </div>
+    </div> 
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('地图经度')}</label>
+        <div class="layui-input-inline">
+            <input name="longitude" placeholder="{:__('请输入地图经度')}" value="{$data.longitude}" class="layui-input"  />
+        </div>
+        <label class="layui-form-label">{:__('地图纬度')}</label>
+        <div class="layui-input-inline">
+            <input name="latitude" placeholder="{:__('请输入地图纬度')}" value="{$data.latitude}"  class="layui-input"   />
+        </div>
+    </div> 
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">{:__('公司地址')}</label>
+        <div class="layui-input-block" style="width: 560px;" >
+            <input name="address" placeholder="{:__('请输入公司地址')}" value="{$data.address}" class="layui-input"  />
+        </div>
+    </div>
+
+    <div class="layui-footer" style="text-align: center;">
+        <button class="layui-btn layui-btn-primary" type="button"  sa-event="closeDialog" >取消</button>
+        <button class="layui-btn layui-btn-normal" lay-filter="submitIframe" type="button" lay-submit>提交</button>
+    </div>
+    </form>
+</div>
+<include file="/public/footer" />
+<include file="/public/static" />

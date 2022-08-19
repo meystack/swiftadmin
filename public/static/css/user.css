@@ -1,0 +1,193 @@
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
+
+i {
+    cursor: pointer;
+}
+
+.layui-nav .layui-this:after, .layui-nav-bar {
+    background: 0 !important;
+}
+
+body {
+    background-color: #eee;
+}
+
+.logo-text, layui-logo {
+    color: #959890 !important;
+}
+
+.logo-text {
+    margin-left: 22px;
+    font-size: 20px;
+}
+
+.layui-btn {
+    height: 33px;
+    line-height: 33px;
+}
+
+.layui-form-fixed {
+    padding-right: 35px;
+    padding-top: 30px;
+}
+
+.layui-center {
+    text-align: center;
+}
+
+.layui-layout-admin .layui-header, .layui-logo, .layui-nav-tree .layui-nav-bar {
+    background: #2a94de !important;
+}
+
+.layui-nav {
+    background-color: unset;
+}
+
+.layui-nav-tree .layui-nav-item:hover, .layui-nav-tree .layui-this {
+    background-color: #37424f;
+}
+
+.layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a, .layui-nav-tree .layui-this, .layui-nav-tree .layui-this > a, .layui-nav-tree .layui-this > a:hover {
+    background-color: #37424f;
+}
+
+/* 主题布局 */
+#content {
+    padding: 25px;
+}
+
+
+/*// 个人中心*/
+#content .goindex {
+    height: 80px;
+    line-height: 80px;
+    overflow: hidden;
+}
+
+#content .goindex div {
+    display: inline-block;
+}
+
+#content .goindex .tips {
+    font-size: 18px;
+}
+
+#content .goindex div img {
+    width: 80%;
+}
+
+#content #profile {
+    padding: 20px;
+    overflow: hidden;
+}
+
+#profile .contract-title {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: 24px;
+    margin: 20px 0 6px;
+    font-size: 14px;
+    color: #a2a0a0;
+}
+
+#content #profile .layui-col-md3 {
+    margin-bottom: 15px;
+}
+
+#content #profile i {
+    cursor: pointer;
+}
+
+#content #profile i:hover {
+    color: #2a94de;
+}
+
+#content #account {
+    padding: 48px;
+    background: #2a94de;
+    border-radius: 3px;
+    color: #fff;
+    padding-bottom: 20px;
+}
+
+#content #account .layui-btn {
+    background-color: #6ebbf1 !important;
+}
+
+#imgHead img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.layui-user-avatar {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+}
+
+.layui-user-avatar:hover:after {
+    content: '\e65d';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    color: #eee;
+    background: rgba(0, 0, 0, 0.5);
+    font-family: layui-icon;
+    font-size: 24px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    cursor: pointer;
+    line-height: 110px;
+    border-radius: 50%;
+}
+
+#content .nickname {
+    line-height: 37px;
+    font-size: 35px;
+    margin-top: 36px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+#content #thrid {
+    margin-top: 20px;
+}
+
+#content #appkey {
+    overflow: hidden;
+}
+
+.layui-comment {
+    padding-top: 15px !important;
+}
+
+.layui-table-cell div {
+    display: inline-block;
+
+}
+
+a.layui-table-text {
+    cursor: pointer;
+}
+
+a[lay-event="del"] {
+    color: #FE232D;
+}

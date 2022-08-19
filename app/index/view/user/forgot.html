@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SwiftAdmin 用户登录</title>
+    <include file="public:header"/>
+</head>
+<body>
+<style>
+    .layui-form-checked[lay-skin="primary"] i {
+        border-color: #1890ff !important;
+        background-color: #1890ff;
+        color: #fff;
+    }
+
+    .layui-form-item {
+        margin-bottom: 25px;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .layui-input:hover {
+        border: 1px solid #1890ff!important;
+    }
+
+</style>
+<div class="layui-fluid">
+    <form class="layui-form layui-form-fixed" action="/user/forgot" method="post" >
+        <input type="hidden" name="__token__" value="{:token()}"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="red">*</span> {:__('手机/邮箱')}</label>
+            <div class="layui-input-inline" style="width: 306px">
+                <input id="string" name="mobile" placeholder="{:__('请输入邮箱或手机号')}" type="text" class="layui-input string"
+                       autocomplete="off" lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="red">*</span> {:__('验证码')}</label>
+            <div class="layui-input-inline">
+                <input name="captcha" placeholder="{:__('请输入验证码')}" type="text" class="layui-input" autocomplete="off" lay-verify="required" maxlength="10"/>
+            </div>
+            <button id="send" class="layui-btn layui-btn-normal" type="button"
+                    lay-ajax data-url="/ajax/smssend" data-object="mobile:string,event:event">{:__('获取')}
+            </button>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="red">*</span> {:__('新密码')}</label>
+            <div class="layui-input-inline" style="width: 306px">
+                <input type="password" id="pwd" name="pwd" lay-verify="required" placeholder="{:__('密码')}" class="layui-input" >
+            </div>
+        </div>
+        <input type="text" hidden name="event" class="event" value="forgot">
+        <div class="layui-footer layui-form-item layui-center">
+            <button class="layui-btn layui-btn-primary" type="button" sa-event="closeDialog">{:__('取消')}</button>
+            <button class="layui-btn layui-btn-normal"  lay-filter="submitIframe" lay-submit>{:__('提交')}</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    layui.use('jquery', function() {
+
+        let $ = layui.jquery;
+
+        $('#string').on('keyup',function (e) {
+
+            let val = $(this).val();
+            let string = $('#string');
+            let send = $('#send');
+            let regx = /^[1][3,4,5,6.7,8,9][0-9]{9}$/
+            if (regx.test(val)) {
+                string.attr('name','mobile');
+                send.attr('data-object','mobile:string,event:event');
+                send.attr('data-url','/ajax/smssend');
+            } else {
+                string.attr('name','email');
+                send.attr('data-object','email:string,event:event');
+                send.attr('data-url','/ajax/emailsend');
+            }
+        })
+
+    })
+</script>
+</html>

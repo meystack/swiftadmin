@@ -1,0 +1,10 @@
+            
+            <volist name="{%varlist%}" id="vo">
+            <input  type="radio" {%attributes%} value="{$vo.value}" title="{$vo.title}"
+                <if (isset($data['id']) && $data['id']) >
+                <eq name="$vo.value" value="$data.{%field%}">checked</eq>
+                <else/>
+                <eq name="$vo.checked" value="true">checked</eq>
+                </if>
+            >
+            </volist>

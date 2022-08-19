@@ -1,0 +1,66 @@
+<include file="/public/header" />
+<link href="/static/js/codemirror/lib/codemirror.css" rel="stylesheet">
+<script src="/static/js/codemirror/lib/codemirror.js"></script>
+<link href="/static/js/codemirror/theme/monokai.css" rel="stylesheet">
+<script src="/static/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+<script src="/static/js/codemirror/mode/htmlembedded/htmlembedded.js"></script>
+<script src="/static/js/codemirror/mode/xml/xml.js"></script>
+<div class="layui-fluid">
+    <div class="layui-card" >
+        <div class="layui-card-body">
+            <!-- begin code -->
+            <textarea id="htmlcode" name="htmlcode"  >{$content}</textarea>
+            <!-- end code-->
+            <div id="htmlshow" style="margin-top: 20px">{$content|raw}</div>
+            <div class="" style="text-align: center;margin-top: 10px">
+                <button class="layui-btn layui-btn-primary" sa-event="closeDialog">取消</button>
+                <button class="layui-btn layui-btn-normal layui-btn-save" lay-tpl="{$tpl}" >保存</button>
+            </div>
+        </div>
+    </div>	        
+</div>
+
+<include file="/public/footer" />
+
+<script>
+    layui.use(['layer','jquery','admin'],function(){
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var admin = layui.admin;
+
+        var editor = CodeMirror.fromTextArea(document.getElementById("htmlcode"), {
+            lineNumbers: true,
+            lineWrapping: true,
+            mode: "text/html",
+            theme:"monokai",
+            matchBrackets: true
+        });
+
+        editor.on('change',function(){
+            $('#htmlshow').html(editor.getValue());
+        });
+
+        // 提交数据
+        $('.layui-btn-save').on('click',function(){
+            var tpl = $(this).attr('lay-tpl');
+            $.ajax({
+                type: "POST",
+                url: "{:url('/Tpl/editTpl')}",
+                data: {tpl:tpl,content:editor.getValue()},
+                success: function (res) {
+                    if(res.code == 200){
+                        layer.msg(res.msg);                        
+                        admin.event.closeDialog();
+                    }else {
+                        layer.error(res.msg);
+                    }
+                }
+            })
+
+            return false;
+        })
+
+    })
+</script>
+</body>
+</html>

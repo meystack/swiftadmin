@@ -1,0 +1,99 @@
+<include file="/public/header" />
+<div class="layui-fluid">
+  <div class="layui-card">
+    <!-- // 默认操作按钮 -->
+    <div class="layui-card-header layadmin-card-header-auto ">
+      <div class="layui-form">
+        <div class="layui-form-item">
+
+          <div class="layui-inline">
+            <div class="layui-input-inline ">
+              <input id="filename" name="filename" class="layui-input" type="text" placeholder="{:__('关键字查询')}" />
+            </div>
+          </div>
+          <div class="layui-inline">
+            <!-- // 默认搜索 -->
+            <button class="layui-btn icon-btn" id="file-search">
+              <i class="layui-icon layui-icon-search"></i> {:__('搜索')}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="files" class="layui-card">
+      <div class="layui-card-body" >
+        <div class="layui-tab layui-tab-brief">
+          <ul class="layui-tab-title">
+            <li class="layui-this" >全部</li>
+            <li data-type="images">图片</li>
+            <li data-type="video">视频</li>
+            <li data-type="document">文档</li>
+            <li data-type="files">其他</li>
+          </ul>
+          <div id="files-content"></div>
+        </div>
+
+        <div id="files-page"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- // 列表工具栏 -->
+<script type="text/html" id="tableBar">
+  <a class="layui-table-text" data-url="{{d.url}}" lay-event="choose" >{:__('选择')}</a>
+</script>
+
+<include file="/public/footer" />
+
+<script>
+  layui.use(['layer','fileManager','jquery'], function () {
+
+    let $ = layui.jquery;
+
+
+
+    /**
+     * 选择文件
+     */
+    /*table.on('tool(lay-tableList)', function (obj) {
+
+      let field = $('#choose_filed').val() || undefined;
+      let type = $('#choose_type').val() || undefined;
+      if (!field) {
+        return layer.info('图片信息不存在');
+      }
+
+
+      if (type === 'images') {
+        let o = parent.layui.$('img.' + field);
+        o.prop('src', obj.data.url);
+        o.parent('div').removeClass('layui-hide');
+        parent.layui.$(o).parents('.layui-upload-drag').find('p,i,hr').addClass('layui-hide');
+        parent.layui.$('input.' + field).val(obj.data.url);
+      } else if (type === 'multiple') {
+        let boxList = parent.layui.$('[lay-choose="' + field + '"]').parents('.layui-imagesbox').find('.layui-input-inline');
+        let length = boxList.length;
+
+        $(boxList).each(function (i, item) {
+          $(item).find('input.layui-hide').prop('name', field + '[' + i + '][src]');
+          $(item).find('input.layui-input').prop('name', field + '[' + i + '][title]');
+        })
+
+        let html = '<div class="layui-input-inline layui-uplpad-image">';
+        html += '<img src="' + obj.data.url + '" >';
+        html += '<input type="text" name="' + field + '[' + (length - 1) + '][src]" class="layui-hide" value="' + obj.data.url + '">';
+        html += '<input type="text" name="' + field + '[' + (length - 1) + '][title]" class="layui-input" placeholder="图片简介">';
+        html += '<span class="layui-badge layui-badge-red" onclick="layui.$(this).parent().remove();">删除</span></div>';
+        let elem = parent.layui.$('[lay-upload="' + field + '"]');
+        parent.layui.$(elem).parent().before(html);
+        parent.layui.$(elem).parents('form').find('input#' + field + '_clear').remove();
+      } else {
+        parent.layui.$('input.' + field).val(obj.data.url);
+      }
+      parent.layer.closeAll();
+    });
+    */
+
+  })
+</script>

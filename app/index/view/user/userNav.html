@@ -1,0 +1,15 @@
+<!--// 初始化菜单-->
+<ul class="layui-nav layui-nav-tree" lay-filter="master">
+	<li class="layui-nav-item layui-this">
+		<a lay-href="/user/profile">控制台</a>
+	</li>
+	<!--// 前台菜单-->
+	{:get_plugin_menu()}
+	<li class="layui-nav-item">
+		<a class="#" href="javascript:;">账号设置</a>
+		<dl class="layui-nav-child">
+			<dd><a lay-href="/user/security">安全设置</a></dd>
+		</dl>
+	</li>
+</ul>
+

@@ -1,0 +1,82 @@
+{
+  "name": "meystack/swiftadmin",
+  "type": "project",
+  "version": "2.0.0",
+  "keywords": [
+    "swiftadmin",
+    "webman"
+  ],
+  "homepage": "https://www.swiftadmin.net",
+  "license": "Apache-2.0",
+  "description": "High performance HTTP Service Framework.",
+  "authors": [
+    {
+      "name": "meystack",
+      "email": "coolsec@foxmail.com",
+      "homepage": "http://www.swiftadmin.net",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "coolsec@foxmail.com",
+    "issues": "https://github.com/meystack/swiftadmin/issues",
+    "forum": "https://ask.swiftadmin.net/",
+    "wiki": "https://doc.swiftadmin.net/help/",
+    "source": "https://github.com/meystack/swiftadmin"
+  },
+  "require": {
+    "php": ">=7.3",
+    "workerman/webman-framework": "1.4.3",
+    "topthink/think-validate": "^2.0",
+    "topthink/think-template": "^2.0",
+    "topthink/think-image": "^1.0",
+    "monolog/monolog": "^2.0",
+    "psr/container": "1.1.1",
+    "webman/think-orm": "^1.0",
+    "webman/redis-queue": "^1.2",
+    "webman/push": "^1.0",
+    "webman/event": "^1.0",
+    "webman/think-cache": "^1.0",
+    "gregwar/captcha": "1.*",
+    "vlucas/phpdotenv": "^5.4",
+    "phpmailer/phpmailer": "^6.6",
+    "guzzlehttp/guzzle": "^7.4",
+    "symfony/translation": "^5.4",
+    "overtrue/pinyin": "^4.0",
+    "overtrue/wechat": "~4.0",
+    "yansongda/pay": "~3.0.26",
+    "ext-json": "*",
+    "webman/console": "1.0.27"
+  },
+  "suggest": {
+    "ext-event": "For better performance. "
+  },
+  "autoload": {
+    "psr-4": {
+      "": "./",
+      "app\\": "./app"
+    },
+    "files": [
+      "./support/helpers.php"
+    ],
+    "psr-0" : {
+      "": "extend/"
+    }
+  },
+  "scripts": {
+    "post-package-install": [
+      "support\\Plugin::install"
+    ],
+    "post-package-update": [
+      "support\\Plugin::install"
+    ],
+    "pre-package-uninstall": [
+      "support\\Plugin::uninstall"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "easywechat-composer/easywechat-composer": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+/**
+ * Copyright meystack
+ * Licensed Apache2.0
+ * Version: 0.0.1 付费内容插入
+ */
+!function(){"use strict";var n=tinymce.util.Tools.resolve("tinymce.PluginManager"),t="插入付费内容",e=function(n){n.addCommand("payEditor",(function(){!function(n){var e=function(n){return n.getContent({source_view:!0})}(n);n.windowManager.open({title:t,size:"small",body:{type:"panel",items:[{type:"textarea",placeholder:"请输入付费内容",name:"code"}]},buttons:[{type:"cancel",name:"cancel",text:"Cancel"},{type:"submit",name:"save",text:"Save",primary:!0}],onSubmit:function(t){t.getData().code&&function(n,t){n.focus(),n.undoManager.transact((function(){n.setContent(t)})),n.selection.setCursorLocation(),n.nodeChanged()}(n,e+"[paybegin]"+t.getData().code+"[payend]"),t.close()}})}(n)}))};n.add("paylabel",(function(n){return e(n),function(n){var e=function(){return n.execCommand("payEditor")};n.ui.registry.addButton("paylabel",{icon:"payicon",tooltip:t,onAction:e}),n.ui.registry.addMenuItem("paylabel",{icon:"payicon",text:t,onAction:e})}(n),{}}))}();

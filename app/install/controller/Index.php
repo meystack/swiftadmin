@@ -137,18 +137,16 @@ class Index extends BaseController
             }
 
             // 查询数据库名
-            $database = @mysqli_select_db($connect, $params['database']);
-            if (!$database) {
-                $query = "CREATE DATABASE IF NOT EXISTS `" . $params['database'] . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
-                if (!@mysqli_query($connect, $query)) {
-                    return $this->error('数据库创建失败或已存在，请手动修改');
-                }
-            } else {
-                $mysql_table = @mysqli_query($connect, 'SHOW TABLES FROM' . ' ' . $params['database']);
-                $mysql_table = @mysqli_fetch_array($mysql_table);
-                if (!empty($mysql_table) && is_array($mysql_table)) {
+            $mysql_table = @mysqli_query($connect, 'SHOW DATABASES');
+            while ($row = @mysqli_fetch_assoc($mysql_table)) {
+                if ($row['Database'] == $params['database']) {
                     return $this->error('数据表已存在，请勿重复安装');
                 }
+            }
+
+            $query = "CREATE DATABASE IF NOT EXISTS `" . $params['database'] . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
+            if (!@mysqli_query($connect, $query)) {
+                return $this->error('数据库创建失败或已存在，请手动修改');
             }
 
             Cache::set('mysqlInfo', $params);
@@ -248,7 +246,7 @@ class Index extends BaseController
 
                 // 清理安装包
                 Cache::clear();
-                recursive_delete(root_path('app' . DIRECTORY_SEPARATOR . 'install'));
+                 recursive_delete(root_path('app' . DIRECTORY_SEPARATOR . 'install'));
                 system_reload();
             } catch (\Throwable $th) {
                 return $this->error($th->getMessage());

@@ -13,6 +13,7 @@ declare (strict_types=1);
 namespace app\admin\controller\system;
 
 
+use GuzzleHttp\Exception\TransferException;
 use system\File;
 use system\Http;
 use system\ZipArchives;
@@ -34,7 +35,13 @@ class Plugin extends AdminController
      * @var int
      */
     protected $limit = 500;
-    
+
+    /**
+     * 错误信息
+     * @var array
+     */
+    static $errData = [];
+
     /**
      * 获取本地插件列表
      * @return \support\Response
@@ -82,7 +89,7 @@ class Plugin extends AdminController
                 self::enabled($name);
             } catch (\Throwable $th) {
                 recursive_delete($pluginPath);
-                return $this->error($th->getMessage());
+                return $this->error($th->getMessage(), null, self::$errData, $th->getCode());
             }
 
             return $this->success('插件安装成功', null, get_plugin_config($name, true));
@@ -176,7 +183,7 @@ class Plugin extends AdminController
                 self::executeSql($name);
                 self::enabled($name);
             } catch (\Throwable $th) {
-                return $this->error($th->getMessage(), null, null, $th->getCode());
+                return $this->error($th->getMessage(), null, self::$errData, $th->getCode());
             }
 
             return $this->success('插件更新成功', null, $data);
@@ -319,16 +326,20 @@ class Plugin extends AdminController
             $query = get_plugin_query();
             $response = Http::get($query, $extends);
             $body = json_decode($response, true);
-            $url = $body['data']['url'] ?: '';
+            $url = '';
+            if (isset($body['data']['url'])) {
+                $url = $body['data']['url'];
+            }
             if (!empty($url) && stristr($url, 'download')) {
                 $content = Http::get($url);
                 $filePath = plugin_path() . $name . '.zip';
                 write_file($filePath, $content);
             } else {
-                throw new \Exception($body['msg'], $body['code'], $body['data']);
+                self::$errData = $body['data'];
+                throw new \Exception($body['msg'], $body['code']);
             }
 
-        } catch (\Throwable $th) {
+        } catch (TransferException $th) {
             throw new \Exception(__("安装包下载失败"), -111);
         }
 
@@ -383,5 +394,4 @@ class Plugin extends AdminController
         }
         return $pluginList;
     }
-
 }

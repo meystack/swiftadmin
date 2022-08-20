@@ -22,14 +22,10 @@ class AccessCross implements MiddlewareInterface
             'Access-Control-Allow-Headers'     => 'Authorization, Content-Type, If-Match, If-Modified-Since, If-None-Match, If-Unmodified-Since, X-CSRF-TOKEN, X-Requested-With',
         ];
 
-        $origin = request()->server('HTTP_ORIGIN');
-        $parseUrl = parse_url($origin);
         $domains = array_merge(config('app.cors_domain'), [request()->host(true)]);
-        if (in_array("*", $domains) || in_array($origin, $domains)
-            || (isset($parseUrl['host']) && in_array($parseUrl['host'], $domains))) {
-            $header['Access-Control-Allow-Origin'] = $request->header('Origin', '*');
-        }
-
+        $domains = array_unique($domains);
+        // 默认为全部允许跨域
+        $header['Access-Control-Allow-Origin'] = $request->header('Origin', '*');
         $response->withHeaders($header);
         return $response;
     }

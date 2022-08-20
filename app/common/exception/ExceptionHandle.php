@@ -52,6 +52,9 @@ class ExceptionHandle extends \Webman\Exception\ExceptionHandler
 
     public function render(Request $request, Throwable $exception): Response
     {
+        if (!file_exists(root_path(). '.env')) {
+            return parent::render($request, $exception);
+        }
         return getenv('APP_DEBUG') ? parent::render($request, $exception) : view(config('app.exception_tpl'), ['trace' => $exception]);
     }
 }

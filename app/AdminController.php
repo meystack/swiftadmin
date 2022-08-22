@@ -155,7 +155,6 @@ class AdminController extends BaseController
     {
         parent::__construct();
         $this->auth = Auth::instance();
-        $this->admin = request()->session()->get($this->sename);
     }
 
     /**

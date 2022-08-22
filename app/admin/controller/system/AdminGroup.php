@@ -36,7 +36,7 @@ class AdminGroup extends AdminController
     {
 	   if (request()->isAjax()) {
 
-			$param = input();
+			$param = \request()->all();
 			$param['page'] = input('page');
 			$param['limit'] = input('limit');
 

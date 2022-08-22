@@ -128,7 +128,7 @@ layui.define(['i18n'], function (exports) {
             layer.open({
                 type: 2,
                 title: i18n.prop('立即支付'),
-                area: area,
+                area: ['500px','685px'],
                 offset: "30px",
                 resize: false,
                 shade: 0.8,

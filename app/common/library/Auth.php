@@ -237,7 +237,7 @@ class Auth
         $response->cookie('token', $this->token,$this->keepTime, '/');
         $response->cookie('nickname', $userInfo['nickname'],$this->keepTime, '/');
         Cache::set($this->token, $userInfo['id'], $this->keepTime);
-        Event::emit("system.userLoginSuccess", $userInfo);
+        Event::emit("userLoginSuccess", $userInfo);
         return $response;
 
     }

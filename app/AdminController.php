@@ -69,7 +69,8 @@ class AdminController extends BaseController
      * 管理员信息
      * @var array
      */
-    public $admin = [];
+    //public $admin = [];使用以下替代
+    //request()->adminInfo['id']
 
     /**
      * 获取模板
@@ -280,7 +281,7 @@ class AdminController extends BaseController
             $where[] = ['id', '=', input('id')];
             if (!$this->auth->SuperAdmin() && $this->dataLimit
                 && in_array($this->dataLimitField, $this->model->getFields())) {
-                $where[] = [$this->dataLimitField, '=', request()->adminInfo['id']];
+                $where[] = [$this->dataLimitField, '=',request()->adminInfo['id']];
             }
 
             try {

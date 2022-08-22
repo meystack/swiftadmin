@@ -34,6 +34,12 @@ class Sms
     protected $smsType = 'alisms';
 
     /**
+     * 验证码过期时间
+     * @var string
+     */
+    private $expireTime = 5; //验证码过期时间（分钟）
+
+    /**
      * 类构造函数
      * class constructor.
      */
@@ -134,7 +140,7 @@ class Sms
             $result->status = 0;
             $result->save();
             $expires = time() - strtotime($result['create_time']);
-            if ($expires <= 60) {
+            if ($expires <= $this->expireTime * 60) {
                 return true;
             }
             $this->setError("当前验证码已过期！");

@@ -41,6 +41,12 @@ class Email
     private $userVModel;
 
     /**
+     * 验证码过期时间
+     * @var string
+     */
+    private $expireTime = 5; //验证码过期时间（分钟）
+
+    /**
      * 错误信息
      * @var string
      */
@@ -265,7 +271,7 @@ class Email
 
             // 是否过期
             $expires = time() - strtotime($result['create_time']);
-            if ($expires <= 60) {
+            if ($expires <= $this->expireTime * 60) {
                 return true;
             }
 

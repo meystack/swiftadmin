@@ -19,6 +19,10 @@ use app\common\model\system\Department;
 use app\common\model\system\Admin as AdminModel;
 use app\common\model\system\AdminGroup as AdminGroupModel;
 use app\common\model\system\AdminAccess as AdminAccessModel;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
+use Webman\Http\Request;
 
 /**
  * 管理员管理
@@ -353,14 +357,18 @@ class Admin extends AdminController
 
     /**
      * 个人中心
+     * @param Request $request
      * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function center(): \support\Response
+    public function center(Request $request): \support\Response
     {
 
         if (request()->isPost()) {
             $post = request()->post();
-            $post['id'] = $this->admin['id'];
+            $post['id'] = $request->adminId;
             if ($this->model->update($post)) {
                 return $this->success();
             }
@@ -369,7 +377,7 @@ class Admin extends AdminController
         }
 
         $title = [];
-        $data = $this->model->find($this->admin['id']);
+        $data = $this->model->find($request->adminId);
         if (!empty($data['group_id'])) {
             $group = AdminGroupModel::field('title')
                                     ->whereIn('id', $data['group_id'])
@@ -390,11 +398,11 @@ class Admin extends AdminController
     /**
      * 修改个人资料
      */
-    public function modify()
+    public function modify(Request $request)
     {
         if (request()->isAjax()) {
             $post = request()->post();
-            $id = $this->admin['id'];
+            $id = $request->adminId;
             try {
                 //code...
                 switch ($post['field']) {
@@ -445,8 +453,11 @@ class Admin extends AdminController
     /**
      * 修改密码
      * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function pwd(): \support\Response
+    public function pwd(Request $request): \support\Response
     {
         if (request()->isPost()) {
 
@@ -457,7 +468,7 @@ class Admin extends AdminController
             }
 
             // 查找数据
-            $where[] = ['id', '=', $this->admin['id']];
+            $where[] = ['id', '=', $request->admin_id];
             $where[] = ['pwd', '=', encryptPwd($pwd)];
             $result = $this->model->where($where)->find();
 

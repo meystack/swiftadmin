@@ -61,7 +61,7 @@ class IndexPermissions implements MiddlewareInterface
             $this->needLogin = $property['needLogin'] ?? false;
             $this->noNeedAuth = $property['noNeedAuth'] ?? [];
             $this->repeatLogin = $property['repeatLogin'] ?? ['login', 'register'];
-            $this->JumpUrl = $property['JumpUrl'] ?: '/user/index';
+            $this->JumpUrl = $property['JumpUrl'] ?? '/user/index';
         }
 
         // 是否验证登录器

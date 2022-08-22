@@ -16,10 +16,9 @@ class AdminLogin implements MiddlewareInterface
 {
     public function process(Request $request, callable $handler) : Response
     {
-        $_security = Auth::instance()->getToken('_security');
-        $_buildToken = 'salt_' . $_security;
-        if (empty($_security) || !Cache::get($_buildToken)) {
-            $request->session()->delete('AdminLogin');
+        $AdminLogin = \request()->session()->get(AdminSession);
+        if (!isset($AdminLogin['_security'])) {
+            $request->session()->delete(AdminSession);
             return response(request_error(), 404);
         }
 

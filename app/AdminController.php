@@ -11,12 +11,9 @@
 namespace app;
 
 use app\admin\library\Auth;
-use app\common\model\system\SystemLog;
-use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use think\helper\Str;
-use Webman\Http\Request;
-
+define('AdminSession', 'AdminLogin');
 class AdminController extends BaseController
 {
 
@@ -73,12 +70,6 @@ class AdminController extends BaseController
      * @var array
      */
     public $admin = [];
-
-    /**
-     * 管理员会话标识
-     * @var string
-     */
-    public $sename = 'AdminLogin';
 
     /**
      * 获取模板
@@ -560,10 +551,9 @@ class AdminController extends BaseController
      */
     public function logout(): Response
     {
-        request()->session()->set($this->sename, null);
+        request()->session()->set(AdminSession, null);
         return $this->success('退出成功！', $this->JumpUrl);
     }
-
 
     /**
      * 错误页面

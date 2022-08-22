@@ -5,6 +5,11 @@ namespace app\admin\controller;
 use app\AdminController;
 use app\common\model\system\Admin;
 use app\common\model\system\LoginLog;
+use Psr\SimpleCache\InvalidArgumentException;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Event\Event;
 use Webman\Http\Request;
 
@@ -12,8 +17,7 @@ class Login extends AdminController
 {
     /**
      * 初始化方法
-     * @param Request $request
-     * @return \support\Response|void
+     * @return void
      * @throws \Exception
      */
     public function __construct()
@@ -25,15 +29,16 @@ class Login extends AdminController
 
     /**
      * 登录函数
-     * @return \support\Response
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function index(): \support\Response
     {
         // 禁止重复访问
-        if (isset($this->admin['id'])) {
+        if (isset(request()->adminInfo['id'])) {
             return $this->redirect('/admin/index');
         }
 
@@ -42,10 +47,10 @@ class Login extends AdminController
             $user = request()->post('name');
             $pwd = request()->post('pwd');
             $captcha = request()->post('captcha');
-            if ((isset($this->admin['count'])
-                    && $this->admin['count'] >= 5)
-                && (isset($this->admin['time'])
-                    && $this->admin['time'] >= strtotime('- 5 minutes'))
+            if ((isset(request()->adminInfo['count'])
+                    && request()->adminInfo['count'] >= 5)
+                && (isset(request()->adminInfo['time'])
+                    && request()->adminInfo['time'] >= strtotime('- 5 minutes'))
             ) {
                 $error = '错误次数过多，请稍后再试！';
                 $this->writeLoginLogs($error);
@@ -53,7 +58,7 @@ class Login extends AdminController
             }
 
             // 验证码
-            if (isset($this->admin['isCaptcha'])) {
+            if (isset(request()->adminInfo['isCaptcha'])) {
                 if (!$captcha || !$this->captchaCheck($captcha)) {
                     $error = '验证码错误！';
                     $this->writeLoginLogs($error);
@@ -70,10 +75,10 @@ class Login extends AdminController
 
                 $result = Admin::checkLogin($user, $pwd);
                 if (empty($result)) {
-                    $this->admin['time'] = time();
-                    $this->admin['isCaptcha'] = true;
-                    $this->admin['count'] = isset($this->admin['count']) ? $this->admin['count'] + 1 : 1;
-                    \request()->session()->set($this->sename, $this->admin);
+                    request()->adminInfo['time'] = time();
+                    request()->adminInfo['isCaptcha'] = true;
+                    request()->adminInfo['count'] = isset(request()->adminInfo['count']) ? request()->adminInfo['count'] + 1 : 1;
+                    request()->session()->set(AdminSession, request()->adminInfo);
                     $error = '用户名或密码错误！';
                     $this->writeLoginLogs($error);
                     Event::emit('adminLoginError', \request()->all());
@@ -93,7 +98,8 @@ class Login extends AdminController
                 try {
 
                     $result->save();
-                    request()->session()->set($this->sename, $result->toArray());
+                    $session = array_merge(request()->adminInfo, $result->toArray());
+                    request()->session()->set(AdminSession, $session);
                 } catch (\Throwable $th) {
                     return $this->error($th->getMessage());
                 }
@@ -106,7 +112,7 @@ class Login extends AdminController
         }
 
         return view('login/index', [
-            'captcha' => $this->admin['isCaptcha'] ?? false,
+            'captcha' => request()->adminInfo['isCaptcha'] ?? false,
         ]);
     }
 

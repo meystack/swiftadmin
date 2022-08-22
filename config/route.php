@@ -21,10 +21,8 @@ if ($defineRoute && is_array($defineRoute)) {
 }
 
 Route::any('/manage', function () {
-    $buildToken = request()->buildToken();
-    $expireTime = config('session.cookie_lifetime');
-    Cache::set('salt_' . $buildToken, time(), $expireTime);
-    return redirect('/admin/login')->cookie('_security', $buildToken, $expireTime);
+    request()->session()->set(AdminSession, ['_security' => request()->buildToken()]);
+    return redirect('/admin/login');
 });
 
 Route::any('/captcha', [app\BaseController::class, 'captcha']);

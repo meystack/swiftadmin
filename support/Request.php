@@ -20,6 +20,7 @@ use system\Random;
  * Class Request
  * @package support
  */
+
 class Request extends \Webman\Http\Request
 {
     /**
@@ -32,6 +33,18 @@ class Request extends \Webman\Http\Request
      * 用户信息
      */
     public $userInfo = [];
+
+    /**
+     * 管理员ID
+     * @var int
+     */
+    public $adminId = 0;
+
+    /**
+     * 管理员信息
+     * @return string
+     */
+    public $adminInfo = [];
 
     /**
      * 生成请求令牌

@@ -15,7 +15,7 @@
             <div class="layui-message-list" >
                 <volist  name="list['msg']" id="vo">
                     <a class="layui-message-list-item" href="javascript:;">
-                    <img class="layui-message-item-icon" src="__ADMINIMAGES__/message.png">
+                    <img class="layui-message-item-icon" src="__ADMINIMAGES__message.png">
                     <!-- <i class="layui-message-item-icon layui-icon layui-icon-email"></i> -->
                     <div class="layui-message-item-right">
                         <h2 class="layui-message-item-title">{$vo.title}</h2>
@@ -27,7 +27,7 @@
 
             <!-- // 列表为空 -->
             <div class="layui-message-list-empty" <empty name="$list['msg']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__/noting.png"><div>{:__('没有通知')}</div>
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有通知')}</div>
             </div>  
 
             <!-- // 底部操作 -->
@@ -43,7 +43,7 @@
             <div class="layui-message-list" >
                 <volist  name="list['comment']" id="vo">
                 <a class="layui-message-list-item" href="javascript:;">
-                    <img class="layui-message-item-icon" src="__ADMINIMAGES__/head.png">
+                    <img class="layui-message-item-icon" src="__ADMINIMAGES__head.png">
                     <div class="layui-message-item-right">
                         <h2 class="layui-message-item-title">{$vo.title}</h2>
                         <p class="layui-message-item-text">{$vo.content}</p>
@@ -56,7 +56,7 @@
 
             <!-- // 列表为空 -->
             <div class="layui-message-list-empty" <empty name="$list['comment']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__/noting.png"><div>{:__('没有私信')}</div>
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有私信')}</div>
             </div>  
             <notempty name="$list['msg']">
             <div class="layui-message-footer">
@@ -86,7 +86,7 @@
            
             <!-- // 列表为空 -->
             <div class="layui-message-list-empty" <empty name="$list['things']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__/noting.png"><div>{:__('没有待办')}</div>
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有待办')}</div>
             </div>  
             <notempty name="$list['things']">
             <div class="layui-message-footer">

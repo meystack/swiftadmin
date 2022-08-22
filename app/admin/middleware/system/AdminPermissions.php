@@ -48,14 +48,17 @@ class AdminPermissions implements MiddlewareInterface
         $app        = request()->getApp();
         $controller = request()->getController();
         $action     = request()->getAction();
-        $AdminLogin = request()->session()->get('AdminLogin');
+        $AdminLogin = request()->session()->get(AdminSession);
         if (!isset($AdminLogin['id']) && strtolower($controller) !== 'login') {
             return redirect(url('/login/index'));
         }
 
+        // 判断是否需要鉴权
+        $request->adminId  = $AdminLogin['id'] ?? 0;
+        $request->adminInfo = $AdminLogin ?? [];
         $method = '/' . $controller. '/' .$action;
         if (!in_array($method, $this->noNeedAuth) && !in_array('*', $this->noNeedAuth)) {
-            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, $AdminLogin['id'])) {
+            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, $request->adminId)) {
                 if (request()->isAjax()) {
                     return json(['code' => 101, 'msg' => '没有权限']);
                 } else {
@@ -64,10 +67,7 @@ class AdminPermissions implements MiddlewareInterface
             }
         }
 
-        /**
-         * 分发请求
-         * 控制器中间件
-         */
+        // 控制器中间件分发
         $id = input('id');
         if (\request()->isPost()) {
             if ($controller == 'system/Admin') {

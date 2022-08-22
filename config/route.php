@@ -21,7 +21,8 @@ if ($defineRoute && is_array($defineRoute)) {
 }
 
 Route::any('/manage', function () {
-    request()->session()->set(AdminSession, ['_security' => request()->buildToken()]);
+    // 登录入口session缓存
+    request()->session()->set('AdminLogin', ['_security' => request()->buildToken()]);
     return redirect('/admin/login');
 });
 

@@ -181,7 +181,7 @@ class AdminController extends BaseController
 
             $post = $this->preRuleOutFields(\request()->post());
             if ($this->dataLimit) {
-                $post[$this->dataLimitField] = $this->admin['id'];
+                $post[$this->dataLimitField] = request()->adminInfo['id'];
             }
 
             $validate = $this->isValidate ? get_class($this->model) : $this->isValidate;
@@ -209,7 +209,7 @@ class AdminController extends BaseController
         // 限制数据调用
         if (!$this->auth->SuperAdmin() && $this->dataLimit
             && in_array($this->dataLimitField, $this->model->getFields())) {
-            if ($data[$this->dataLimitField] != $this->admin['id']) {
+            if ($data[$this->dataLimitField] != request()->adminInfo['id']) {
                 return $this->error('没有权限');
             }
         }
@@ -250,7 +250,7 @@ class AdminController extends BaseController
             foreach ($list as $item) {
                 if (!$this->auth->SuperAdmin() && $this->dataLimit
                     && in_array($this->dataLimitField, $this->model->getFields())) {
-                    if ($item[$this->dataLimitField] != $this->admin['id']) {
+                    if ($item[$this->dataLimitField] != request()->adminInfo['id']) {
                         continue;
                     }
                 }
@@ -280,7 +280,7 @@ class AdminController extends BaseController
             $where[] = ['id', '=', input('id')];
             if (!$this->auth->SuperAdmin() && $this->dataLimit
                 && in_array($this->dataLimitField, $this->model->getFields())) {
-                $where[] = [$this->dataLimitField, '=', $this->admin['id']];
+                $where[] = [$this->dataLimitField, '=', request()->adminInfo['id']];
             }
 
             try {
@@ -507,7 +507,7 @@ class AdminController extends BaseController
             // 限制数据字段
             if (!$this->auth->SuperAdmin() && $this->dataLimit) {
                 if (in_array($this->dataLimitField, $this->tableFields)) {
-                    $where[] = [$this->dataLimitField, '=', $this->admin['id']];
+                    $where[] = [$this->dataLimitField, '=', request()->adminInfo['id']];
                 }
             }
 

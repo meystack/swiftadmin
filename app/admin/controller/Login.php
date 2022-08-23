@@ -91,7 +91,7 @@ class Login extends AdminController
                     return $this->error($error);
                 }
 
-                $result->login_ip = request()->getRemoteIp();
+                $result->login_ip = request()->getRealIp();
                 $result->login_time = time();
                 $result->count = $result->count + 1;
 
@@ -136,7 +136,7 @@ class Login extends AdminController
         $user_browser = preg_replace('/[^(]+\((.*?)[^)]+\) .*?/','$1',$userAgent);
 
         $data = [
-            'user_ip'      => request()->getRemoteIp(),
+            'user_ip'      => request()->getRealIp(),
             'user_agent'   => $userAgent,
             'user_os'      => $user_os,
             'user_browser' => $user_browser,

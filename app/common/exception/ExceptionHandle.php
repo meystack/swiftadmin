@@ -29,7 +29,7 @@ class ExceptionHandle extends \Webman\Exception\ExceptionHandler
                     'params'     => serialize(request()->all()),
                     'method'     => request()->method(),
                     'url'        => request()->url(),
-                    'ip'         => request()->getRemoteIp(),
+                    'ip'         => request()->getRealIp(),
                     'name'       => session('AdminLogin.name'),
                 ];
 

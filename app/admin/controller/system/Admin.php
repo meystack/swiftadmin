@@ -154,7 +154,7 @@ class Admin extends AdminController
 
             // 管理员加密
             $post['pwd'] = encryptPwd($post['pwd']);
-            $post['create_ip'] = request()->getRemoteIp();
+            $post['create_ip'] = request()->getRealIp();
             $data = $this->model->create($post);
             if (!is_empty($data->id)) {
                 $access['admin_id'] = $data->id;

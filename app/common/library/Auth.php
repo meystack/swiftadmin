@@ -92,7 +92,7 @@ class Auth
         /**
          * 禁止批量注册
          */
-        $where[] = ['create_ip', '=', ip2long(request()->getRemoteIp())];
+        $where[] = ['create_ip', '=', ip2long(request()->getRealIp())];
         $where[] = ['create_time', '>', linux_extime(1)];
         $totalMax = UserModel::where($where)->count();
 
@@ -173,7 +173,7 @@ class Auth
             $userUpdate = [
                 'id'          => $this->userInfo['id'],
                 'login_time'  => time(),
-                'login_ip'    => request()->getRemoteIp(),
+                'login_ip'    => request()->getRealIp(),
                 'login_count' => $this->userInfo['login_count'] + 1,
             ];
 

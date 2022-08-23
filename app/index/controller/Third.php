@@ -125,7 +125,7 @@ class Third extends HomeController
         if (!empty($userInfo)) {
             $array['id'] = $userInfo['id'];
             $array['login_time'] = time();
-            $array['login_ip'] = request()->getRemoteIp();
+            $array['login_ip'] = request()->getRealIp();
             $array['login_count'] = $userInfo['login_count'] + 1;
 
             if (User::update($array)) {
@@ -142,7 +142,7 @@ class Third extends HomeController
                 $data['nickname'] .= Random::alpha(3);
             }
             $data['group_id'] = 1;
-            $data['create_ip'] = request()->getRemoteIp();
+            $data['create_ip'] = request()->getRealIp();
             $result = $this->auth->register($data);
 
             // 封装第三方数据

@@ -116,7 +116,7 @@ class AdminPermissions implements MiddlewareInterface
                 'method'     => request()->method(),
                 'code'       => 200,
                 'url'        => request()->url(),
-                'ip'         => request()->getRemoteIp(),
+                'ip'         => request()->getRealIp(),
                 'name'       => session('AdminLogin.name'),
             ];
 

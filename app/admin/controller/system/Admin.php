@@ -55,13 +55,6 @@ class Admin extends AdminController
     {
         parent::__construct();
         $this->model = new AdminModel();
-        $this->jobs = Jobs::select()->toArray();
-        $this->group = AdminGroupModel::select()->toArray();
-        $this->department = Department::getListTree();
-
-        foreach ($this->group as $k => $v) {
-            $this->group[$k]['title'] = __($v['title']);
-        }
     }
 
     /**
@@ -122,6 +115,10 @@ class Admin extends AdminController
 
             return $this->success('查询成功', null, $list, $count);
         }
+
+        $this->jobs = Jobs::select()->toArray();
+        $this->group = AdminGroupModel::select()->toArray();
+        $this->department = Department::getListTree();
 
         return view('/system/admin/index', [
             'jobs'       => $this->jobs,

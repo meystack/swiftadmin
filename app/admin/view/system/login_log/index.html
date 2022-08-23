@@ -87,6 +87,10 @@
                         <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i
                                 class="layui-icon layui-icon-search"></i>{:__('搜索')}
                         </button>
+                        <!-- // 删除所有 -->
+                        <button class="layui-btn icon-btn layui-btn-danger" lay-batch="" data-table="lay-tableList"  data-url="{:url('/system/LoginLog/del')}" >
+                            <i class="layui-icon layui-icon-delete"></i>{:__('删除')}
+                        </button>
                     </div>
                 </div>
             </div>

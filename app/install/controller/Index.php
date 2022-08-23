@@ -140,7 +140,7 @@ class Index extends BaseController
             $mysql_table = @mysqli_query($connect, 'SHOW DATABASES');
             while ($row = @mysqli_fetch_assoc($mysql_table)) {
                 if ($row['Database'] == $params['database']) {
-                    return $this->error('数据表已存在，请勿重复安装');
+                    return $this->error('数据库已存在，请勿重复安装');
                 }
             }
 

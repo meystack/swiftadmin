@@ -61,10 +61,17 @@
  * 安装PHP，版本 >= 7.3 <= 8.1
  * 安装PHP扩展fileinfo opcache redis imagemagick exif
  * 开发环境下关闭禁用PHP函数exec、putenv、proc_open、proc_get_status、pcntl_signal[如果存在]
+ * Linux环境下，请关闭禁用pcntl_类函数！生产环境可以逐个去除
 ```
 <font color="#dd0000">2、Windows环境下启动开发服务</font>
 ```
-找到根目录下的Windows.bat文件，双击执行该文件即可启动服务。
+1、执行php windows.php start 进行基础开发，例如APP/CONFIG/ROUTE等
+2、执行Windows.bat 进行完整开发，例如APP/PLUGIN/extend
+
+因为我们在项目中使用了fileboy热更新工具，那么在加载插件的时候会导致问题，因为要加载的文件过多；
+
+所以我们建议，首先把项目clone到本地后，先执行 php windows.php start,安装完毕插件助手后，再进行完整开发，这样就不会出现问题了；
+
 ```
 3、Linux环境下启动开发服务
 ```

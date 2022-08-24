@@ -1,0 +1,1 @@
+php windows.php start

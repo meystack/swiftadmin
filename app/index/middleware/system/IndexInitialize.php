@@ -42,6 +42,13 @@ class IndexInitialize implements MiddlewareInterface
             return redirect('/install/index');
         }
 
+        $siteInfo = saenv('site', true);
+        if ($siteInfo && is_array($siteInfo)) {
+            foreach ($siteInfo as $key => $value) {
+                \support\View::assign($key,$value);
+            }
+        }
+
         return $handler($request);
     }
 }

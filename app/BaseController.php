@@ -90,12 +90,6 @@ class BaseController
     public function __construct()
     {
         $this->referer = \request()->header('referer');
-        $siteArr = saenv('site', true);
-        if ($siteArr && is_array($siteArr)) {
-            foreach ($siteArr as $key => $value) {
-                \support\View::assign($key,$value);
-            }
-        }
     }
 
     /**

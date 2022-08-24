@@ -65,12 +65,16 @@
 ```
 <font color="#dd0000">2、Windows环境下启动开发服务</font>
 ```
-1、执行php windows.php start 进行基础开发，例如APP/CONFIG/ROUTE等
-2、执行Windows.bat 进行完整开发，例如APP/PLUGIN/extend
+1、执行init.bat进行基础开发，在安装插件助手之前请执行init.bat
+2、执行Windows.bat 进行完整开发，例如APP/PLUGIN/extend/其他扩展开发
 
-因为我们在项目中使用了fileboy热更新工具，那么在加载插件的时候会导致问题，因为要加载的文件过多；
+因为我们在项目中使用了fileboy热更新工具，如果在安装插件的时候，使用fileboy热更新，因插件文件过多会导致不停重启卡机。
 
-所以我们建议，首先把项目clone到本地后，先执行 php windows.php start,安装完毕插件助手后，再进行完整开发，这样就不会出现问题了；
+所以我们建议，首先把项目clone到本地后，先执行init.bat,安装完毕插件助手/或其他插件后，再进行完整开发，这样就不会出现问题了；
+
+通俗一点将，init.bat只监听app/config文件夹下的文件修改，但是我们要开发插件，会需要监听app/config/extend/plugin这些文件夹PHP的修改
+
+所以在安装第三方插件的时候，使用init.bat，等到安装完毕，切换到Windows.bat，进行完整开发；
 
 ```
 3、Linux环境下启动开发服务

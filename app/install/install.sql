@@ -299,8 +299,8 @@ CREATE TABLE `__PREFIX__company`  (
 -- ----------------------------
 -- Records of __PREFIX__company
 -- ----------------------------
-INSERT INTO `__PREFIX__company` VALUES (1, '北京总部技术公司', 'bj', '北京市东城区长安街880号', 10000, '权栈', 15100000001, '010-10000', 'coolsec@foxmail.com', '91130403XXA0AJ7XXM', '01', '02', 1613711884);
-INSERT INTO `__PREFIX__company` VALUES (2, '河北分公司', 'hb', '河北省邯郸市丛台区公园路880号', 56000, '权栈', 12345678901, '0310-12345678', 'coolsec@foxmail.com', 'code', NULL, NULL, 1613787702);
+INSERT INTO `__PREFIX__company` VALUES (1, '北京总部技术公司', 'bj', '北京市东城区长安街880号', 10000, '权栈', 15100000001, '010-10000', 'coolsec@foxmail.com', '91130403XXA0AJ7XXM', '01', '02', 1613711884,NULL);
+INSERT INTO `__PREFIX__company` VALUES (2, '河北分公司', 'hb', '河北省邯郸市丛台区公园路880号', 56000, '权栈', 12345678901, '0310-12345678', 'coolsec@foxmail.com', 'code', NULL, NULL, 1613787702,NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__config

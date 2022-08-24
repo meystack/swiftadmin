@@ -553,7 +553,7 @@ class AdminController extends BaseController
     public function logout(): Response
     {
         request()->session()->set(AdminSession, null);
-        return $this->success('退出成功！', $this->JumpUrl);
+        return $this->success('退出成功！', '/');
     }
 
     /**

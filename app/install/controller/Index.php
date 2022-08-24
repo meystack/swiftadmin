@@ -132,21 +132,22 @@ class Index extends BaseController
 
             // 检测MySQL版本
             $mysqlInfo = @mysqli_get_server_info($connect);
-            if ((float)$mysqlInfo < 5.6) {
-                return $this->error('MySQL版本过低');
-            }
 
             // 查询数据库名
+            $database = false;
             $mysql_table = @mysqli_query($connect, 'SHOW DATABASES');
             while ($row = @mysqli_fetch_assoc($mysql_table)) {
                 if ($row['Database'] == $params['database']) {
-                    return $this->error('数据库已存在，请勿重复安装');
+                    $database = true;
+                    break;
                 }
             }
 
-            $query = "CREATE DATABASE IF NOT EXISTS `" . $params['database'] . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
-            if (!@mysqli_query($connect, $query)) {
-                return $this->error('数据库创建失败或已存在，请手动修改');
+            if (!$database) {
+                $query = "CREATE DATABASE IF NOT EXISTS `" . $params['database'] . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
+                if (!@mysqli_query($connect, $query)) {
+                    return $this->error('数据库创建失败或已存在，请手动修改');
+                }
             }
 
             Cache::set('mysqlInfo', $params);

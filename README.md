@@ -61,7 +61,7 @@
  * 安装PHP，版本 >= 7.3 <= 8.1
  * 安装PHP扩展fileinfo opcache redis imagemagick exif
  * 开发环境下关闭禁用PHP函数exec、putenv、proc_open、proc_get_status、pcntl_signal[如果存在]
- * Linux环境下，请关闭禁用pcntl_类函数！生产环境可以逐个去除
+ * Linux环境下，请关闭禁用shell_exec pcntl_signal pcntl_fork pcntl_wait pcntl_alarm exec函数！
 ```
 <font color="#dd0000">2、Windows环境下启动开发服务</font>
 ```

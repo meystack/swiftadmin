@@ -137,7 +137,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         , setBreadHtml: function () {
 
             var b = '<div class="layui-breadcrumb-header layui-breadcrumb" lay-separator="/">';
-            b += '      <a lay-href="#">' + '主页' + '</a>';
+            b += '      <a lay-href="#">' + i18n.prop('主页') + '</a>';
             b += '      <span class="breadcrumb">';
             b += '          <a lay-href="#">Dashboard</a>';
             b += '      </span>';

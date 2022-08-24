@@ -558,8 +558,8 @@ if (!function_exists('__')) {
      */
     function __($str, $parameters = [], $domain = null, $locale = null)
     {
-        if (is_numeric($str)
-            || getenv('LANG_DEFAULT_LANG') === 'zh-CN') {
+        $lang = session('lang', 'zh-CN');
+        if (is_numeric($str) || strstr($lang, 'zh-CN')) {
             return $str;
         }
 

@@ -492,6 +492,7 @@ class Admin extends AdminController
         $array = parse_ini_file($env, true);
         $array['LANG_DEFAULT_LANG'] = $language;
         $content = parse_array_ini($array);
+        request()->session()->set('lang', $language);
         if (write_file($env, $content)) {
             return json(['success']);
         }

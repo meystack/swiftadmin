@@ -162,6 +162,9 @@
                     admin.setStorage('language', obj.symbol);
                     location.reload();
                 })
+
+                // 清空本地缓存
+                admin.setConfig("TabLists", undefined);
             }
         });
 

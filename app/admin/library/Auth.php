@@ -305,6 +305,12 @@ class Auth
                     'field' => $this->authFields
                 ], true);
             }
+
+            if (empty($list)) {
+                $list = Event::emit('cmscategoryPermissions', [
+                    'field' => $this->authFields
+                ], true);
+            }
         }
 
         return $tree ? ($list ? json_encode(list_to_tree($list)) : json_encode([])) : $list;

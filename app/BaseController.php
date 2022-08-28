@@ -246,8 +246,8 @@ class BaseController
      */
     protected function getTableFields($model = null)
     {
-        $this->model = $model ?: $this->model;
-        $tableFields = $this->model->getTableFields();
+        $model = $model ?: $this->model;
+        $tableFields = $model->getTableFields();
         if (!empty($tableFields) && is_array($tableFields)) {
             foreach ($tableFields as $key => $value) {
                 $filter = ['update_time', 'create_time', 'delete_time'];

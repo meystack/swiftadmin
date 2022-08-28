@@ -39,13 +39,10 @@ class Dictionary extends Model
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public static function getValueList(string $value = ''): array
+    public static function getValueList(string $value = '')
     {
         $list = [];
-        $data = self::where([
-                                'pid'   => 0,
-                                'value' => $value
-                            ])->find();
+        $data = self::where(['pid'   => 0,'value' => $value])->find();
         if (!empty($data)) {
             $list = self::where('pid', $data['id'])->select();
         }

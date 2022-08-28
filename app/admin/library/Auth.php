@@ -293,24 +293,17 @@ class Auth
             }
         } else {
 
-            if (!Event::hasListener('cmscategoryPermissions')) {
-                throw new \Exception('请安装CMS插件');
-            } else {
-
-                if (!$this->superAdmin()) {
-                    if (!empty($auth_nodes[$class])) {
-                        $list = Event::emit('cmscategoryPermissions', [
-                            'field' => $this->authFields,
-                            'nodes' => $auth_nodes[$class]
-                        ], true);
-                    }
-                }
-
-                if (empty($list)) {
+            if (!$this->superAdmin()) {
+                if (!empty($auth_nodes[$class])) {
                     $list = Event::emit('cmscategoryPermissions', [
-                        'field' => $this->authFields
+                        'field' => $this->authFields,
+                        'nodes' => $auth_nodes[$class]
                     ], true);
                 }
+            } else {
+                $list = Event::emit('cmscategoryPermissions', [
+                    'field' => $this->authFields
+                ], true);
             }
         }
 

@@ -692,7 +692,8 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
                     options.iframeAuto && layer.iframeAuto(index);
                     if (options.type <= 1) {
-
+                        // 禁止滚动条
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
                         if (typeof tableThis !== 'undefined' && !options.disableform) {
                             form.val(options.id, tableThis.data);
                         }
@@ -1414,12 +1415,11 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             layui.each($('.layui-tags'), function (i, e) {
                 $(e).remove();
             })
-
             layui.each($('*[lay-tags]'), function (index, elem) {
-
-                var isTags = layui.tags.render({
+                let url = $(elem).data('url') || '';
+                let isTags = layui.tags.render({
                     elem: elem,
-                    url: '/Ajax/getTags',
+                    url: url,
                     done: function (key, all) {
                     }
                 });

@@ -66,13 +66,6 @@ class AdminController extends BaseController
     public $status = false;
 
     /**
-     * 管理员信息
-     * @var array
-     */
-    //public $admin = [];使用以下替代
-    //request()->adminInfo['id']
-
-    /**
      * 获取模板
      * @access   protected
      * @var      string
@@ -156,8 +149,8 @@ class AdminController extends BaseController
     public function index()
     {
         if (request()->isAjax()) {
-            $page = (int)input('page') ?? 1;
-            $limit = (int)input('limit') ?? 18;
+            $page = (int)input('page', 1);
+            $limit = (int)input('limit',18);
             $where = $this->buildSelectParams();
             $count = $this->model->where($where)->count();
             $limit = is_empty($limit) ? 10 : $limit;

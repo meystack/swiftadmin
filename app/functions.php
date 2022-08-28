@@ -339,7 +339,7 @@ if (!function_exists('release')) {
      */
     function release()
     {
-        return getenv('APP_DEBUG') ? \system\Random::alphaNum() : config('app.version');
+        return config('app.version');
     }
 }
 
@@ -1322,9 +1322,12 @@ if (!function_exists('plugin_refresh_hooks')) {
                 $events[$hook][] = [$namespace, $hook];
             }
 
-            $taglibPath = plugin_path($name) . 'taglib.php';
-            if (is_file($taglibPath)) {
-                $taglib[] = 'plugin\\' . $name . '\\taglib.php';
+            $taglibPath = plugin_path($name . DIRECTORY_SEPARATOR . 'taglib');
+
+            $tagList = glob($taglibPath . '*.php');
+            foreach ($tagList as $index => $tag) {
+                $tag = pathinfo($tag, PATHINFO_FILENAME);
+                $taglib[] = 'plugin\\' . $name . '\\taglib\\' . $tag;
             }
         }
 

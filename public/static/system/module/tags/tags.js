@@ -138,7 +138,7 @@ layui.define(function(exports){
       $('#'+ this.config.id + ' .layui-tags-input').before(html);
 
       // 限定隐藏元素
-      if (this.getData().length == this.config.limit) {
+      if (this.getData().length === this.config.limit) {
         $('#'+this.config.id + ' .layui-tags-input').hide();
       }
 
@@ -195,11 +195,10 @@ layui.define(function(exports){
       // 监听输入框键盘事件
       $('body').on('keyup',input,function(e) {
 
-
         var elem = $(this),keyCode = e.keyCode;
-        if (options.url !== undefined && keyCode != 13) {
+        if (options.url !== undefined && keyCode !== 13) {
     
-            if (elem.val() != that.TAG_NAME) {
+            if (elem.val() !== that.TAG_NAME && options.url) {
                 $.ajax({
                   type: "get",
                   url: options.url,
@@ -208,7 +207,7 @@ layui.define(function(exports){
                   },
                   // 获取TAGS关键词
                   success: function(res) {
-                    if (res.code == 200) {
+                    if (res.code === 200) {
                         that.drawHtml(res.data,elem);
                     }
                   }
@@ -219,16 +218,16 @@ layui.define(function(exports){
 
             var self = $('.'+LAY_TAG_THIS);
             // 上键
-            if (keyCode == 38) {
+            if (keyCode === 38) {
               var prev = self.prev();
-              if (prev.length != 0) {
+              if (prev.length !== 0) {
                 self.removeClass(LAY_TAG_THIS);
                 prev.addClass(LAY_TAG_THIS);
               }
             } // 下键
-            else if (keyCode == 40) { 
+            else if (keyCode === 40) {
               var next = self.next();
-              if (next.length != 0) {
+              if (next.length !== 0) {
                 self.removeClass(LAY_TAG_THIS);
                 next.addClass(LAY_TAG_THIS);
               }

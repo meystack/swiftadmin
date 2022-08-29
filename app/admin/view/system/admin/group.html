@@ -154,7 +154,7 @@
         admin.callback.auth = function(clickthis,colletction,config) {
 
             // 获取表格对象
-            var tableThis = colletction.tableThis,checkKeys = [];
+            var tableThis = colletction.tableThis, checkKeys = [];
 
             // 勾选默认权限
             if (typeof (tableThis.data.rules) !== undefined && tableThis.data.rules != null) {
@@ -164,49 +164,60 @@
                 }
             }
 
-            // 渲染树列表
-            tree.render({
-                id: 'authTree'
-                ,elem: '#authTree'
-                ,data: _ajax('rules')
-                ,showCheckbox: true
-                ,checkids: checkKeys
-                ,oncheck: function(obj){}
-            });
-           
-            // 监听提交
-            form.on("submit(submitPage)",function(post){
-                // 获取提交地址
-                var pageThat = jquery(this), _form = pageThat.parents('form'), 
-                _pageUrl = _form.attr("action") || pageThat.data('url');
-                pageThat.attr("disabled",true);
-                if (typeof(_pageUrl) === 'undefined') {
-                    layer.msg('缺少URL属性','error');
-                    return false;
-                }
+            jquery.ajax({
+                url:'{:url("/system/Admin/getPermissions")}',
+                type:'post',
+                dataType:'json',
+                data:{
+                    type : 'rules',
+                    group: true,
+                },
+                success(data) {
+                    // 渲染树列表
+                    tree.render({
+                        id: 'authTree'
+                        ,elem: '#authTree'
+                        ,data: data
+                        ,showCheckbox: true
+                        ,oncheck: function(obj){}
+                    });
+                    tree.setChecked('authTree', checkKeys);
 
-                // 增加角色id
-                post.field.id = tableThis.data.id;
-                // 增加节点数据
-                post.field.rules = tree.getChecked('authTree',true);
-
-                // 开始POST提交数据
-                jquery.post(_pageUrl, 
-                    post.field, function(res){
-                        if (res.code === 200) {
-                            layer.msg(res.msg);
-                            // 更新本地规则
-                            tableThis.update({
-                                rules: tree.getChecked('authTree',true).join(',')
-                            });
-                            // 关闭当前窗口
-                            layer.close(colletction.index);
-                        }else{
-                            layer.error(res.msg);
+                    // 监听提交
+                    form.on("submit(submitPage)",function(post){
+                        // 获取提交地址
+                        var pageThat = jquery(this), _form = pageThat.parents('form'),
+                            _pageUrl = _form.attr("action") || pageThat.data('url');
+                        pageThat.attr("disabled",true);
+                        if (typeof(_pageUrl) === 'undefined') {
+                            layer.msg('缺少URL属性','error');
+                            return false;
                         }
-                }, 'json');
 
-                return false;                        
+                        // 增加角色id
+                        post.field.id = tableThis.data.id;
+                        // 增加节点数据
+                        post.field.rules = tree.getChecked('authTree',true);
+
+                        // 开始POST提交数据
+                        jquery.post(_pageUrl,
+                            post.field, function(res){
+                                if (res.code === 200) {
+                                    layer.msg(res.msg);
+                                    // 更新本地规则
+                                    tableThis.update({
+                                        rules: tree.getChecked('authTree',true).join(',')
+                                    });
+                                    // 关闭当前窗口
+                                    layer.close(colletction.index);
+                                }else{
+                                    layer.error(res.msg);
+                                }
+                            }, 'json');
+
+                        return false;
+                    })
+                }
             })
         }
 
@@ -225,64 +236,73 @@
                 }
             }
 
-            var rules = _ajax('cates');
-            if (typeof rules.code != "undefined") {
-                return layer.msg(rules.msg,'info');
-            }
+            jquery.ajax({
+                url:'{:url("/system/Admin/getPermissions")}',
+                type:'post',
+                dataType:'json',
+                data:{
+                    type : 'cates',
+                    group: true,
+                },
+                success(data) {
 
-            // 渲染树列表
-            tree.render({
-                id: 'cateTree'
-                ,elem: '#cateTree'
-                ,data: rules
-                ,showCheckbox: true
-                ,checkids: checkKeys
-                ,oncheck: function(obj){}
-            });
+                    // 渲染树列表
+                    tree.render({
+                        id: 'cateTree'
+                        ,elem: '#cateTree'
+                        ,data: data
+                        ,showCheckbox: true
+                        ,oncheck: function(obj){}
+                    });
 
-            // 监听提交
-            form.on("submit(submitPage)",function(post){
-                // 获取提交地址
-                var pageThat = jquery(this), _form = pageThat.parents('form'), 
-                _pageUrl = _form.attr("action") || pageThat.data('url');
-                pageThat.attr("disabled",true);
-                if (typeof(_pageUrl) === 'undefined') {
-                    layer.msg('缺少URL属性','error');
-                    return false;
-                }
+                    tree.setChecked('cateTree', checkKeys);
 
-                // 增加角色id
-                post.field.id = tableThis.data.id;
-                // 增加节点数据
-                post.field.cates = tree.getChecked('cateTree',true);
-
-                // 开始POST提交数据
-                jquery.post(_pageUrl, 
-                    post.field, function(res){
-                        if (res.code === 200) {
-                            layer.msg(res.msg);
-                            // 更新栏目权限
-                            tableThis.update({
-                                cates: tree.getChecked('cateTree',true).join(',')
-                            });
-                            // 关闭当前窗口
-                            layer.close(colletction.index);
-                        }else{
-                            layer.error(res.msg);
+                    // 监听提交
+                    form.on("submit(submitPage)",function(post){
+                        // 获取提交地址
+                        var pageThat = jquery(this), _form = pageThat.parents('form'),
+                            _pageUrl = _form.attr("action") || pageThat.data('url');
+                        pageThat.attr("disabled",true);
+                        if (typeof(_pageUrl) === 'undefined') {
+                            layer.msg('缺少URL属性','error');
+                            return false;
                         }
-                }, 'json');
 
-                return false;                        
-            }) 
+                        // 增加角色id
+                        post.field.id = tableThis.data.id;
+                        // 增加节点数据
+                        post.field.cates = tree.getChecked('cateTree',true);
+
+                        // 开始POST提交数据
+                        jquery.post(_pageUrl,
+                            post.field, function(res){
+                                if (res.code === 200) {
+                                    layer.msg(res.msg);
+                                    // 更新栏目权限
+                                    tableThis.update({
+                                        cates: tree.getChecked('cateTree',true).join(',')
+                                    });
+                                    // 关闭当前窗口
+                                    layer.close(colletction.index);
+                                }else{
+                                    layer.error(res.msg);
+                                }
+                            }, 'json');
+
+                        return false;
+                    })
+                }
+            })
+
+            // var rules = _ajax('cates');
+            // if (typeof rules.code != "undefined") {
+            //     return layer.msg(rules.msg,'info');
+            // }
+
+
         }
 
-        // 同步加载函数
-        var _ajax = function (type) {
-            var func = '{:url("/system/Admin/getRuleCateTree")}';
-            return admin.event.ajax(func,{
-                type   : type,
-            },false)
-        }
+
 
     });
 

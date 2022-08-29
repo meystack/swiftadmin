@@ -333,7 +333,7 @@
                 // 开始POST提交数据
                 layui.$.post(_pageUrl,
                     post.field, function(res){
-                        if (res.code == 200) {
+                        if (res.code === 200) {
                             layer.msg(res.msg);
                             // 关闭当前窗口
                             table.reload('lay-tableList');
@@ -351,58 +351,55 @@
 
         // 编辑用户权限/栏目权限回调函数
         admin.callback.rulecates = function(clickthis,colletction,config) {
+            var tableThis = colletction.tableThis,
+                event = tableThis.event;
 
-            var tableThis = colletction.tableThis, event = tableThis.event;
+            layui.$.ajax({
+                url:'{:url("/system/Admin/getPermissions")}',
+                type:'post',
+                dataType:'json',
+                data:{
+                    type : event,
+                },
+                success(data) {
+                    tree.render({
+                        id: 'authTree',
+                        elem: '#authTree',
+                        data: data,
+                        showCheckbox: true,
+                    })
 
-            var rules = _ajax(event);
-            if (typeof rules.code != "undefined") {
-                return layer.msg(rules.msg,'info');
-            }
+                    tree.setChecked('authTree', tableThis.data[event].length ? tableThis.data[event].map(Number):  []);
 
-            // 创建实例
-            tree.render({
-                id: 'authTree',
-                elem: '#authTree',
-                data: rules,
-                showCheckbox: true,
-                checkids: tableThis.data[event].map(Number)
+                    // 监听权限提交
+                    form.on("submit(submitPage)", function (post) {
+
+                        // 获取用户id
+                        post.field.admin_id = tableThis.data.id;
+                        // 增加节点数据
+                        post.field[event] = tree.getChecked('authTree', true);
+                        // 开始POST提交数据
+                        clickthis.attr("disabled", true);
+                        layui.$.post("{:url('/system/admin/edit" + event + "')}",
+                            post.field, function (res) {
+                                if (res.code === 200) {
+                                    // 更新本地规则
+                                    tableThis.update({
+                                        [event]: post.field[event]
+                                    });
+
+                                    // 关闭当前窗口
+                                    layer.msg(res.msg);
+                                    layer.close(colletction.index);
+                                } else {
+                                    layer.error(res.msg);
+                                }
+                            }, 'json');
+
+                        return false;
+                    })
+                }
             })
-
-            // 监听权限提交
-            form.on("submit(submitPage)", function (post) {
-
-                // 获取用户id
-                post.field.admin_id = tableThis.data.id;
-                // 增加节点数据
-                post.field[event] = tree.getChecked('authTree', true);
-                // 开始POST提交数据
-                clickthis.attr("disabled", true);
-                layui.$.post("{:url('/system/admin/edit" + event + "')}",
-                    post.field, function (res) {
-                        if (res.code === 200) {
-                            // 更新本地规则
-                            tableThis.update({
-                                [event]: post.field[event]
-                            });
-
-                            // 关闭当前窗口
-                            layer.msg(res.msg);
-                            layer.close(colletction.index);
-                        } else {
-                            layer.error(res.msg);
-                        }
-                    }, 'json');
-
-                return false;
-            })
-        }
-
-        // 同步加载函数
-        var _ajax = function (type) {
-            var func = '{:url("/system/Admin/getRuleCateTree")}';
-            return admin.event.ajax(func,{
-                type   : type,
-            },false)
         }
     });
 </script>

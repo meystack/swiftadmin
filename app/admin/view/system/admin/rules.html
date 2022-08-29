@@ -301,7 +301,7 @@
                     return layui.layer.error('路由必须以/符号开始');
                 }
                 router = router.substring(1);
-                jquery('.alias').val(router.replace('/',':'));
+                jquery('.alias').val(router.replaceAll('/',':'));
             })
         }
 

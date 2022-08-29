@@ -574,32 +574,25 @@ if (!function_exists('saenv')) {
      * @param bool $group
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     function saenv(string $name, bool $group = false)
     {
-
-        $redis = 'sys_' . $name;
-        try {
-
-            $config = Cache::get($redis);
-            if (empty($config) || getenv('APP_DEBUG')) {
-                $config = Config::all($name, $group);
+        $redis = 'config_' . $name;
+        $config = Cache::get($redis);
+        $configList = Cache::get('config_list') ?? [];
+        if (empty($config)) {
+            $config = $group ? Config::all($name, true) : Config::where('name', $name)->value('value');
+            if (!empty($config)) {
+                $configList[$name] = $redis;
                 Cache::set($redis, $config);
-            }
-        } catch (\Throwable $th) {
-            return [];
-        }
-
-        // 优先返回组配置
-        if (!empty($group)) {
-            return $config;
-        } else {
-            if (isset($config[$name]) && $config[$name]) {
-                return $config[$name];
+                Cache::set('config_list', $configList);
             }
         }
 
-        return false;
+        return $config ?: false;
     }
 }
 

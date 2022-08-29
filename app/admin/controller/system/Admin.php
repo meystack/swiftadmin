@@ -22,6 +22,7 @@ use app\common\model\system\AdminAccess as AdminAccessModel;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use think\facade\Cache;
 use Webman\Http\Request;
 
 /**
@@ -541,7 +542,6 @@ class Admin extends AdminController
     /**
      * 清理系统缓存
      * @return \support\Response
-     * @throws \think\Exception
      */
     public function clear(): \support\Response
     {
@@ -553,7 +553,9 @@ class Admin extends AdminController
 
                 // 清理内容
                 if ($type == 'all' || $type == 'content') {
+                    $session = session(AdminSession);
                     \think\facade\Cache::clear();
+                    request()->session()->set(AdminSession, $session);
                 }
 
                 // 清理模板

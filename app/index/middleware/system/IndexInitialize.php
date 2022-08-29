@@ -26,6 +26,15 @@ use function root_path;
 
 class IndexInitialize implements MiddlewareInterface
 {
+    /**
+     * @param Request $request
+     * @param callable $handler
+     * @return Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function process(Request $request, callable $handler): Response
     {
         try {

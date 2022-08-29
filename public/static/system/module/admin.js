@@ -317,26 +317,24 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         , setPageHeaderFooter: function (type = 'header') {
 
             if (type === 'header') {
-
                 var openHeader = admin.getStorage('openHeader');
-                if (openHeader === false) { // 移除
+                if (!openHeader) {
+                    console.log('移除');
                     top.layui.$('.layui-header,.layui-logo').hide();
-                    top.layui.$('.layui-nav-tree,.layui-body').css({
-                        "top": "0px",
-                        "margin-top": "0px"
-                    });
-                } else if (openHeader === true) { // 还原回来
+                    top.layui.$('.layui-nav-tree,.layui-body').addClass('lay-fix-top');
+                } else {
                     top.layui.$('.layui-header,.layui-logo').show();
-                    top.layui.$('.layui-nav-tree').css("margin-top", "60px");
-                    top.layui.$('.layui-body').css("top", "50px");
+                    top.layui.$('.layui-nav-tree,.layui-body').removeClass('lay-fix-top');
                 }
 
             } else {
                 var openFooter = admin.getStorage('openFooter');
-                if (openFooter === false) { // 移除
-                    top.layui.$('.layui-footer').hide();
-                } else if (openFooter === true) { // 显示
-                    top.layui.$('.layui-footer').show();
+                if (!openFooter) {
+                    top.layui.$('.layui-footer').addClass('layui-hide');
+                    top.layui.$('.layui-layout-admin>.layui-body').addClass('lay-fix-bottom');
+                } else { // 显示
+                    top.layui.$('.layui-footer').removeClass('layui-hide');
+                    top.layui.$('.layui-layout-admin>.layui-body').removeClass('lay-fix-bottom');
                 }
             }
         }
@@ -2607,6 +2605,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         let othis = this;
         this.options = $.extend(this.options, options);
         this.options.layout = this.getStorage('layout') || this.options.layout;
+        othis.setPageHeaderFooter() || othis.setPageHeaderFooter('footer');
 
         // 初始化Load效果
         if (!$(LAYOUTBODY).children('#loading').length) {

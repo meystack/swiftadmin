@@ -26,13 +26,13 @@ return [
             'auth'     => '',
             'timeout'  => 2,
             'database' => getenv('CACHE_SELECT') ?? 0,
-            'prefix'   => 'redis_',
+            'prefix'   => '',
         ],
         'redis_cluster' => [
             'host'    => ['127.0.0.1:7000', '127.0.0.1:7001', '127.0.0.1:7001'],
             'timeout' => 2,
             'auth'    => '',
-            'prefix'  => 'redis_',
+            'prefix'  => '',
         ]
     ],
     'session_name'          => 'SAPHPID',

@@ -17,6 +17,7 @@ use app\common\library\Email;
 use app\common\library\Ftp;
 use think\cache\driver\Memcached;
 use think\cache\driver\Redis;
+use think\facade\Cache;
 use Webman\Event\Event;
 use app\common\model\system\Attachment;
 use app\common\model\system\Config;
@@ -279,6 +280,7 @@ class Index extends AdminController
                     $config[$key] = $option;
                 }
             }
+
             try {
                 (new Config())->saveAll($config);
                 $env = base_path() . '/.env';
@@ -292,6 +294,12 @@ class Index extends AdminController
                 write_file($env, parse_array_ini($parse));
             } catch (\Throwable $th) {
                 return $this->error($th->getMessage());
+            }
+
+            // 清理系统缓存
+            $configList = Cache::get('config_list');
+            foreach ($configList as $item) {
+                Cache::delete($item);
             }
         }
 

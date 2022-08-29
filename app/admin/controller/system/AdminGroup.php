@@ -106,19 +106,6 @@ class AdminGroup extends AdminController
 		}			
 	}
 
-    /**
-     * 权限函数接口
-     * @access      public
-     * @return      mixed|array
-     */
-    public function getRuleCateTree()
-    {
-        if (request()->isAjax()) {
-            $type = input('type') ?? 'rules';
-            return $this->auth->getRuleCatesTree($type, $this->auth->authGroup);
-        }
-    }
-
 	/**
 	 * 更新权限
 	 */

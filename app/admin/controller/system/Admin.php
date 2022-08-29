@@ -62,6 +62,10 @@ class Admin extends AdminController
      */
     public function index()
     {
+        $this->jobs = Jobs::select()->toArray();
+        $this->group = AdminGroupModel::select()->toArray();
+        $this->department = Department::getListTree();
+
         // 判断isAjax
         if (request()->isAjax()) {
 
@@ -116,13 +120,9 @@ class Admin extends AdminController
             return $this->success('查询成功', null, $list, $count);
         }
 
-        $this->jobs = Jobs::select()->toArray();
-        $this->group = AdminGroupModel::select()->toArray();
-        $this->department = Department::getListTree();
-
         return view('/system/admin/index', [
-            'jobs'       => $this->jobs,
-            'group'      => $this->group,
+            'jobs' => $this->jobs,
+            'group' => $this->group,
             'department' => json_encode($this->department),
         ]);
     }
@@ -223,7 +223,7 @@ class Admin extends AdminController
     /**
      * 更新权限函数
      * @access      protected
-     * @param   string  $type
+     * @param string $type
      * @return      \support\Response|void
      */
     protected function _update_RuleCates(string $type = AUTH_RULES)
@@ -252,12 +252,12 @@ class Admin extends AdminController
                 }
 
                 $rules = array_unique(array_merge($rules, $current));
-                $this->model = new AdminAccessModel();
+                $AdminAccessModel = new AdminAccessModel();
                 $data = [
                     "$type" => implode(',', $rules)
                 ];
 
-                if ($this->model->where('admin_id', $admin_id)->save($data)) {
+                if ($AdminAccessModel->where('admin_id', $admin_id)->save($data)) {
                     return $this->success('更新权限成功！');
                 }
 
@@ -267,35 +267,28 @@ class Admin extends AdminController
     }
 
     /**
-     * 获取用户菜单
+     * 获取用户权限树
      * getAdminRules
-     * @return void
+     * @return mixed
      */
-    public function getUserMenu()
+    public function getPermissions()
     {
+        $list = [];
         if (\request()->isAjax()) {
-            return $this->auth->getRulesMenu();
-        }
-    }
-
-    /**
-     * 权限函数接口
-     * @access      public
-     * @return      mixed|array
-     */
-    public function getRuleCateTree()
-    {
-        if (request()->isAjax()) {
-            $type = input('type') ?? 'rules';
-            try {
-                $list = $this->auth->getRuleCatesTree($type, $this->auth->authPrivate);
-            } catch (\Exception $e) {
-                return $this->error($e->getMessage());
+            $type = input('type', 'menu');
+            $group = input('group', 0);
+            if ($type == 'menu') {
+                return $this->auth->getRulesMenu();
+            } else {
+                try {
+                    $list = $this->auth->getRuleCatesTree($type, $group ? $this->auth->authGroup : $this->auth->authPrivate);
+                } catch (\Exception $e) {
+                    return $this->error($e->getMessage());
+                }
+                return $list;
             }
-            return $list;
         }
-
-        return [];
+        return $list;
     }
 
     /**
@@ -313,34 +306,34 @@ class Admin extends AdminController
     {
         // 配置消息
         $msg = [
-            'msg'     => [
+            'msg' => [
                 '0' => [
-                    'title'       => '你收到了几份周报！',
-                    'type'        => '周报类型',
+                    'title' => '你收到了几份周报！',
+                    'type' => '周报类型',
                     'create_time' => '1周前',
                 ],
                 '1' => [
-                    'title'       => '你收到了来自女下属的周报',
-                    'type'        => '周报类型',
+                    'title' => '你收到了来自女下属的周报',
+                    'type' => '周报类型',
                     'create_time' => '2周前',
                 ]
             ],
             'comment' => [
                 '0' => [
-                    'title'       => '一个领导评论了你',
-                    'content'     => '小伙子不错，继续努力！',
+                    'title' => '一个领导评论了你',
+                    'content' => '小伙子不错，继续努力！',
                     'create_time' => '1周前',
                 ]
             ],
-            'things'  => [
+            'things' => [
                 '0' => [
-                    'title'       => '客户说尽快修复瞟了么APP闪退的问题...',
-                    'type'        => '0',
+                    'title' => '客户说尽快修复瞟了么APP闪退的问题...',
+                    'type' => '0',
                     'create_time' => '1周前',
                 ],
                 '1' => [
-                    'title'       => '秦老板和经销商的下季度合同尽快签订！',
-                    'type'        => '1',
+                    'title' => '秦老板和经销商的下季度合同尽快签订！',
+                    'type' => '1',
                     'create_time' => '2周前',
                 ]
             ],
@@ -377,9 +370,9 @@ class Admin extends AdminController
         $data = $this->model->find($request->adminId);
         if (!empty($data['group_id'])) {
             $group = AdminGroupModel::field('title')
-                                    ->whereIn('id', $data['group_id'])
-                                    ->select()
-                                    ->toArray();
+                ->whereIn('id', $data['group_id'])
+                ->select()
+                ->toArray();
             foreach ($group as $key => $value) {
                 $title[$key] = $value['title'];
             }
@@ -473,7 +466,7 @@ class Admin extends AdminController
                 $this->model->where($where)->update(['pwd' => encryptPwd($post['pass'])]);
                 return $this->success('更改密码成功！');
             } else {
-               return $this->error('原始密码输入错误');
+                return $this->error('原始密码输入错误');
             }
         }
 

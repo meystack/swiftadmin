@@ -37,18 +37,18 @@ class IndexInitialize implements MiddlewareInterface
      */
     public function process(Request $request, callable $handler): Response
     {
-        try {
-            if (saenv('site_status')) {
-                $content = file_get_contents(root_path('extend/conf/tpl') . 'close.tpl');
-                $content = str_replace('{text}',saenv('site_notice'),$content);
-                return \response($content, 503);
-            }
-        } catch (\Throwable $th) {
-            return \response('Web site has been closed', 503);
-        }
-
-        if (!is_file(root_path('extend/conf').'install.lock')) {
+        if (!is_file(root_path('extend/conf') . 'install.lock')) {
             return redirect('/install/index');
+        } else {
+            try {
+                if (saenv('site_status')) {
+                    $content = file_get_contents(root_path('extend/conf/tpl') . 'close.tpl');
+                    $content = str_replace('{text}', saenv('site_notice'), $content);
+                    return \response($content, 503);
+                }
+            } catch (\Throwable $th) {
+                return \response('Web site has been closed', 503);
+            }
         }
 
         $siteInfo = saenv('site', true);

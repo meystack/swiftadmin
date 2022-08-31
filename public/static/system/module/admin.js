@@ -848,7 +848,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                 location.href = res.url;
                             }
 
-                            if (typeof (options.close) !== false) {
+                            if (options.close) {
                                 admin.event.closeDialog(clickObject);
                             }
 

@@ -28,13 +28,6 @@ Route::any('/manage', function () {
 
 Route::any('/captcha', [app\BaseController::class, 'captcha']);
 
-$ignoreList = [];
-$routes = Route::getRoutes();
-// 获取已存在路由
-foreach ($routes as $tmp_route) {
-    $ignoreList[] = $tmp_route->getPath();
-}
-
 // 遍历默认应用文件夹
 $default_app = config('app.default_app', 'index');
 $files = new \RecursiveIteratorIterator(
@@ -67,33 +60,24 @@ foreach ($files as $file) {
     $className = $refClass->name;
     $methods = $refClass->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-    $route = function ($url, $action) use ($ignoreList) {
-        if (in_array($url, $ignoreList) || empty($url)) {
-            return;
+    $route = function ($url, $action) {
+        if (!in_array($url, get_routes()) && !empty($url)) {
+            $url = strtolower($url);
+            Route::any($url, $action);
         }
-
-        $url = strtolower($url);
-        Route::any($url, $action);
     };
 
     foreach ($methods as $item) {
-
         $action = $item->name;
-
         $magic = [
             '__construct', '__destruct', '__call', '__callStatic', '__get', '__set','__isset', '__unset', '__sleep', '__wakeup', '__toString',
             '__invoke', '__set_state', '__clone', '__autoload', '__debugInfo', 'initialize',
         ];
-
-        // 过滤魔术方法
         if (in_array($action,$magic)) {
             continue;
         }
-
-        // 执行路由代码
         if ($action === 'index') {
-            if (strtolower(substr($urlPath, -6)) === '/index') {
-                // 默认路由
+            if (strtolower(substr($urlPath, -6)) === '/index' && $urlPath === '/Index') {
                 $route('/', [$className, $action]);
                 $route(substr($urlPath, 0, -6), [$className, $action]);
             }

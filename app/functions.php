@@ -582,17 +582,22 @@ if (!function_exists('saenv')) {
     {
         $redis = 'config_' . $name;
         $config = Cache::get($redis);
-        $configList = Cache::get('config_list') ?? [];
-        if (empty($config)) {
-            $config = $group ? Config::all($name, true) : Config::where('name', $name)->value('value');
-            if (!empty($config)) {
-                $configList[$name] = $redis;
-                Cache::set($redis, $config);
-                Cache::set('config_list', $configList);
-            }
-        }
 
-        return $config ?: false;
+        try {
+
+            $configList = Cache::get('config_list') ?? [];
+            if (empty($config)) {
+                $config = $group ? Config::all($name, true) : Config::where('name', $name)->value('value');
+                if (!empty($config)) {
+                    $configList[$name] = $redis;
+                    Cache::set($redis, $config);
+                    Cache::set('config_list', $configList);
+                }
+            }
+
+        } catch (\Exception $e) {}
+
+        return $config;
     }
 }
 
@@ -658,6 +663,21 @@ if (!function_exists('system_reload')) {
             return true;
         }
         return false;
+    }
+}
+
+if (!function_exists('get_routes')) {
+    /**
+     * 获取系统配置信息
+     */
+    function get_routes(): array
+    {
+        $routeList = [];
+        $routes = \Webman\Route::getRoutes();
+        foreach ($routes as $tmp_route) {
+            $routeList[] = $tmp_route->getPath();
+        }
+        return $routeList;
     }
 }
 
@@ -1299,7 +1319,7 @@ if (!function_exists('plugin_refresh_hooks')) {
                 $parse = explode('/', $route);
                 $action = end($parse);
                 array_pop($parse);
-                $path = implode('/', $parse);
+                $path = implode('\\', $parse);
                 $controller = 'app\\index\\controller\\' . $path;
                 if (class_exists($controller) && method_exists($controller, $action)) {
                     $controller = preg_replace('#//#', '/', $controller);

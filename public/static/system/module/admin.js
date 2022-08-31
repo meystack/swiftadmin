@@ -318,21 +318,20 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
             if (type === 'header') {
                 var openHeader = admin.getStorage('openHeader');
-                if (!openHeader) {
-                    console.log('移除');
+                if (openHeader === false) {
                     top.layui.$('.layui-header,.layui-logo').hide();
                     top.layui.$('.layui-nav-tree,.layui-body').addClass('lay-fix-top');
-                } else {
+                } else if (openHeader === true) {
                     top.layui.$('.layui-header,.layui-logo').show();
                     top.layui.$('.layui-nav-tree,.layui-body').removeClass('lay-fix-top');
                 }
 
             } else {
                 var openFooter = admin.getStorage('openFooter');
-                if (!openFooter) {
+                if (openFooter === false) {
                     top.layui.$('.layui-footer').addClass('layui-hide');
                     top.layui.$('.layui-layout-admin>.layui-body').addClass('lay-fix-bottom');
-                } else { // 显示
+                } else if(openFooter === true) { // 显示
                     top.layui.$('.layui-footer').removeClass('layui-hide');
                     top.layui.$('.layui-layout-admin>.layui-body').removeClass('lay-fix-bottom');
                 }

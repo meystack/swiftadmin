@@ -36,11 +36,18 @@ class Config extends Model
      */
     public static function all(string $name = '', bool $group = false): array
     {
+        $where = [];
         $config = [];
-        $where = $group ? ['group' => $name] : [];
+
+        if (!empty($name) && $group) {
+            $where[] = ['group', '=', $name];
+        } else {
+            if (!empty($name)) {
+                $where[] = ['name', '=', $name];
+            }
+        }
 
         $list = self::where($where)->select()->toArray();
-
         foreach ($list as $option) {
             if (!is_empty($option['type']) && 'array' == trim($option['type'])) {
                 $config[$option['name']] = json_decode($option['value'], true);

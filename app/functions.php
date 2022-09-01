@@ -582,21 +582,21 @@ if (!function_exists('saenv')) {
     {
         $redis = 'config_' . $name;
         $config = Cache::get($redis);
-
         try {
-
             $configList = Cache::get('config_list') ?? [];
             if (empty($config)) {
-                $config = $group ? Config::all($name, true) : Config::where('name', $name)->value('value');
+                $config = Config::all($name, $group);
                 if (!empty($config)) {
+                    // 是否开启分组查询
+                    if (empty($group)) {
+                        $config = $config[$name];
+                    }
                     $configList[$name] = $redis;
                     Cache::set($redis, $config);
                     Cache::set('config_list', $configList);
                 }
             }
-
         } catch (\Exception $e) {}
-
         return $config;
     }
 }

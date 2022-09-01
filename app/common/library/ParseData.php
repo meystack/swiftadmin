@@ -164,11 +164,11 @@ class ParseData
      * @param string $image 图片地址
      * @param bool $bool 链接OR替换
      * @return  string
+     * @throws InvalidArgumentException
      */
     protected static function changeImages(string $image, bool $bool = true): string
     {
         $prefix = cdn_Prefix();
-        var_dump($prefix);
         if (!empty($prefix) && $image) {
             if (!strpos($image, 'data:image')) {
                 return $bool ? $prefix . $image : str_replace($prefix, '', $image);

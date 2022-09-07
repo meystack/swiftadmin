@@ -84,8 +84,6 @@ if (!function_exists('url')) {
 
         if (!Str::startsWith($url, '/')) {
             $url = DIRECTORY_SEPARATOR . $url;
-        }else{
-            return  $url . $vars;
         }
 
         return $app == 'index' ? $url . $vars : '/' . $app . $url . $vars;

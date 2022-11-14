@@ -459,7 +459,7 @@ class Admin extends AdminController
             }
 
             // 查找数据
-            $where[] = ['id', '=', $request->admin_id];
+            $where[] = ['id', '=', $request->adminId];
             $where[] = ['pwd', '=', encryptPwd($pwd)];
             $result = $this->model->where($where)->find();
 

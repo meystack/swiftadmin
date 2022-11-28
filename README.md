@@ -19,14 +19,14 @@
 
 ### 软件架构
 
-|  依赖   |  版本   | 说明                                |
-|-----|-----|:----------------------------------|
-| PHP               | \>= 7.3   | 最低支持PHP7.3 - 8.0                  |
+|  依赖   | 版本        | 说明                                |
+|-----|-----------|:----------------------------------|
+| PHP               | \>= 8.0   | 最低支持PHP8.0                        |
 | WebMan            | \>= 1.4.3 | 基于1.4.3.不支持action-hook/auto-route |
 | MySQL             | \>= 5.7   | 最低 5.7,注意5.6版本无JSON字段，会报错         |
 | Layui             | \>= 2.7   | 特殊开发版，无法直接用官网替换                   |
 | layui-form-design | \>= 1.0   | 表单设计器，基于Sortable专为SAPHP框架开发       |
-| Admin Theme       | \>= 1.2   | 专为本框架开发、封装超多功能、支持多种菜单布局           |
+| Admin Theme       | \>= 1.x   | 专为本框架开发、封装超多功能、支持多种菜单布局           |
 
 ### 软件功能
 
@@ -58,26 +58,16 @@
  * git clone https://gitee.com/meystack/swiftadmin.git
  * 请使用宝塔面板或其他PHP集成环境
  * 安装Apache或者NGINX服务器
- * 安装PHP，版本 >= 7.3 <= 8.1
+ * 安装PHP，版本 >= 8.0
  * 安装PHP扩展fileinfo opcache redis imagemagick exif
  * 开发环境下关闭禁用PHP函数exec、putenv、proc_open、proc_get_status、pcntl_signal[如果存在]
  * Linux环境下，请关闭禁用shell_exec pcntl_signal pcntl_fork pcntl_wait pcntl_alarm exec函数！
 ```
 <font color="#dd0000">2、Windows环境下启动开发服务</font>
 ```
-1、执行init.bat进行基础开发，在安装插件助手之前请执行init.bat
-2、执行Windows.bat 进行完整开发，例如APP/PLUGIN/extend/其他扩展开发
-
-因为我们在项目中使用了fileboy热更新工具，如果在安装插件的时候，使用fileboy热更新，因插件文件过多会导致不停重启卡机。
-
-所以我们建议，首先把项目clone到本地后，先执行init.bat,安装完毕插件助手/或其他插件后，再进行完整开发，这样就不会出现问题了；
-
-通俗一点将，init.bat只监听app/config文件夹下的文件修改，但是我们要开发插件，会需要监听app/config/extend/plugin这些文件夹PHP的修改
-
-所以在安装第三方插件的时候，使用init.bat，等到安装完毕，切换到Windows.bat，进行完整开发；
-
+1、执行Windows.bat 进行完整开发，默认会监听app、config、plugin目录的PHP html的更改热加载
 ```
-3、Linux环境下启动开发服务
+2、Linux环境下启动开发服务
 ```
 执行命令：php start.php start        # 启动开发服务
 执行命令：php start.php stop         # 停止开发服务
@@ -86,14 +76,16 @@
 
 注：当前默认只有app、config文件夹下文件内容被修改后才会自动重启，全局监听方案，请参考开发文档
 ```
-4、打开浏览器输入网址，访问项目
+3、打开浏览器输入网址，访问项目
 ```
-http://localhost:8787/              # 访问项目执行安装
+http://localhost:8787/index              # 访问项目执行安装
 ```
-5、安装完毕后，访问后台URL登录系统
+4、安装完毕后，访问后台URL登录系统
 ```
 http://localhost:8787/manage        # 登录后台/生产环境下可自行修改后台地址
 ```
+
+5、
 
 ### 反馈BUG
 

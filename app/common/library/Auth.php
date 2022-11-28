@@ -12,6 +12,7 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
+use app\common\model\system\UserLog;
 use system\Random;
 use support\Response;
 use think\facade\Cache;
@@ -25,30 +26,30 @@ class Auth
      * token令牌
      * @var string
      */
-    public $token = null;
+    public string $token;
 
     /**
      * 用户数据
      * @var object|array
      */
-    public $userInfo = null;
+    public mixed $userData;
 
     /**
      * 保活时间
-     * @var string
+     * @var int
      */
-    protected $keepTime = 604800;
+    protected int $keepTime = 604800;
 
     /**
      * 错误信息
      * @var string
      */
-    protected $_error = '';
+    protected string $_error = '';
 
     /**
      * @var object 对象实例
      */
-    protected static $instance = null;
+    protected static $instance;
 
     /**
      * 类构造函数
@@ -78,7 +79,7 @@ class Auth
     /**
      * 用户注册
      * @param array $post
-     * @return false|mixed
+     * @return bool
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DbException
      */
@@ -127,9 +128,9 @@ class Auth
                 $post['pwd'] = encryptPwd($post['pwd'], $post['salt']);
             }
 
-            $this->userInfo = UserModel::create($post);
+            $this->userData = UserModel::create($post);
 
-            return $this->responseToken($this->userInfo);
+            return $this->responseToken($this->userData);
 
         } catch (\Throwable $th) {
             $this->setError($th->getMessage());
@@ -154,31 +155,36 @@ class Auth
         } else {
             $where[] = ['mobile', '=', htmlspecialchars(trim($nickname))];
         }
-        $this->userInfo = UserModel::where($where)->find();
+        $this->userData = UserModel::where($where)->find();
 
-        if (!empty($this->userInfo)) {
+        if (!empty($this->userData)) {
 
-            $uPwd = encryptPwd($pwd, $this->userInfo['salt']);
-            if ($this->userInfo['pwd'] !== $uPwd) {
+            $uPwd = encryptPwd($pwd, $this->userData['salt']);
+            if ($this->userData['pwd'] !== $uPwd) {
+
                 $this->setError('用户名或密码错误');
+                UserLog::write($this->getError(), $this->userData->nickname, $this->userData->id);
                 return false;
             }
 
-            if (!$this->userInfo['status']) {
+            if (!$this->userData['status']) {
                 $this->setError('用户异常或未审核，请联系管理员');
+                UserLog::write($this->getError(), $this->userData->nickname, $this->userData->id);
                 return false;
             }
 
             // 更新登录数据
             $userUpdate = [
-                'id'          => $this->userInfo['id'],
+                'id'          => $this->userData['id'],
                 'login_time'  => time(),
                 'login_ip'    => request()->getRealIp(),
-                'login_count' => $this->userInfo['login_count'] + 1,
+                'login_count' => $this->userData['login_count'] + 1,
             ];
 
             if (UserModel::update($userUpdate)) {
-                return $this->responseToken($this->userInfo);
+                Event::emit('userLoginSuccess', $this->userData);
+                UserLog::write('登录成功', $this->userData->nickname, $this->userData->id, 1);
+                return $this->responseToken($this->userData);
             }
         }
 
@@ -199,12 +205,11 @@ class Auth
         if (!$token) {
             return false;
         }
-
         $uid = $this->checkToken($token);
 
         if (!empty($uid)) {
             $this->token = $token;
-            $this->userInfo = UserModel::find($uid);
+            $this->userData = UserModel::with('group')->find($uid);
             return true;
         }
 
@@ -224,20 +229,20 @@ class Auth
     /**
      *
      * 返回前端令牌
-     * @param mixed $userInfo
+     * @param mixed $userData
      * @param bool $token
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function responseToken($userInfo, bool $token = false)
+    public function responseToken($userData, bool $token = false)
     {
-        $this->token = $token ? $this->getToken() : $this->buildToken($userInfo['id']);
+        $this->token = $token ? $this->getToken() : $this->buildToken($userData['id']);
         $response = response();
-        $response->cookie('uid', $userInfo['id'],$this->keepTime, '/');
+        $response->cookie('uid', $userData['id'],$this->keepTime, '/');
         $response->cookie('token', $this->token,$this->keepTime, '/');
-        $response->cookie('nickname', $userInfo['nickname'],$this->keepTime, '/');
-        Cache::set($this->token, $userInfo['id'], $this->keepTime);
-        Event::emit("userLoginSuccess", $userInfo);
+        $response->cookie('nickname', $userData['nickname'],$this->keepTime, '/');
+        Cache::set($this->token, $userData['id'], $this->keepTime);
+        Event::emit("userLoginSuccess", $userData);
         return $response;
 
     }
@@ -266,13 +271,13 @@ class Auth
      * 校验token
      * @access protected
      * @param $token
-     * @return mixed
+     * @return void
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function checkToken($token)
     {
-        $userId = Cache::get($token);
-        return $userId ?? false;
+        $user_id = Cache::get($token);
+        return $user_id ?? false;
     }
 
     /**
@@ -287,8 +292,9 @@ class Auth
     /**
      * 设置错误
      * @param string $error 信息信息
+     * @return void
      */
-    protected function setError(string $error)
+    protected function setError(string $error): void
     {
         $this->_error = $error;
     }

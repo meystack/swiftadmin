@@ -75,6 +75,10 @@ class Application extends ServiceContainer
 
     /**
      * Build payment scheme for product.
+     *
+     * @param string $productId
+     *
+     * @return string
      */
     public function scheme(string $productId): string
     {
@@ -92,6 +96,8 @@ class Application extends ServiceContainer
     }
 
     /**
+     * @param string $codeUrl
+     *
      * @return string
      */
     public function codeUrlScheme(string $codeUrl)
@@ -100,6 +106,8 @@ class Application extends ServiceContainer
     }
 
     /**
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
@@ -112,6 +120,8 @@ class Application extends ServiceContainer
     }
 
     /**
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
@@ -124,6 +134,8 @@ class Application extends ServiceContainer
     }
 
     /**
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
@@ -138,6 +150,9 @@ class Application extends ServiceContainer
     /**
      * Set sub-merchant.
      *
+     * @param string      $mchId
+     * @param string|null $appId
+     *
      * @return $this
      */
     public function setSubMerchant(string $mchId, string $appId = null)
@@ -148,12 +163,17 @@ class Application extends ServiceContainer
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function inSandbox(): bool
     {
         return (bool) $this['config']->get('sandbox');
     }
 
     /**
+     * @param string|null $endpoint
+     *
      * @return string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

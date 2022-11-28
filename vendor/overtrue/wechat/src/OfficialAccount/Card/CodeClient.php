@@ -23,6 +23,9 @@ class CodeClient extends BaseClient
     /**
      * 导入code接口.
      *
+     * @param string $cardId
+     * @param array  $codes
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -41,6 +44,8 @@ class CodeClient extends BaseClient
     /**
      * 查询导入code数目.
      *
+     * @param string $cardId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -57,6 +62,9 @@ class CodeClient extends BaseClient
 
     /**
      * 核查code接口.
+     *
+     * @param string $cardId
+     * @param array  $codes
      *
      * @return mixed
      *
@@ -75,6 +83,10 @@ class CodeClient extends BaseClient
 
     /**
      * 查询 Code 接口.
+     *
+     * @param string $code
+     * @param string $cardId
+     * @param bool   $checkConsume
      *
      * @return mixed
      *
@@ -95,6 +107,10 @@ class CodeClient extends BaseClient
     /**
      * 更改Code接口.
      *
+     * @param string $code
+     * @param string $newCode
+     * @param string $cardId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -114,6 +130,9 @@ class CodeClient extends BaseClient
     /**
      * 设置卡券失效.
      *
+     * @param string $code
+     * @param string $cardId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -131,6 +150,9 @@ class CodeClient extends BaseClient
 
     /**
      * 核销 Code 接口.
+     *
+     * @param string      $code
+     * @param string|null $cardId
      *
      * @return mixed
      *
@@ -152,6 +174,8 @@ class CodeClient extends BaseClient
 
     /**
      * Code解码接口.
+     *
+     * @param string $encryptedCode
      *
      * @return mixed
      *

@@ -25,6 +25,8 @@ class Client extends BaseClient
     use InteractsWithCache;
 
     /**
+     * @return string
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Payment\Kernel\Exceptions\SandboxException
      * @throws \Psr\SimpleCache\InvalidArgumentException
@@ -48,6 +50,9 @@ class Client extends BaseClient
         throw new SandboxException($response['retmsg'] ?? $response['return_msg']);
     }
 
+    /**
+     * @return string
+     */
     protected function getCacheKey(): string
     {
         return 'easywechat.payment.sandbox.'.md5($this->app['config']->app_id.$this->app['config']['mch_id']);

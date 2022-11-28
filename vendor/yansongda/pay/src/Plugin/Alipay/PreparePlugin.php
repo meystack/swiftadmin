@@ -14,7 +14,6 @@ use Yansongda\Pay\Rocket;
 class PreparePlugin implements PluginInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
@@ -31,7 +30,6 @@ class PreparePlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
@@ -49,7 +47,7 @@ class PreparePlugin implements PluginInterface
             'timestamp' => date('Y-m-d H:i:s'),
             'version' => '1.0',
             'notify_url' => $this->getNotifyUrl($params),
-            'app_auth_token' => '',
+            'app_auth_token' => $this->getAppAuthToken($params),
             'app_cert_sn' => $this->getAppCertSn($params),
             'alipay_root_cert_sn' => $this->getAlipayRootCertSn($params),
             'biz_content' => [],
@@ -57,7 +55,6 @@ class PreparePlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      */
@@ -71,7 +68,6 @@ class PreparePlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      */
@@ -85,7 +81,19 @@ class PreparePlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
+     * @throws \Yansongda\Pay\Exception\ContainerException
+     * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
+     */
+    protected function getAppAuthToken(array $params): string
+    {
+        if (!empty($params['_app_auth_token'])) {
+            return $params['_app_auth_token'];
+        }
+
+        return get_alipay_config($params)->get('app_auth_token', '');
+    }
+
+    /**
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
@@ -101,11 +109,14 @@ class PreparePlugin implements PluginInterface
         $cert = file_get_contents($path);
         $ssl = openssl_x509_parse($cert);
 
-        return $this->getCertSn($ssl['issuer'], $ssl['serialNumber']);
+        if (false === $ssl) {
+            throw new InvalidConfigException(Exception::ALIPAY_CONFIG_ERROR, 'Parse `app_public_cert_path` Error');
+        }
+
+        return $this->getCertSn($ssl['issuer'] ?? [], $ssl['serialNumber'] ?? '');
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -162,8 +173,8 @@ class PreparePlugin implements PluginInterface
 
     protected function formatCert(array $ssl): array
     {
-        if (0 === strpos($ssl['serialNumber'], '0x')) {
-            $ssl['serialNumber'] = $this->hex2dec($ssl['serialNumberHex']);
+        if (0 === strpos($ssl['serialNumber'] ?? '', '0x')) {
+            $ssl['serialNumber'] = $this->hex2dec($ssl['serialNumberHex'] ?? '');
         }
 
         return $ssl;

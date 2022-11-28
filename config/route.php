@@ -10,9 +10,13 @@
 // +----------------------------------------------------------------------
 
 use Webman\Route;
-use think\facade\Cache;
 
-// 加载自定义路由
+// 验证码路由
+Route::any('/captcha', [app\BaseController::class, 'captcha']);
+
+/**
+ * 加载自定义路由 [插件路由]
+ */
 $defineRoute = require __DIR__ . '/defineRoute.php';
 if ($defineRoute && is_array($defineRoute)) {
     foreach ($defineRoute as $key => $value) {
@@ -20,73 +24,40 @@ if ($defineRoute && is_array($defineRoute)) {
     }
 }
 
+/**
+ * 默认管理员路由
+ * @var string $manage
+ */
 Route::any('/manage', function () {
-    // 登录入口session缓存
     request()->session()->set('AdminLogin', ['_security' => request()->buildToken()]);
     return redirect('/admin/login');
 });
 
-Route::any('/captcha', [app\BaseController::class, 'captcha']);
-
-// 遍历默认应用文件夹
-$default_app = config('app.default_app', 'index');
-$files = new \RecursiveIteratorIterator(
-    new \RecursiveDirectoryIterator(root_path('app/' . $default_app), \FilesystemIterator::SKIP_DOTS),
-    \RecursiveIteratorIterator::CHILD_FIRST
-);
-
-foreach ($files as $file) {
-
-    if ($file->isDir()) {
-        continue;
-    }
-    $filePath = str_replace('\\', '/', $file->getPathname());
-    $fileExt = pathinfo($filePath, PATHINFO_EXTENSION);
-
-    // 只处理PHP文件
-    if (strpos(strtolower($filePath), '/controller/') === false || strtolower($fileExt) !== 'php') {
-        continue;
-    }
-
-    // 获取路由URL路径
-    $urlPath = str_replace(['/controller/', '/Controller/'], '/', substr(substr($filePath, strlen(app_path())), 0, -4));
-    $urlPath = str_replace($default_app . '/', '', $urlPath);
-    $className = str_replace('/', '\\', substr(substr($filePath, strlen(base_path())), 0, -4));
-    if (!class_exists($className)) {
-        continue;
-    }
-
-    $refClass = new \ReflectionClass($className);
-    $className = $refClass->name;
-    $methods = $refClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-
-    $route = function ($url, $action) {
-        if (!in_array($url, get_routes()) && !empty($url)) {
-            $url = strtolower($url);
-            Route::any($url, $action);
-        }
-    };
-
-    foreach ($methods as $item) {
-        $action = $item->name;
-        $magic = [
-            '__construct', '__destruct', '__call', '__callStatic', '__get', '__set','__isset', '__unset', '__sleep', '__wakeup', '__toString',
-            '__invoke', '__set_state', '__clone', '__autoload', '__debugInfo', 'initialize',
-        ];
-        if (in_array($action,$magic)) {
+/**
+ * 加载插件全局初始化路由
+ * @var array $pluginRoute
+ */
+Route::any('/static/system/js/plugin.js', function () {
+    $plugins = get_plugin_list();
+    $pluginFiles = [];
+    foreach ($plugins as $item) {
+        if (!$item['status']) {
             continue;
         }
-        if ($action === 'index') {
-            if (strtolower(substr($urlPath, -6)) === '/index' && $urlPath === '/Index') {
-                $route('/', [$className, $action]);
-                $route(substr($urlPath, 0, -6), [$className, $action]);
-            }
-            $route($urlPath, [$className, $action]);
+        // 是否存在javascript文件
+        $pluginJs = plugin_path($item['name']) . 'plugin.js';
+        if (file_exists($pluginJs)) {
+            $pluginFiles[] = read_file($pluginJs);
         }
-        $route($urlPath . '/' . $action, [$className, $action]);
     }
-}
+    return $pluginFiles ? implode(PHP_EOL, $pluginFiles) : '';
+});
 
+/**
+ * 全局404路由fallback
+ * @var array $request
+ * @var array $response
+ */
 Route::fallback(function ($request) {
     $pathInfo = parse_url(request()->url());
     if (!isset($pathInfo['path'])) {

@@ -15,7 +15,6 @@ use Yansongda\Pay\Rocket;
 class LaunchPlugin implements PluginInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\InvalidResponseException
@@ -41,9 +40,9 @@ class LaunchPlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\InvalidResponseException
-     *
      * @return array|\Psr\Http\Message\MessageInterface|\Yansongda\Supports\Collection|null
+     *
+     * @throws \Yansongda\Pay\Exception\InvalidResponseException
      */
     protected function validateResponse(Rocket $rocket)
     {

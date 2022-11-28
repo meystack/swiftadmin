@@ -47,6 +47,9 @@ class Client extends BaseClient
     /**
      * Create a staff.
      *
+     * @param string $account
+     * @param string $nickname
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -64,6 +67,9 @@ class Client extends BaseClient
 
     /**
      * Update a staff.
+     *
+     * @param string $account
+     * @param string $nickname
      *
      * @return mixed
      *
@@ -83,6 +89,8 @@ class Client extends BaseClient
     /**
      * Delete a staff.
      *
+     * @param string $account
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -95,6 +103,9 @@ class Client extends BaseClient
 
     /**
      * Invite a staff.
+     *
+     * @param string $account
+     * @param string $wechatId
      *
      * @return mixed
      *
@@ -113,6 +124,9 @@ class Client extends BaseClient
 
     /**
      * Set staff avatar.
+     *
+     * @param string $account
+     * @param string $path
      *
      * @return mixed
      *
@@ -141,6 +155,8 @@ class Client extends BaseClient
     /**
      * Send a message.
      *
+     * @param array $message
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -153,6 +169,8 @@ class Client extends BaseClient
 
     /**
      * Show typing status.
+     *
+     * @param string $openid
      *
      * @return mixed
      *
@@ -169,6 +187,8 @@ class Client extends BaseClient
 
     /**
      * Hide typing status.
+     *
+     * @param string $openid
      *
      * @return mixed
      *
@@ -188,6 +208,8 @@ class Client extends BaseClient
      *
      * @param int $startTime
      * @param int $endTime
+     * @param int $msgId
+     * @param int $number
      *
      * @return mixed
      *

@@ -8,6 +8,8 @@ use app\ApiController;
 use app\common\library\Email;
 use app\common\library\Sms;
 use app\common\model\system\User;
+use PHPMailer\PHPMailer\Exception;
+use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
@@ -18,11 +20,11 @@ use think\db\exception\ModelNotFoundException;
 class Ajax extends ApiController
 {
 
-    public $needLogin = true;
+    public bool $needLogin = true;
 
     /**
      * 发送短信
-     * @return mixed|void
+     * @return Response|void
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
@@ -44,10 +46,10 @@ class Ajax extends ApiController
                 return $this->error(__('发送频繁'));
             }
 
-            $userinfo = User::getByMobile($mobile);
-            if (in_array($event, ['register', 'changer']) && $userinfo) {
+            $userData = User::getByMobile($mobile);
+            if (in_array($event, ['register', 'changer']) && $userData) {
                 return $this->error('当前手机号已被占用');
-            } else if ($event == 'forgot' && !$userinfo) {
+            } else if ($event == 'forgot' && !$userData) {
                 return $this->error('当前手机号未注册');
             }
 
@@ -63,10 +65,11 @@ class Ajax extends ApiController
 
     /**
      * 发送邮件
-     * @return mixed|void
+     * @return Response|void
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
+     * @throws Exception
      */
     public function emailSend()
     {
@@ -86,10 +89,10 @@ class Ajax extends ApiController
                 return $this->error(__('发送频繁'));
             }
 
-            $userinfo = User::getByEmail($email);
-            if (in_array($event, ['register', 'changer']) && $userinfo) {
+            $userData = User::getByEmail($email);
+            if (in_array($event, ['register', 'changer']) && $userData) {
                 return $this->error('当前邮箱已被注册');
-            } else if ($event == 'forgot' && !$userinfo) {
+            } else if ($event == 'forgot' && !$userData) {
                 return $this->error('当前邮箱不存在');
             }
 

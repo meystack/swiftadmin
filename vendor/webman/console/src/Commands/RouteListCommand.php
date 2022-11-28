@@ -20,13 +20,13 @@ class RouteListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $headers = ['uri', 'method', 'callback', 'middleware'];
+        $headers = ['uri', 'method', 'callback', 'middleware', 'name'];
         $rows = [];
         foreach (Route::getRoutes() as $route) {
             foreach ($route->getMethods() as $method) {
                 $cb = $route->getCallback();
                 $cb = $cb instanceof \Closure ? 'Closure' : (is_array($cb) ? json_encode($cb) : var_export($cb, 1));
-                $rows[] = [$route->getPath(), $method, $cb, json_encode($route->getMiddleware() ?: null)];
+                $rows[] = [$route->getPath(), $method, $cb, json_encode($route->getMiddleware() ?: null), $route->getName()];
             }
         }
 

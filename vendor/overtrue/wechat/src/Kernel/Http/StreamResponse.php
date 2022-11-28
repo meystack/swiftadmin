@@ -23,6 +23,10 @@ use EasyWeChat\Kernel\Support\File;
 class StreamResponse extends Response
 {
     /**
+     * @param string $directory
+     * @param string $filename
+     * @param bool   $appendSuffix
+     *
      * @return bool|int
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -66,6 +70,10 @@ class StreamResponse extends Response
     }
 
     /**
+     * @param string $directory
+     * @param string $filename
+     * @param bool   $appendSuffix
+     *
      * @return bool|int
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

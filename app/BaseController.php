@@ -22,70 +22,70 @@ class BaseController
 
     /**
      * 应用实例
-     * @var $app
+     * @var mixed $app
      */
-    protected $app;
+    protected mixed $app;
 
     /**
      * 数据库实例
      * @var object
      */
-    public $model = null;
+    public object $model;
 
     /**
      * 是否批量验证
      * @var bool
      */
-    protected $batchValidate = false;
+    protected bool $batchValidate = false;
 
 
     /**
      * 验证场景
      * @var string
      */
-    public $scene = '';
+    public string $scene = '';
 
     /**
      * 操作状态
-     * @var int
+     * @var mixed
      */
-    public $status = false;
+    public mixed $status;
 
     /**
      * 接口权限
      * @var object
      */
-    public $auth = '';
+    public object $auth;
 
     /**
      * 控制器登录鉴权
      * @var bool
      */
-    public $needLogin = false;
+    public bool $needLogin = false;
 
     /**
      * 禁止登录重复
      * @var array
      */
-    public $repeatLogin = [];
+    public array $repeatLogin = [];
 
     /**
      * 非鉴权方法
      * @var array
      */
-    public $noNeedAuth = ['index', 'login', 'logout'];
+    public array $noNeedAuth = ['index', 'login', 'logout'];
 
     /**
      * 验证错误消息
-     * @var bool
+     * @var string
      */
-    protected $errorMsg = null;
+    protected string $errorText;
 
     /**
      * 获取访问来源
-     * @var null
+     * @var string
      */
-    public $referer = null;
+    public mixed $referer;
 
     public function __construct()
     {
@@ -236,6 +236,20 @@ class BaseController
     protected function getResponseType(): string
     {
         return request()->isAjax() || request()->acceptJson() ? 'json' : 'html';
+    }
+
+    /**
+     * 返回错误信息
+     * @param string $msg
+     * @param int $code
+     * @return Response
+     */
+    protected function retResponseError(string $msg = '404 not found', int $code = 404): Response
+    {
+        if (\request()->expectsJson()) {
+            return json(['code' => 404, 'msg' => $msg]);
+        }
+        return response(request_error(), $code);
     }
 
     /**

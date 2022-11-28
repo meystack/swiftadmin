@@ -23,8 +23,9 @@ class StatsClient extends BaseClient
     /**
      * Fetch statistics data by deviceId.
      *
-     * @param int $beginTime (Unix timestamp)
-     * @param int $endTime   (Unix timestamp)
+     * @param array $deviceIdentifier
+     * @param int   $beginTime        (Unix timestamp)
+     * @param int   $endTime          (Unix timestamp)
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -45,6 +46,9 @@ class StatsClient extends BaseClient
     /**
      * Fetch all devices statistics data by date.
      *
+     * @param int $timestamp
+     * @param int $pageIndex
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -63,6 +67,7 @@ class StatsClient extends BaseClient
     /**
      * Fetch statistics data by pageId.
      *
+     * @param int $pageId
      * @param int $beginTime (Unix timestamp)
      * @param int $endTime   (Unix timestamp)
      *
@@ -84,6 +89,9 @@ class StatsClient extends BaseClient
 
     /**
      * Fetch all pages statistics data by date.
+     *
+     * @param int $timestamp
+     * @param int $pageIndex
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

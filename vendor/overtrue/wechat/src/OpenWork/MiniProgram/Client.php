@@ -21,6 +21,8 @@ class Client extends BaseClient
 {
     /**
      * Client constructor.
+     *
+     * @param \EasyWeChat\Kernel\ServiceContainer $app
      */
     public function __construct(ServiceContainer $app)
     {
@@ -29,6 +31,8 @@ class Client extends BaseClient
 
     /**
      * Get session info by code.
+     *
+     * @param string $code
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

@@ -1,129 +1,54 @@
 <include file="/public/header" />
 <link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css" />
-<div class="layui-tab layui-tab-brief" >
-
-    <ul class="layui-tab-title" style="text-align: center;">
-        <li class="layui-this" id="msg" >{:__('通知')}({:count($list['msg'])})</li>
-        <li id="comment" >{:__('私信')}({:count($list['comment'])})</li>
-        <li id="things" >{:__('待办')}({:count($list['things'])})</li>
-    </ul>
-
-     <div class="layui-tab-content" style="padding: 5px 0px;">
-
-        <div class="layui-tab-item layui-show">
-            
-            <div class="layui-message-list" >
-                <volist  name="list['msg']" id="vo">
-                    <a class="layui-message-list-item" href="javascript:;">
-                    <img class="layui-message-item-icon" src="__ADMINIMAGES__message.png">
-                    <!-- <i class="layui-message-item-icon layui-icon layui-icon-email"></i> -->
-                    <div class="layui-message-item-right">
-                        <h2 class="layui-message-item-title">{$vo.title}</h2>
-                        <p class="layui-message-item-text">{$vo.create_time}</p>
-                    </div>
-                </a>
-                </volist>
+<!-- // 重定位Style -->
+<style>
+    .face {
+        margin-bottom: 3px;
+    }
+</style>
+<div id="instant-content" class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-panel">
+            <div class="layui-card-header">
+                <div class="title"><span class="titles"><img src="{$detail.face}" class="face" width="20"> </span>{$detail.nickname}</div>
+                <div class="time"><span class="times">时间：</span>{$detail.create_time}</div>
             </div>
-
-            <!-- // 列表为空 -->
-            <div class="layui-message-list-empty" <empty name="$list['msg']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有通知')}</div>
-            </div>  
-
-            <!-- // 底部操作 -->
-            <notempty name="$list['msg']">
-            <div class="layui-message-footer">
-            <a href="javascript:;" class="clear" data-type="msg">{:__('清空通知')}</a><span>|</span><a href="javascript:;" class="more">{:__('查看更多')}</a>
-            </div>
-            </notempty>
-        </div>
-   
-        <div class="layui-tab-item">
-
-            <div class="layui-message-list" >
-                <volist  name="list['comment']" id="vo">
-                <a class="layui-message-list-item" href="javascript:;">
-                    <img class="layui-message-item-icon" src="__ADMINIMAGES__head.png">
-                    <div class="layui-message-item-right">
-                        <h2 class="layui-message-item-title">{$vo.title}</h2>
-                        <p class="layui-message-item-text">{$vo.content}</p>
-                        <p class="layui-message-item-text">{$vo.create_time}</p>
-                    </div>
-                </a>
-                </volist>
-
-            </div>
-
-            <!-- // 列表为空 -->
-            <div class="layui-message-list-empty" <empty name="$list['comment']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有私信')}</div>
-            </div>  
-            <notempty name="$list['msg']">
-            <div class="layui-message-footer">
-        <a href="javascript:;" class="clear"data-type="comment">{:__('清空私信')}</a><span>|</span><a href="javascript:;" class="more">{:__('查看更多')}</a>
-            </div>
-            </notempty>
+            <div id="layui-info">{$detail.content|raw}</div>
         </div>
 
-        <div class="layui-tab-item">
-
-            <div class="layui-message-list" >
-                <volist  name="list['things']" id="vo">
-                <a class="layui-message-list-item" href="javascript:;">
-                    <div class="layui-message-item-right">
-                        <eq name="$vo['type']" value="0">
-                            <span class="layui-badge pull-right">{:__('待完成')}</span>
-                            <else/>
-                            <span class="layui-badge layui-bg-gray pull-right">{:__('已完成')}</span>
-                        </eq>
-                        <h2 class="layui-message-item-title">{$vo.title}</h2>
-                        <p class="layui-message-item-text">{$vo.create_time}</p>
-                    </div>
-                </a>
-                </volist>
-                <a id="more" class="layui-message-btn-more" href="javascript:;">{:__('更多')}</a> 
-            </div>
-           
-            <!-- // 列表为空 -->
-            <div class="layui-message-list-empty" <empty name="$list['things']"> style="display:black;" <else/>  style="display:none;" </empty>  >
-                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有待办')}</div>
-            </div>  
-            <notempty name="$list['things']">
-            <div class="layui-message-footer">
-            <a href="javascript:;" class="clear" data-type="things">{:__('清空待办')}</a><span>|</span><a href="javascript:;" class="more">{:__('查看更多')}</a>
-            </div>
-            </notempty>
+        <div class="layui-footer">
+            <!-- 底部固定区域 -->
+            <button type="button" class="layui-btn layui-btn-normal" lay-open data-title="回复私信" data-url="#replyForms" data-area="500px,350px"  >回复</button>
+            <button type="button" class="layui-btn layui-btn-danger" sa-event="closeDialog" >关闭</button>
         </div>
-
     </div>
 </div>
 
-<include file="/public/footer" />
+<script type="text/html" id="replyForms">
+    <div class="layui-fluid layui-bg-white" >
+        <form action="{:url('/system/admin/saveNotice')}" class="layui-form">
+            <input type="text" name="type" value="message" hidden>
+            <input type="text" name="admin_id" value="{$detail.send_id}" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('标题')}</label>
+                <div class="layui-input-block" >
 
-<script>
-    layui.use(['element'], function () {
-        var $ = layui.jquery;
-        var element = layui.element;
+                    <input type="text" name="title" class="layui-input" lay-verify="required" value="" placeholder="请输入私信标题">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('回复内容')}</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea" lay-verify="required" placeholder="请输入私信内容"></textarea>
+                </div>
+            </div>
 
-        // 加载更多
-        $('#more').click(function (obj) {
-            layer.msg('没有更多了','info');                 
-        })
-
-        // 清空消息点击事件
-        $('.clear').click(function (obj) {
-            var that = $(this), typeElem = that.data('type');
-            var findElem = $('#' + typeElem);
-
-            // 删除元素
-            that.parent().prev().prev().remove();
-            that.parent().prev().show();
-            that.parent().remove();
-            // 替换标题
-            findElem.text(findElem.text().replace(/\([^\)]*\)/,''));
-
-            // 执行AJAX请求...
-            
-        });
-    });
+            <div class="layui-footer layui-form-item layui-center "  >
+                <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
+                <button class="layui-btn" lay-filter="submitPage" lay-submit>{:__('提交')}</button>
+            </div>
+        </form>
+    </div>
 </script>
+
+<include file="/public/footer" />

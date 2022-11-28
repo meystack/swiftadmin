@@ -1,0 +1,35 @@
+<layout name="layout:layout" />
+<!-- 内容主体区域 -->
+<div id="content">
+  <div class="layui-card">
+    <div class="layui-card-header">登录日志</div>
+    <!-- // 创建数据实例 -->
+    <div class="layui-card-body">
+      <table id="lay-tableList" lay-filter="lay-tableList"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui.use(['table'], function () {
+
+    var table = layui.table;
+    /*
+     * 初始化表格
+    */
+    var isTable = table.render({
+      elem: "#lay-tableList"
+      , url: "{:url('/user/login_log')}"
+      , page: true
+      , limit: 20
+      , cols: [[
+        {field: 'nickname', align: 'left',title: '{:__("登录帐号")}'},
+        {field: 'login_ip', align: 'center', title: '{:__("登录IP")}'},
+        {field: 'login_os', align: 'center', title: '{:__("操作系统")}'},
+        {field: 'login_browser', align: 'center', title: '{:__("登录代理")}'},
+        {field: 'error', align: 'center',  title: '{:__("登录状态")}'},
+        {field: 'create_time', align: 'center',  title: '{:__("登录时间")}'},
+      ]]
+    })
+  })
+</script>

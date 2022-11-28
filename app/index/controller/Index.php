@@ -12,8 +12,11 @@ declare (strict_types=1);
 namespace app\index\controller;
 
 use app\HomeController;
-use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
+use Psr\SimpleCache\InvalidArgumentException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 class Index extends HomeController
 {
@@ -21,8 +24,11 @@ class Index extends HomeController
      * 前端首页
      * @return Response
      * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function index(): \support\Response
+    public function index(): Response
     {
         return $this->view('index/index', ['name' => 'meystack']);
     }

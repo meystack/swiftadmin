@@ -27,6 +27,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $activityId
+     * @param int    $state
+     * @param array  $params
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -51,6 +55,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array $params
+     *
      * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

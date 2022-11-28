@@ -22,7 +22,7 @@ class Jobs extends Model
 	public static function getListTree() 
     {
         $array = self::select()->toArray();
-		if (is_array($array) && !empty($array)) {
+		if (!empty($array)) {
 			return list_to_tree($array);
 		}
 	}

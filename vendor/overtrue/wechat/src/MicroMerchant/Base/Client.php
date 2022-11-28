@@ -24,6 +24,8 @@ class Client extends BaseClient
     /**
      * apply to settle in to become a small micro merchant.
      *
+     * @param array $params
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -45,6 +47,9 @@ class Client extends BaseClient
 
     /**
      * query application status.
+     *
+     * @param string $applymentId
+     * @param string $businessCode
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -76,6 +81,8 @@ class Client extends BaseClient
     /**
      * merchant upgrade api.
      *
+     * @param array $params
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -98,6 +105,8 @@ class Client extends BaseClient
 
     /**
      * get upgrade status.
+     *
+     * @param string $subMchId
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

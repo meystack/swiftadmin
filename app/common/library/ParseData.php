@@ -77,7 +77,7 @@ class ParseData
      * @access  public
      * @param string $content
      * @return  string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function setContentAttr(string $content): string
     {
@@ -93,7 +93,7 @@ class ParseData
      * @access  public
      * @param string $content
      * @return  string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getContentAttr(string $content): string
     {
@@ -124,7 +124,7 @@ class ParseData
      * @param $data
      * @param bool $ready
      * @return  string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function setImageAttr(string $image, $data, bool $ready = false): string
     {
@@ -143,7 +143,8 @@ class ParseData
      * 获取图片链接
      * @access  public
      * @param string $image
-     * @return  string
+     * @return string
+     * @throws InvalidArgumentException
      */
     public static function getImageAttr(string $image): string
     {
@@ -176,36 +177,6 @@ class ParseData
         }
 
         return $image;
-    }
-
-    /**
-     * 获取IP转换
-     * @access  public
-     * @param  $ip
-     * @return mixed
-     */
-    public static function getIPAttr($ip)
-    {
-        if (!empty($ip)) {
-            $ip = long2ip($ip);
-        }
-
-        return $ip;
-    }
-
-    /**
-     * 设置IP转换
-     * @access  public
-     * @param  $ip
-     * @return mixed
-     */
-    public static function setIPAttr($ip)
-    {
-        if (!empty($ip)) {
-            $ip = ip2long($ip);
-        }
-
-        return $ip;
     }
 
     /**

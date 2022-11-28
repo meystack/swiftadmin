@@ -11,6 +11,11 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\index\middleware\system;
+use Psr\SimpleCache\InvalidArgumentException;
+use support\View;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;
@@ -30,10 +35,10 @@ class IndexInitialize implements MiddlewareInterface
      * @param Request $request
      * @param callable $handler
      * @return Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function process(Request $request, callable $handler): Response
     {
@@ -54,7 +59,7 @@ class IndexInitialize implements MiddlewareInterface
         $siteInfo = saenv('site', true);
         if ($siteInfo && is_array($siteInfo)) {
             foreach ($siteInfo as $key => $value) {
-                \support\View::assign($key,$value);
+                View::assign($key,$value);
             }
         }
 

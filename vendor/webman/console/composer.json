@@ -23,7 +23,8 @@
     "source": "https://github.com/webman-php/console"
   },
   "require": {
-    "symfony/console": ">=5.0"
+    "symfony/console": ">=5.0",
+    "doctrine/inflector": "^2.0"
   },
   "autoload": {
     "psr-4": {

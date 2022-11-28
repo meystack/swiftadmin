@@ -1,0 +1,185 @@
+<layout name="layout:layout"/>
+<!-- 内容主体区域 -->
+<style>
+    .alert-warn {
+        background: #fff3eb;
+        border: 1px solid #ffdac2;
+        border-radius: 2px;
+        color: #ff6600;
+        font-size: 12px;
+        padding: 10px 30px;
+    }
+
+    .choose-box {
+        overflow: hidden;
+        padding: 25px;
+    }
+
+    .choose-box #tip {
+        margin-bottom: 15px;
+    }
+
+    .choose-item {
+        cursor: pointer;
+        border: 1px solid #e1e4e6;
+        border-radius: 3px;
+        margin-right: 20px;
+        padding: 28px 28px 28px 50px;
+    }
+
+    .choose-item:hover {
+        border-color: #1890ff;
+    }
+
+    .choose-item:hover i {
+        color: #1890ff;
+    }
+
+    .svg {
+        margin-top: 23px;
+    }
+
+    .fa-wechat, .fa-mobile-phone {
+        font-size: 4em;
+    }
+
+    .subtitle {
+        margin-top: 10px;
+        font-size: 18px;
+        clear: both;
+        display: block;
+    }
+
+    .captcha img {
+        border: 1px solid #d9d9d9;
+        background-color: #fff;
+        border-radius: 3px;
+        width: 116px;
+    }
+
+    #proves {
+        padding: 65px;
+        overflow: hidden;
+    }
+
+    #proves .auHead, #proves .auIntro {
+        margin: 0px 10px;
+    }
+
+    #proves h2 {
+        margin-bottom: 15px;
+    }
+
+    #proves .text-muted {
+        color: #a0a2a3;
+    }
+
+    #proves p {
+        margin-bottom: 10px;
+    }
+
+</style>
+<div id="content">
+    <div class="layui-card">
+        <div class="layui-card-header "><h5>实名认证</h5></div>
+        <div class="layui-card-body ">
+
+            <div class="alert-warn">
+              <span>
+                <i class="layui-icon fa-info-circle"></i>
+                根据《中华人民共和国网络安全法》等网络安全相关法律法规规定，及按网监，公安等有关监管单位要求，互联网计算资源用户须完成用户实名认证才能使用。
+                请您认真填写相关实名认证信息，完成实名认证申请。
+              </span>
+            </div>
+
+            <empty name="prove">
+                <div class="choose-box layui-row layui-col-space10">
+                    <div id="tip">请您从以下认证方式中选择一种：</div>
+
+                    <div class="layui-col-md4 choose-item " lay-open data-title="实名认证" data-url="#author" data-area="520px,390px">
+                        <div class="layui-col-md2">
+                            <div class="svg"><i class="layui-icon fa-mobile-phone"></i></div>
+                        </div>
+                        <div class="layui-col-md10">
+                            <span class="subtitle">手机号码 验证实名</span>
+                            <span class="intro">注：手机号码必须与实名认证人信息一致</span>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md4 choose-item" onclick="layui.layer.msg('暂未支持','info')">
+                        <div class="layui-col-md2">
+                            <div class="svg"><i class="layui-icon fa-wechat"></i></div>
+                        </div>
+                        <div class="layui-col-md10">
+                            <span class="subtitle">微信人脸 识别认证</span>
+                            <span class="intro">注：请使用本人微信进行人脸识别认证</span>
+                        </div>
+                    </div>
+                </div>
+                <else/>
+
+                <div id="proves">
+                    <div class="auHead fl"><svg t="1667563336182" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2727" width="200" height="200"><path d="M0 0h1024v1024H0z" fill="#FFFFFF" p-id="2728"></path><path d="M151.272727 197.818182m93.090909 0l538.507637 0q93.090909 0 93.090909 93.090909l0 428.520727q0 93.090909-93.090909 93.090909l-538.507637 0q-93.090909 0-93.090909-93.090909l0-428.520727q0-93.090909 93.090909-93.090909Z" fill="#23C588" p-id="2729"></path><path d="M366.545455 458.624a52.363636 52.363636 0 1 0-52.363637-52.363636 52.421818 52.421818 0 0 0 52.363637 52.363636m0 46.545455a98.909091 98.909091 0 1 1 98.90909-98.909091 98.909091 98.909091 0 0 1-98.90909 98.909091z" fill="#FFFFFF" p-id="2730"></path><path d="M360.727273 551.714909a69.899636 69.899636 0 0 0-69.818182 69.818182v46.545454h151.272727v-46.545454a69.899636 69.899636 0 0 0-69.818182-69.818182h-11.636363m0-46.545454h11.636363a116.363636 116.363636 0 0 1 116.363637 116.363636v46.545454a46.545455 46.545455 0 0 1-46.545455 46.545455H290.909091a46.545455 46.545455 0 0 1-46.545455-46.545455v-46.545454a116.363636 116.363636 0 0 1 116.363637-116.363636z" fill="#FFFFFF" p-id="2731"></path><path d="M758.027636 430.743273h-186.181818a23.272727 23.272727 0 0 1-23.272727-23.272728 23.272727 23.272727 0 0 1 23.272727-23.272727h186.181818a23.272727 23.272727 0 0 1 23.272728 23.272727 23.272727 23.272727 0 0 1-23.272728 23.272728z" fill="#FFFFFF" p-id="2732"></path><path d="M758.027636 535.470545h-186.181818a23.272727 23.272727 0 0 1-23.272727-23.272727 23.272727 23.272727 0 0 1 23.272727-23.272727h186.181818a23.272727 23.272727 0 0 1 23.272728 23.272727 23.272727 23.272727 0 0 1-23.272728 23.272727z" fill="#FFFFFF" p-id="2733"></path><path d="M758.027636 640.197818h-186.181818a23.272727 23.272727 0 0 1-23.272727-23.272727 23.272727 23.272727 0 0 1 23.272727-23.272727h186.181818a23.272727 23.272727 0 0 1 23.272728 23.272727 23.272727 23.272727 0 0 1-23.272728 23.272727z" fill="#FFFFFF" p-id="2734"></path></svg> </div>
+                    <div class="auIntro fl">
+                        <h2>恭喜您已通过实名认证</h2>
+                        <p><span class="text-muted">认证途径：</span>身份证实名</p>
+                        <p><span class="text-muted">真实姓名：</span>{:hide_str($user['name'],0,1)}</p>
+                        <p><span class="text-muted">认证时间：</span>{$user.prove_time}</p>
+                        <p><span class="text-muted">证件号码：</span>{:hide_str($user['idcard'],3,8)}</p>
+                        <p>
+                            <span class="text-muted">如果您的认证信息发生变更，可</span>
+                            <a id="edit-verify">联系管理员修改认证资料 &gt;</a>
+                        </p>
+                    </div>
+                </div>
+            </empty>
+        </div>
+    </div>
+</div>
+
+<!-- // 实名认证 -->
+<script type="text/html" id="author">
+    <div class="layui-fluid layui-bg-white">
+        <form class="layui-form layui-form-fixed" action="/index/user/certification">
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('手机号')}</label>
+                <div class="layui-input-inline" style="width: 320px">
+                    <input name="mobile" placeholder="{:__('请输入手机号')}" type="text" autocomplete="on"
+                           class="layui-input" lay-verify="required|phone"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('真实姓名')}</label>
+                <div class="layui-input-inline" style="width: 320px">
+                    <input name="name" placeholder="{:__('请输入真实姓名')}" type="text" autocomplete="on" class="layui-input" lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('身份证号码')}</label>
+                <div class="layui-input-inline" style="width: 320px">
+                    <input name="idCard" placeholder="{:__('请输入身份证号码')}" type="text" autocomplete="on" class="layui-input" lay-verify="required|identity"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('验证码')}</label>
+                <div class="layui-input-inline">
+                    <input name="captcha" placeholder="{:__('请输入验证码')}" type="text" autocomplete="on" class="layui-input" lay-verify="required" maxlength="10"/>
+                </div>
+                <div class="captcha"><a href="javascript:;"><img src="{:captcha_src()}" height="31" id="captchaImg" alt="{:__('验证码')}"/></a></div>
+            </div>
+            <div class="layui-footer layui-form-item layui-center">
+                <button class="layui-btn layui-btn-primary" type="button" sa-event="closeDialog">{:__('取消')}</button>
+                <button class="layui-btn layui-btn-normal" data-reload="true" lay-filter="submitPage" lay-submit>{:__('提交')}</button>
+            </div>
+        </form>
+    </div>
+</script>
+
+<script>
+    layui.use(['table', 'jquery'], function () {
+        let $ = layui.jquery, captchaUrl = '{:captcha_src()}';
+        $(document).on('click', '#captchaImg', function () {
+            $(this).attr('src', captchaUrl + '?rand=' + Math.random())
+        })
+    })
+</script>

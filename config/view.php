@@ -18,7 +18,7 @@ use support\view\Blade;
 use support\view\ThinkPHP;
 
 return [
-    'handler' => ThinkPHP::class,
+    'handler' => \support\Template::class,
     'options' => [
         'tpl_cache'          => true,
         'taglib_begin'       => '<',

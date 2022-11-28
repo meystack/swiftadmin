@@ -520,6 +520,9 @@ class Request
     {
         $file = [];
         $boundary = "\r\n$boundary";
+        if (\strlen($this->_buffer) < $section_start_offset) {
+            return 0;
+        }
         $section_end_offset = \strpos($this->_buffer, $boundary, $section_start_offset);
         if (!$section_end_offset) {
             return 0;
@@ -596,7 +599,7 @@ class Request
      */
     protected static function createSessionId()
     {
-        return \bin2hex(\pack('d', \microtime(true)) . \pack('N', \mt_rand()));
+        return \bin2hex(\pack('d', \microtime(true)) . random_bytes(8));
     }
 
     /**

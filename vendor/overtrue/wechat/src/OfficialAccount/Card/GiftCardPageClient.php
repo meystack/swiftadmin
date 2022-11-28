@@ -23,6 +23,8 @@ class GiftCardPageClient extends BaseClient
     /**
      * 创建-礼品卡货架接口.
      *
+     * @param array $attributes
+     *
      * @return mixed
      */
     public function add(array $attributes)
@@ -37,6 +39,8 @@ class GiftCardPageClient extends BaseClient
     /**
      * 查询-礼品卡货架信息接口.
      *
+     * @param string $pageId
+     *
      * @return mixed
      */
     public function get(string $pageId)
@@ -50,6 +54,10 @@ class GiftCardPageClient extends BaseClient
 
     /**
      * 修改-礼品卡货架信息接口.
+     *
+     * @param string $pageId
+     * @param string $bannerPicUrl
+     * @param array  $themeList
      *
      * @return mixed
      */
@@ -78,6 +86,8 @@ class GiftCardPageClient extends BaseClient
 
     /**
      * 下架-礼品卡货架接口(下架某一个货架或者全部货架).
+     *
+     * @param string $pageId
      *
      * @return mixed
      */

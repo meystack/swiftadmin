@@ -3,7 +3,7 @@ declare (strict_types = 1);
 namespace app\admin\controller\system;
 
 use app\AdminController;
-use app\common\model\system\LoginLog as LoginLogModel;
+use app\common\model\system\AdminLog as LoginLogModel;
 use Webman\Http\Request;
 
 /**

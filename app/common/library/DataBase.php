@@ -13,7 +13,6 @@ class DataBase {
     /**
      * 导入目录下Install.sql文件
      * @param string $sqlPath
-     * @return void
      */
     public static function importSql(string $sqlPath)
     {
@@ -28,8 +27,7 @@ class DataBase {
                 }
                 try {
                     Db::getPdo()->exec($line);
-                } catch (\Throwable $th) {
-                }
+                } catch (\Throwable $th) {}
             }
         }
     }

@@ -1,4 +1,35 @@
 <layout name="layout:layout"/>
+<style>
+
+    .u-box {
+        margin-left: 35px;
+    }
+
+    @media screen and (max-width: 1024px) {
+        .setting-intro {
+            display: none;
+        }
+
+        .u-box {
+            margin-left: 10px;
+        }
+    }
+
+    @media screen and (max-width: 440px) {
+        .u-box {
+            width: 190px;
+        }
+
+        #user-detail .layui-progress {
+            width: 110px;
+        }
+
+        .text-stress {
+            display: none;
+        }
+    }
+
+</style>
 <div id="content">
     <div class="layui-card">
         <div class="layui-card-header"><h5>安全设置</h5></div>
@@ -7,8 +38,8 @@
                 <div class="layui-user-avatar fl" >
                     <img src="{$user.avatar}" alt="" width="80">
                 </div>
-                <div class="fl" style="margin-left: 35px">
-                    <div class="u-info"><span class="label">会员ID:</span>{$user.id}</div>
+                <div class="u-box fl">
+                    <div class="u-info"><span class="label">会员UID:</span>{$user.id|supplement_id}</div>
                     <div class="u-info"><span class="label">注册日期:</span>{$user.create_time}</div>
                     <div class="u-info">
                         <span class="label">安全级别:</span>
@@ -29,7 +60,7 @@
                     <span class="setting-intro">安全性高的密码可以使账户更安全；互联网账号存在被盗风险，建议您定期更换密码</span>
                 </div>
                 <div class="setting-operate fr">
-                    <a lay-open="" data-title="修改密码" data-url="/user/changepwd" data-area="470px,330px" href="javascript:;">修改</a>
+                    <a lay-open="" data-title="修改密码" data-url="/index/user/changepwd" data-area="470px,330px" href="javascript:;">修改</a>
                 </div>
             </div>
 
@@ -53,7 +84,7 @@
                 </div>
 
                 <div class="setting-operate fr">
-                    <a lay-open data-title="修改手机" data-url="/user/mobile" data-area="500px,300px">修改</a>
+                    <a lay-open data-title="修改手机" data-url="/index/user/mobile" data-area="500px,300px">修改</a>
                 </div>
             </div>
 
@@ -77,7 +108,7 @@
                 </div>
 
                 <div class="setting-operate fr">
-                    <a lay-open data-title="修改邮箱" data-url="/user/email" data-area="500px,300px">修改</a>
+                    <a lay-open data-title="修改邮箱" data-url="/index/user/email" data-area="500px,300px">修改</a>
                 </div>
             </div>
 
@@ -95,7 +126,7 @@
                 </div>
 
                 <div class="setting-operate fr">
-                    <a lay-open data-title="设置密保" data-url="/user/protection" data-area="500px,300px">设置</a>
+                    <a lay-open data-title="设置密保" data-url="/index/user/protection" data-area="500px,300px">设置</a>
                 </div>
             </div>
 

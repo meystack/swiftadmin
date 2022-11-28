@@ -69,16 +69,24 @@ abstract class Handler
     /**
      * Handle incoming notify.
      *
+     * @param \Closure $closure
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     abstract public function handle(Closure $closure);
 
+    /**
+     * @param string $message
+     */
     public function fail(string $message)
     {
         $this->fail = $message;
     }
 
     /**
+     * @param array $attributes
+     * @param bool  $sign
+     *
      * @return $this
      */
     public function respondWith(array $attributes, bool $sign = false)
@@ -91,6 +99,8 @@ abstract class Handler
 
     /**
      * Build xml and return the response to WeChat.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
@@ -112,6 +122,8 @@ abstract class Handler
 
     /**
      * Return the notify message from request.
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
@@ -141,6 +153,8 @@ abstract class Handler
     /**
      * Decrypt message.
      *
+     * @param string $key
+     *
      * @return string|null
      *
      * @throws \EasyWeChat\Kernel\Exceptions\Exception
@@ -163,6 +177,8 @@ abstract class Handler
 
     /**
      * Validate the request params.
+     *
+     * @param array $message
      *
      * @throws \EasyWeChat\Payment\Kernel\Exceptions\InvalidSignException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

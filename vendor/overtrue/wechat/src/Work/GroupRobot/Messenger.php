@@ -41,6 +41,8 @@ class Messenger
 
     /**
      * Messenger constructor.
+     *
+     * @param Client $client
      */
     public function __construct(Client $client)
     {
@@ -70,6 +72,8 @@ class Messenger
     }
 
     /**
+     * @param string $groupKey
+     *
      * @return Messenger
      */
     public function toGroup(string $groupKey)

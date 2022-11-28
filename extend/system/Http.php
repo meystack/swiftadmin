@@ -24,10 +24,10 @@ class Http
      * @param array $params
      * @param bool $agent
      * @param array $options
-     * @param $header
+     * @param array $header
      * @return mixed|string
      */
-    public static function post(string $url, array $params = [], bool $agent = true, array $options = [], $header = '')
+    public static function post(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [])
     {
         $req = self::request($url, $params, $agent, 'POST', $options, $header);
         return $req['ret'] ? $req['msg'] : '';
@@ -39,10 +39,10 @@ class Http
      * @param array $params
      * @param bool $agent
      * @param array $options
-     * @param $header
+     * @param array $header
      * @return mixed|string
      */
-    public static function get(string $url, array $params = [], bool $agent = true, array $options = [], $header = [])
+    public static function get(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [])
     {
         $req = self::request($url, $params, $agent, 'GET', $options, $header);
         return $req['ret'] ? $req['msg'] : '';

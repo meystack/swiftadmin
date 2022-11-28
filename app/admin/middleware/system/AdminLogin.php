@@ -21,7 +21,6 @@ class AdminLogin implements MiddlewareInterface
             $request->session()->delete(AdminSession);
             return response(request_error(), 404);
         }
-
         return $handler($request);
     }
 }

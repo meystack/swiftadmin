@@ -31,8 +31,8 @@ layui.define(['i18n'], function (exports) {
                 let data;
                 layer.closeAll();
                 if (res.code === 200) {
-                    layer.msg(res.msg);
 
+                    layer.msg(res.msg);
                     let index = layui.sessionData('api_install_index').index,
                         elems = $('tr[data-index="' + index + '"]');
                     if (url.indexOf('install') !== -1) {
@@ -128,22 +128,19 @@ layui.define(['i18n'], function (exports) {
             layer.open({
                 type: 2,
                 title: i18n.prop('立即支付'),
-                area: ['500px','685px'],
+                area: ['500px','550px'],
                 offset: "30px",
                 resize: false,
                 shade: 0.8,
                 shadeClose: true,
-                content: data.payUrl,
+                content: data.pay_url,
                 success: function (index, layero) {
+                    // 父类消息监听
                     window.onmessage = function (res) {
                         let data = res.data;
                         if (res.data !== null && data.code === 200) {
                             layer.close(layero);
                             plugin.againClick();
-                        }
-
-                        if (res.data !== null && data.code === -133) {
-                            layer.close(layero);
                         }
                     }
                 }

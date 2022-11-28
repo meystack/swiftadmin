@@ -26,6 +26,9 @@ class Application extends OfficialAccount
 {
     /**
      * Application constructor.
+     *
+     * @param array $config
+     * @param array $prepends
      */
     public function __construct(array $config = [], array $prepends = [])
     {

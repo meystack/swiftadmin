@@ -25,6 +25,12 @@ class Encryptor extends BaseEncryptor
     /**
      * Decrypt data.
      *
+     * @param string $sessionKey
+     * @param string $iv
+     * @param string $encrypted
+     *
+     * @return array
+     *
      * @throws \EasyWeChat\Kernel\Exceptions\DecryptException
      */
     public function decryptData(string $sessionKey, string $iv, string $encrypted): array

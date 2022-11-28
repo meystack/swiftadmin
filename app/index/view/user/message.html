@@ -1,0 +1,88 @@
+<layout name="layout:layout" />
+<!-- 内容主体区域 -->
+<style>
+  .layui-table-text-red {
+    font-weight: bold;
+  }
+</style>
+<div id="content">
+  <div class="layui-row" >
+    <div id="cardInfo" class="layui-card"> <i class="layui-icon fa-bullhorn"></i> 短消息是本站系统给您发送的提醒消息，请务必阅读。如因自身未阅读导致出现的相关问题后果自负！</div>
+    <div class="layui-card" style="padding-top: 10px">
+      <!-- // 默认操作按钮 -->
+      <div class="layui-card-header layadmin-card-header-auto ">
+        <div class="layui-form">
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <button class="layui-btn layui-btn-normal layui-btn-sm layui-btn-post" data-status="all" >{:__('全部消息')}</button>
+              <button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-post" data-status="1">{:__('已读消息')}</button>
+              <button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-post" data-status="0">{:__('未读消息')}</button>
+              <button class="layui-btn layui-btn-danger layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/dermessage?type=del"  >{:__('删除消息')}</button>
+              <button class="layui-btn layui-btn-checked layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/dermessage?type=read" >{:__('标记已读')}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- // 创建数据实例 -->
+      <table id="lay-tableList" lay-filter="lay-tableList"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui.use(['table','jquery'], function () {
+
+    let $ = layui.jquery;
+    let table = layui.table;
+
+    /*
+     * 初始化表格
+    */
+    let isTable = table.render({
+      elem: "#lay-tableList"
+      , url: "{:url('/user/message')}"
+      , page: true
+      , limit: 20
+      , cols: [[
+        {type: 'checkbox', width: 45},
+        {
+          field: 'title', align: 'left',  templet: function (e) {
+            let title = '<a class="layui-table-text';
+            if (e.status === 0) {
+              title += ' layui-table-text-red';
+            }
+            title += '" lay-open data-title="查看消息" data-url="/index/user/viewmessage?id=' + e.id + '" data-area="600px, 390px" >';
+            if (e.status === 0) {
+              title += '<i class="layui-icon fa-envelope"></i> ';
+            } else {
+              title += '<i class="layui-icon fa-envelope-o"></i> ';
+            }
+            title += e.title;
+            title += '</a>';
+            return title;
+          }, title: '{:__("消息标题")}'
+        },
+        {field: 'send_ip', align: 'center',width: 220,  title: '{:__("来源IP")}'},
+        {field: 'type', align: 'center', width: 130, title: '{:__("消息类型")}'},
+        {field: 'create_time', align: 'center', width: 200, title: '{:__("创建时间")}'},
+      ]]
+    })
+
+    $('.layui-btn-post').click(function () {
+      let status = $(this).data('status');
+      $('.layui-btn-post').removeClass('layui-btn-normal').addClass('layui-btn-primary');
+      $(this).addClass('layui-btn-normal').removeClass('layui-btn-primary');
+
+      isTable.reload({
+        where: {status: status},
+        page: {curr: 1}
+      });
+    });
+
+    $('body').on('click','.layui-table-text-red',function () {
+      $(this).removeClass('layui-table-text-red');
+    });
+
+  })
+</script>

@@ -1,14 +1,37 @@
 /**
- * SAPHP 前端CommonJS
+ * 前端CommonJS
  * 默认提供一些基础的页面交互操作
  * 注：插件开发请勿直接将JS代码写入此文件
  */
-layui.use(['jquery','form','upload'], function(){
+layui.use(['jquery','form','upload','table','dropdown'], function(){
 
     let $ = layui.$;
     let form = layui.form;
     let layer = layui.layer;
+    let table = layui.table;
     let upload = layui.upload;
+    let dropdown = layui.dropdown;
+
+    /**
+     * 短消息下拉框
+     * @param count
+     */
+    window.bellMessage = function (count) {
+        let msg = dropdown.render({
+            elem: '#notice'
+            , trigger: 'hover'
+            , align: 'center'
+            , data: [{
+                title: !count ? '暂无消息' : '您有<b class="msg">' + count + '</b>条未读消息'
+            }], ready: function (elemPanel, elem) {
+            }
+            , click: function (data, othis) {
+                let elem = $('.layui-nav-tree li [lay-href="/user/message"]');
+                $(elem).parents('.layui-nav-item').addClass('layui-nav-itemed');
+                $(elem).trigger('click');
+            }
+        });
+    }
 
     // 注册为全局对象
     window.Home = {
@@ -139,7 +162,7 @@ layui.use(['jquery','form','upload'], function(){
         obj && obj.call(this, $(this));
     });
 
-    var uploadURL = '/user/upload';
+    var uploadURL = '/index/user/upload';
     layui.each($('*[lay-upload]'), function (index, elem) {
 
         var that = $(this),
@@ -207,6 +230,7 @@ layui.use(['jquery','form','upload'], function(){
 
     })
 
+
     // 全局监听打开窗口
     $(document).on('click',"*[lay-open]",function(){
         let clickthis = $(this),
@@ -271,15 +295,9 @@ layui.use(['jquery','form','upload'], function(){
                             post.field, function(res){
                                 if (res.code === 200) {
                                     Home.event.closeDialog(that);
-
-                                    /**
-                                     * 当前这个页面，也需要写成是否重载
-                                     * 支持哪种重载方式，父页面 自身，还是其他。
-                                     */
                                     if ($(that).data('reload')) {
                                         location.reload();
                                     }
-
                                     layer.msg(res.msg);
                                 } else {
                                     layer.msg(res.msg,'error');
@@ -291,6 +309,52 @@ layui.use(['jquery','form','upload'], function(){
                     })
                 }
             }
+        })
+    })
+
+    $(document).on("click", "*[lay-batch]", function (obj) {
+        var othis = $(this)
+            , tableId = othis.data("table") || null
+            , fields = othis.data("field") || undefined
+            , list = table.checkStatus(tableId);
+
+        var field = ['id'];
+        if (typeof fields !== 'undefined') {
+            field = field.concat(fields.split(','));
+        }
+
+        if (list.data.length === 0) {
+            layer.msg('请勾选数据', 'error');
+            return false;
+        }
+
+        var data = {};
+        for (var n in field) {
+            var e = field[n];
+            field[e] = [];
+            for (var i in list.data) {
+                field[e].push(list.data[i][e]);
+            }
+            data[e] = field[e];
+        }
+
+        layer.confirm('确定执行批量操作', function (index) {
+
+            $.ajax({
+                url: othis.data("url"),
+                type: 'post',
+                data: data,
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg(res.msg);
+                        table.reload(tableId);
+                    } else {
+                        layer.msg(res.msg, 'error');
+                    }
+                }
+            })
+            layer.close(index);
         })
     })
 

@@ -16,10 +16,13 @@ use app\common\library\Email;
 use app\common\library\Sms;
 use app\common\model\system\User;
 use app\HomeController;
+use PHPMailer\PHPMailer\Exception;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use think\response\Json;
 
 /**
  * Ajax控制器
@@ -36,10 +39,10 @@ class Ajax extends HomeController
     }
 
     /**
-     * 发送短信
-     * @return mixed|void
+     * 发送短信验证码
      * @throws DataNotFoundException
      * @throws DbException
+     * @throws InvalidArgumentException
      * @throws ModelNotFoundException
      */
     public function smsSend()
@@ -59,10 +62,10 @@ class Ajax extends HomeController
                 return $this->error(__('发送频繁'));
             }
 
-            $userinfo = User::getByMobile($mobile);
-            if (in_array($event, ['register', 'changer']) && $userinfo) {
+            $userData = User::getByMobile($mobile);
+            if (in_array($event, ['register', 'changer']) && $userData) {
                 return $this->error('当前手机号已被占用');
-            } else if ($event == 'forgot' && !$userinfo) {
+            } else if ($event == 'forgot' && !$userData) {
                 return $this->error('当前手机号未注册');
             }
 
@@ -75,11 +78,12 @@ class Ajax extends HomeController
     }
 
     /**
-     * 发送邮件
-     * @return mixed|void
+     * 发送邮件验证码
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function emailSend()
     {
@@ -99,10 +103,10 @@ class Ajax extends HomeController
                 return $this->error(__('发送频繁'));
             }
 
-            $userinfo = User::getByEmail($email);
-            if (in_array($event, ['register', 'changer']) && $userinfo) {
+            $userData = User::getByEmail($email);
+            if (in_array($event, ['register', 'changer']) && $userData) {
                 return $this->error('当前邮箱已被注册');
-            } else if ($event == 'forgot' && !$userinfo) {
+            } else if ($event == 'forgot' && !$userData) {
                 return $this->error('当前邮箱不存在');
             }
 

@@ -21,6 +21,8 @@ use EasyWeChat\Kernel\BaseClient;
 class Client extends BaseClient
 {
     /**
+     * @param array $params
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -34,6 +36,7 @@ class Client extends BaseClient
     /**
      * 设置小程序业务域名.
      *
+     * @param array  $domains
      * @param string $action
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string

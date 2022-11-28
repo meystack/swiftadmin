@@ -12,8 +12,13 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\model\system;
 
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
+use think\db\Query;
 use think\Model;
 use app\common\library\ParseData;
+use think\model\relation\HasOne;
 
 /**
  * @mixin \think\Model
@@ -27,9 +32,9 @@ class Admin extends \think\Model
     /**
      * 关联管理组
      *
-     * @return \think\model\relation\HasOne
+     * @return HasOne
      */
-    public function group(): \think\model\relation\HasOne
+    public function group(): HasOne
     {
         return $this->hasOne(AdminGroup::class, 'id', 'group_id');
     }
@@ -38,10 +43,10 @@ class Admin extends \think\Model
      * 根据用户名/密码 进行登录判断
      * @param $user
      * @param $pwd
-     * @return Admin|array|mixed|Model|null
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function checkLogin($user, $pwd)
     {
@@ -59,10 +64,10 @@ class Admin extends \think\Model
      * 根据用户名/验证码 进行数据查找
      * @param $user
      * @param $code
-     * @return Admin|array|mixed|Model|null
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function checkForget($user, $code)
     {
@@ -75,37 +80,5 @@ class Admin extends \think\Model
 
         $where[] = ['valicode', '=', $code];
         return Admin::where($where)->find();
-    }
-
-    /**
-     * 设置创建IP
-     */
-    public function setCreateIpAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取创建IP
-     */
-    public function getCreateIpAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
-    }
-
-    /**
-     * 设置登录IP
-     */
-    public function setLoginIpAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取登录IP
-     */
-    public function getLoginIpAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
     }
 }

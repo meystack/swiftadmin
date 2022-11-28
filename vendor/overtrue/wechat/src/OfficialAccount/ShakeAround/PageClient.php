@@ -21,6 +21,8 @@ use EasyWeChat\Kernel\BaseClient;
 class PageClient extends BaseClient
 {
     /**
+     * @param array $data
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -32,6 +34,9 @@ class PageClient extends BaseClient
     }
 
     /**
+     * @param int   $pageId
+     * @param array $data
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -44,6 +49,8 @@ class PageClient extends BaseClient
 
     /**
      * Fetch batch of pages by pageIds.
+     *
+     * @param array $pageIds
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -63,6 +70,9 @@ class PageClient extends BaseClient
     /**
      * Pagination to get batch of pages.
      *
+     * @param int $begin
+     * @param int $count
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -81,6 +91,8 @@ class PageClient extends BaseClient
 
     /**
      * delete a page.
+     *
+     * @param int $pageId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

@@ -23,6 +23,8 @@ class Client extends BaseClient
     /**
      * Add a calendar.
      *
+     * @param array $calendar
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -35,6 +37,9 @@ class Client extends BaseClient
 
     /**
      * Update the calendar.
+     *
+     * @param string $id
+     * @param array  $calendar
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -65,6 +70,8 @@ class Client extends BaseClient
 
     /**
      * Delete a calendar.
+     *
+     * @param string $id
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

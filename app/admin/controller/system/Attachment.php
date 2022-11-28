@@ -24,9 +24,19 @@ use Webman\Http\Request;
  */
 class Attachment extends AdminController
 {
-    // 上传文件夹地址
-    protected $upload;
+    /**
+     * 上传文件夹地址
+     * @var mixed
+     */
+    protected mixed $upload;
 
+    /**
+     * 初始化函数
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function __construct()
     {
         parent::__construct();

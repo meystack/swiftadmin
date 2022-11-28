@@ -23,6 +23,8 @@ class TagClient extends BaseClient
     /**
      * Create tag.
      *
+     * @param string $name
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -52,6 +54,9 @@ class TagClient extends BaseClient
     /**
      * Update a tag name.
      *
+     * @param int    $tagId
+     * @param string $name
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -72,6 +77,8 @@ class TagClient extends BaseClient
     /**
      * Delete tag.
      *
+     * @param int $tagId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -89,6 +96,8 @@ class TagClient extends BaseClient
     /**
      * Get user tags.
      *
+     * @param string $openid
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -103,6 +112,9 @@ class TagClient extends BaseClient
 
     /**
      * Get users from a tag.
+     *
+     * @param int    $tagId
+     * @param string $nextOpenId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -122,6 +134,9 @@ class TagClient extends BaseClient
     /**
      * Batch tag users.
      *
+     * @param array $openids
+     * @param int   $tagId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -139,6 +154,9 @@ class TagClient extends BaseClient
 
     /**
      * Untag users from a tag.
+     *
+     * @param array $openids
+     * @param int   $tagId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

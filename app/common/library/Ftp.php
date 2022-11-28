@@ -12,6 +12,7 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
+use support\Log;
 use system\Random;
 
 /**
@@ -27,7 +28,7 @@ class Ftp
     protected static $instance = null;
 
     //默认配置
-    protected $config = [
+    protected array $config = [
         'upload_ftp_host' => '127.0.0.1',               // 服务器地址
         'upload_ftp_port' => 21,                        // 服务器端口
         'upload_ftp_user' => 'username',                // FTP用户名
@@ -52,7 +53,6 @@ class Ftp
      * @param array $options 参数
      * @return Ftp
      */
-
     public static function instance($options = [])
     {
         if (is_null(self::$instance)) {
@@ -120,7 +120,6 @@ class Ftp
      */
     public function ftpTest(array $config): bool
     {
-
         $connect = @ftp_connect($config['host'], (int)$config['port']) or die('Could not connect');
         if (@ftp_login($connect, $config['user'], $config['pass'])) {
 
@@ -145,11 +144,11 @@ class Ftp
                 }
 
             } catch (\Throwable $th) {
-                return $th->getMessage();
+                Log::info('upload ftp ' . $th->getMessage());
+                return false;
             }
         }
 
         return false;
     }
-
 }

@@ -47,7 +47,7 @@
         <form class="layui-form" lay-filter="editforms" >
             <input type="text" name="id" hidden="">
             <div class="layui-form-item">
-                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('上级菜单')}</label>
+                <label class="layui-form-label">{:__('上级菜单')}</label>
                 <div class="layui-input-inline">
                     <div id="treeNode" name="pid" lay-filter="treeNode" ></div>
                 </div>
@@ -82,7 +82,7 @@
             </div>
 
             <div class="layui-form-item">
-                <label class="layui-form-label">{:__('路由地址')}</label>
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('路由地址')}</label>
                 <div class="layui-input-inline">
                     <input name="router" placeholder="{:__('/system/Target/index')}" type="text" class="layui-input router"  lay-verify="required" />
                 </div>

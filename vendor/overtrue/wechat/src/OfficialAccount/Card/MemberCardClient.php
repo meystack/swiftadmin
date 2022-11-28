@@ -21,6 +21,8 @@ class MemberCardClient extends Client
     /**
      * 会员卡接口激活.
      *
+     * @param array $info
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -33,6 +35,9 @@ class MemberCardClient extends Client
 
     /**
      * 设置开卡字段接口.
+     *
+     * @param string $cardId
+     * @param array  $settings
      *
      * @return mixed
      *
@@ -48,6 +53,9 @@ class MemberCardClient extends Client
 
     /**
      * 拉取会员信息接口.
+     *
+     * @param string $cardId
+     * @param string $code
      *
      * @return mixed
      *
@@ -66,6 +74,8 @@ class MemberCardClient extends Client
 
     /**
      * 更新会员信息.
+     *
+     * @param array $params
      *
      * @return mixed
      *

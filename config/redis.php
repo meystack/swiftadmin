@@ -15,8 +15,8 @@
 return [
     'default' => [
         'host'     => '127.0.0.1',
-        'password' => null,
+        'password' => getenv('REDIS_PASSWORD'),
         'port'     => 6379,
-        'database' => 3,
+        'database' => 1,
     ],
 ];

@@ -21,6 +21,11 @@ use EasyWeChat\Kernel\BaseClient;
 class Client extends BaseClient
 {
     /**
+     * @param int    $templateId
+     * @param string $extJson
+     * @param string $version
+     * @param string $description
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -37,6 +42,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string|null $path
+     *
      * @return \EasyWeChat\Kernel\Http\Response
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -70,6 +77,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array $data
+     * @param string|null $feedbackInfo
+     * @param string|null $feedbackStuff
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -89,6 +100,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param int $auditId
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -143,6 +156,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $action
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -157,6 +172,8 @@ class Client extends BaseClient
 
     /**
      * 分阶段发布.
+     *
+     * @param int $grayPercentage
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -209,6 +226,8 @@ class Client extends BaseClient
 
     /**
      * 设置最低基础库版本.
+     *
+     * @param string $version
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

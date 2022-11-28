@@ -7,6 +7,7 @@ use app\ApiController;
 use app\common\library\ResultCode;
 use app\common\library\Sms;
 use app\common\library\Upload;
+use Psr\SimpleCache\InvalidArgumentException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
@@ -20,20 +21,20 @@ class User extends ApiController
      * 需要登录
      * @var bool
      */
-	public $needLogin = true;
+	public bool $needLogin = true;
 
     /**
      * 非鉴权方法
      * @var array
      */
-    public $noNeedAuth = ['register', 'login'];
+    public array $noNeedAuth = ['register', 'login'];
 
     /**
      * 用户注册
      * @return mixed|void
      * @throws DataNotFoundException
      * @throws DbException
-     * @throws ModelNotFoundException
+     * @throws ModelNotFoundException|InvalidArgumentException
      */
     public function register()
     {
@@ -83,8 +84,6 @@ class User extends ApiController
             $response->withBody(json_encode(array_merge(ResultCode::LOGINSUCCESS, ['token' => $this->auth->token])));
             return $response;
 		}
-
-        return $this->throwError();
     }
 
     /**

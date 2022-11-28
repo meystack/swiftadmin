@@ -13,7 +13,6 @@ namespace EasyWeChat\Payment\Jssdk;
 
 use EasyWeChat\BasicService\Jssdk\Client as JssdkClient;
 use EasyWeChat\Kernel\Support;
-use Overtrue\Socialite\AccessTokenInterface;
 
 /**
  * Class Client.
@@ -31,6 +30,9 @@ class Client extends JssdkClient
      *  ...
      * );
      * </pre>
+     *
+     * @param string $prepayId
+     * @param bool   $json
      *
      * @return string|array
      */
@@ -55,6 +57,10 @@ class Client extends JssdkClient
      * <pre>
      * wx.chooseWXPay({...});
      * </pre>
+     *
+     * @param string $prepayId
+     *
+     * @return array
      */
     public function sdkConfig(string $prepayId): array
     {
@@ -68,6 +74,10 @@ class Client extends JssdkClient
 
     /**
      * Generate app payment parameters.
+     *
+     * @param string $prepayId
+     *
+     * @return array
      */
     public function appConfig(string $prepayId): array
     {
@@ -88,16 +98,13 @@ class Client extends JssdkClient
     /**
      * Generate js config for share user address.
      *
-     * @param string|\Overtrue\Socialite\AccessTokenInterface $accessToken
+     * @param string $accessToken
+     * @param bool                                            $json
      *
      * @return string|array
      */
-    public function shareAddressConfig($accessToken, bool $json = true)
+    public function shareAddressConfig(string $accessToken, bool $json = true)
     {
-        if ($accessToken instanceof AccessTokenInterface) {
-            $accessToken = $accessToken->getToken();
-        }
-
         $params = [
             'appId' => $this->app['config']->app_id,
             'scope' => 'jsapi_address',
@@ -123,6 +130,10 @@ class Client extends JssdkClient
 
     /**
      * Generate js config for contract of mini program.
+     *
+     * @param array $params
+     *
+     * @return array
      */
     public function contractConfig(array $params): array
     {
@@ -132,5 +143,33 @@ class Client extends JssdkClient
         $params['sign'] = Support\generate_sign($params, $this->app['config']->key);
 
         return $params;
+    }
+
+    /**
+     * Generate js config for biz red packet of mini program.
+     *
+     * @param  string $package
+     * @return array
+     */
+    public function miniprogramRedpackConfig(string $package): array
+    {
+        $param = [
+            'appId' => $this->app['config']->app_id,
+            'timeStamp' => '' . time(),
+            'nonceStr' => uniqid(),
+            'package' => urlencode($package),
+        ];
+        ksort($param);
+
+        $buff = '';
+        foreach ($param as $k => $v) {
+            $buff .= $k . "=" . $v . "&";
+        }
+
+        $param['paySign'] = md5($buff . 'key=' . $this->app['config']->key);
+        $param['signType'] = 'MD5';
+        unset($param['appId']);
+
+        return $param;
     }
 }

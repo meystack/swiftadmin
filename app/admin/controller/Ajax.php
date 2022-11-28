@@ -14,6 +14,7 @@ namespace app\admin\controller;
 use app\AdminController;
 use app\common\library\ResultCode;
 use app\common\library\Upload;
+use support\Response;
 
 /**
  * Ajax类
@@ -24,16 +25,16 @@ class Ajax extends AdminController
 {
     /**
      * 测试接口
-     * @return \support\Response
+     * @return Response
      */
-    public function index(): \support\Response
+    public function index(): Response
     {
         return json(ResultCode::SUCCESS);
     }
 
     /**
      * 文件上传
-     * @return \support\Response|void
+     * @return Response|void
      * @throws \Exception
      */
     public function upload()
@@ -49,9 +50,9 @@ class Ajax extends AdminController
 
     /**
      * 远程下载图片
-     * @return mixed
+     * @return Response
      */
-    public function getImage()
+    public function getImage(): Response
     {
         if (request()->isPost()) {
             $file = Upload::instance()->download(input('url'));
@@ -60,6 +61,8 @@ class Ajax extends AdminController
             }
             return json($file);
         }
+
+        return json(ResultCode::EXCEPTION);
     }
 
 }

@@ -111,6 +111,7 @@ class ZipArchives
             }
 
         } catch (\Throwable $th) {
+            var_dump($th->getMessage());
             throw new \Exception("压缩 " . $fileName . " 包失败", -115);
         } finally {
             $zip->close();

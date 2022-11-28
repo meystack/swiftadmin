@@ -11,7 +11,6 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
-
 /**
  * RESULT代码文件
  */
@@ -105,6 +104,12 @@ class ResultCode
         'code'   => -110,
         'status' => 'STATUSEXCEPTION',
         'msg'    => '当前用户已被禁用',
+    ];
+
+    const PLEASELOGININ = [
+        'code'   => -111,
+        'status' => 'PLEASELOGININ',
+        'msg'    => '请登录后操作',
     ];
 
     const ACCESS_TOKEN_TIMEOUT = [

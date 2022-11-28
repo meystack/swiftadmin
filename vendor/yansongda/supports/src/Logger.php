@@ -26,33 +26,13 @@ use Psr\Log\LoggerInterface;
  */
 class Logger
 {
-    /**
-     * Logger instance.
-     *
-     * @var \Psr\Log\LoggerInterface|null
-     */
-    protected $logger;
+    protected ?LoggerInterface $logger = null;
 
-    /**
-     * formatter.
-     *
-     * @var \Monolog\Formatter\FormatterInterface|null
-     */
-    protected $formatter;
+    protected ?FormatterInterface $formatter = null;
 
-    /**
-     * handler.
-     *
-     * @var \Monolog\Handler\AbstractProcessingHandler|null
-     */
-    protected $handler;
+    protected ?AbstractProcessingHandler $handler = null;
 
-    /**
-     * config.
-     *
-     * @var array
-     */
-    protected $config = [
+    protected array $config = [
         'file' => null,
         'identify' => 'yansongda.supports',
         'level' => BaseLogger::DEBUG,
@@ -95,11 +75,7 @@ class Logger
      */
     public function getLogger(): LoggerInterface
     {
-        if (is_null($this->logger)) {
-            $this->logger = $this->createLogger();
-        }
-
-        return $this->logger;
+        return $this->logger ??= $this->createLogger();
     }
 
     public function createLogger(): BaseLogger
@@ -132,11 +108,7 @@ class Logger
      */
     public function getFormatter(): FormatterInterface
     {
-        if (is_null($this->formatter)) {
-            $this->formatter = $this->createFormatter();
-        }
-
-        return $this->formatter;
+        return $this->formatter ??= $this->createFormatter();
     }
 
     /**
@@ -166,11 +138,7 @@ class Logger
 
     public function getHandler(): AbstractProcessingHandler
     {
-        if (is_null($this->handler)) {
-            $this->handler = $this->createHandler();
-        }
-
-        return $this->handler;
+        return $this->handler ??= $this->createHandler();
     }
 
     public function createHandler(): AbstractProcessingHandler

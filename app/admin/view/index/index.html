@@ -12,6 +12,7 @@
     <meta name="format-detection" content="telephone=no">
     <link href="__STATICADMIN__layui/css/layui.css?v={:release()}" rel="stylesheet" type="text/css"/>
     <link href="__STATICADMIN__css/style.css?v={:release()}" rel="stylesheet" type="text/css"/>
+    <link href="__STATICADMIN__layui/css/font-awesome.css?v={:release()}" rel="stylesheet" type="text/css"/>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -27,14 +28,14 @@
     }
 </style>
 <script>
-    var _global_ = {
+    let _global_ = {
         app: "{$app|default='admin.php'}",
         controller: "{$controller|default='index'}",
         action: "{$action|default='index'}",
         api: "{:config('app.api_url')}"
     };
 
-    var _upload_chunkSize =  {:saenv('upload_chunk_size')};
+    let _upload_chunkSize =  {:saenv('upload_chunk_size')};
 </script>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -78,11 +79,12 @@
                 </a>
             </li>
             <li class="layui-nav-item" lay-unselect>
-                <a href="javascript:;" sa-event="message" lay-text="{:__('消息中心')}"
-                   data-url="{:url('/system/admin/message',[],false)}">
+                <a href="javascript:;" sa-event="bells" lay-text="{:__('消息中心')}" data-url="{:url('/system/admin/bells',[],false)}">
                     <i class="layui-icon fa-bell-o"></i>
                     <!-- 如果有新消息，则显示小圆点 -->
-                    <span class="layui-badge-dot"></span>
+                    <neq name="notice_count" value="0">
+                        <span class="layui-badge-dot"></span>
+                    </neq>
                 </a>
 
             </li>
@@ -135,7 +137,7 @@
 </div>
 <script src="__STATICADMIN__layui/layui.js?v={:release()}"></script>
 <script src="__STATICADMIN__js/common.js?v={:release()}"></script>
-<link href="__STATICADMIN__layui/css/font-awesome.css?v={:release()}" rel="stylesheet" type="text/css"/>
+<script src="__STATICADMIN__js/plugin.js?v={:release()}"></script>
 <script>
     layui.use(['admin', 'mousewheel', 'dropdown'], function () {
         let $ = layui.jquery;

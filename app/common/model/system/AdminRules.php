@@ -3,6 +3,9 @@ declare (strict_types=1);
 
 namespace app\common\model\system;
 
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -25,17 +28,18 @@ class AdminRules extends Model
      * @param array $array 引用数组
      * @param int $blank 替换字符
      * @param int $level 栏目等级
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function getListRule(string $tips = '', int $pid = 0, array &$array = [], int $blank = 0, int $level = 0): array
     {
         $result = self::where('pid', $pid)->select()->toArray();
         foreach ($result as $key => $value) {
             if (!empty($tips)) {
-                $catename = $tips . $value['title'];
-                $value['title'] = str_repeat('', $blank) . $catename;
+                $cateName = $tips . $value['title'];
+                $value['title'] = str_repeat('', $blank) . $cateName;
             }
             $value['_level'] = $level;
             $array[] = $value;
@@ -48,11 +52,10 @@ class AdminRules extends Model
 
     /**
      * 返回栏目树形结构
-     *
-     * @return void
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return array|void
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function getListTree()
     {
@@ -71,11 +74,11 @@ class AdminRules extends Model
      * @param array $list 菜单列表
      * @param string $note
      * @param mixed $parent 父类的name或pid
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public static function createMenu(array $list = [], string $note = '', $parent = 0)
+    public static function createMenu(array $list = [], string $note = '',mixed $parent = 0)
     {
         $fields = array_flip(['title', 'router', 'alias', 'type', 'icon', 'note', 'status']);
         foreach ($list as $key => $item) {
@@ -104,11 +107,11 @@ class AdminRules extends Model
      * 启用菜单
      * @param string $name
      * @return void
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public static function enabled(string $name)
+    public static function enabled(string $name): void
     {
         $list = self::getNoteByMenus($name);
         foreach ($list as $item) {
@@ -121,11 +124,11 @@ class AdminRules extends Model
      * @param string $name
      * @param bool $force
      * @return void
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public static function disabled(string $name, bool $force = false)
+    public static function disabled(string $name, bool $force = false): void
     {
         $list = self::getNoteByMenus($name);
         foreach ($list as $item) {
@@ -137,9 +140,9 @@ class AdminRules extends Model
      * 导出指定名称的菜单规则
      * @param string $name
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function export(string $name): array
     {
@@ -168,12 +171,12 @@ class AdminRules extends Model
     /**
      * 根据名称获取规则IDS
      * @param string $name
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return object|mixed|void
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public static function getNoteByMenus(string $name)
+    public static function getNoteByMenus(string $name = '')
     {
         return self::withTrashed()->where('note', $name)->select();
     }

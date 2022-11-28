@@ -9,10 +9,12 @@ use Yansongda\Supports\Collection;
 use Yansongda\Supports\Config;
 use Yansongda\Supports\Str;
 
+/**
+ * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_4.shtml
+ */
 class InvokePrepayPlugin extends \Yansongda\Pay\Plugin\Wechat\Pay\Common\InvokePrepayPlugin
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      * @throws \Exception
@@ -20,7 +22,7 @@ class InvokePrepayPlugin extends \Yansongda\Pay\Plugin\Wechat\Pay\Common\InvokeP
     protected function getInvokeConfig(Rocket $rocket, string $prepayId): Config
     {
         $config = new Config([
-            'appid' => $this->getAppid($rocket),
+            'appid' => $this->getAppId($rocket),
             'partnerid' => get_wechat_config($rocket->getParams())->get('mch_id'),
             'prepayid' => $prepayId,
             'package' => 'Sign=WXPay',
@@ -34,7 +36,6 @@ class InvokePrepayPlugin extends \Yansongda\Pay\Plugin\Wechat\Pay\Common\InvokeP
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -49,10 +50,8 @@ class InvokePrepayPlugin extends \Yansongda\Pay\Plugin\Wechat\Pay\Common\InvokeP
         return get_wechat_sign($params, $contents);
     }
 
-    protected function getAppid(Rocket $rocket): string
+    protected function getConfigKey(): string
     {
-        $config = get_wechat_config($rocket->getParams());
-
-        return $config->get('app_id', '');
+        return 'app_id';
     }
 }

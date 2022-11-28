@@ -30,26 +30,4 @@ class SystemLog extends Model
             }
         }
     }
-
-    /**
-     * 设置IP转换
-     * @access  public
-     * @param   $ip
-     * @return  mixed
-     */
-    public function setIPAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取IP转换
-     * @access  public
-     * @param   $ip
-     * @return  mixed
-     */
-    public function getIPAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
-    }
 }

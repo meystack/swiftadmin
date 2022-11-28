@@ -4,29 +4,9 @@ declare(strict_types=1);
 
 namespace Yansongda\Supports\Traits;
 
-use RuntimeException;
-
 trait Serializable
 {
-    /**
-     * toJson.
-     */
-    public function toJson(): string
-    {
-        return $this->serialize();
-    }
-
-    /**
-     * Specify data which should be serialized to JSON.
-     *
-     * @see   https://php.net/manual/en/jsonserializable.jsonserialize.php
-     *
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     *               which is a value of any type other than a resource
-     *
-     * @since 5.4.0
-     */
-    public function jsonSerialize()
+    public function __serialize(): array
     {
         if (method_exists($this, 'toArray')) {
             return $this->toArray();
@@ -35,52 +15,51 @@ trait Serializable
         return [];
     }
 
-    /**
-     * String representation of object.
-     *
-     * @see   https://php.net/manual/en/serializable.serialize.php
-     *
-     * @return string the string representation of the object or null
-     *
-     * @since 5.1.0
-     */
-    public function serialize()
+    public function __unserialize(array $data): void
     {
-        if (method_exists($this, 'toArray')) {
-            return json_encode($this->toArray());
-        }
-
-        return json_encode([]);
-    }
-
-    /**
-     * Constructs the object.
-     *
-     * @see   https://php.net/manual/en/serializable.unserialize.php
-     *
-     * @param string $serialized <p>
-     *                           The string representation of the object.
-     *                           </p>
-     *
-     * @since 5.1.0
-     */
-    public function unserialize($serialized)
-    {
-        $data = json_decode($serialized, true);
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new RuntimeException('Invalid Json Format');
-        }
-
         $this->unserializeArray($data);
     }
 
-    public function unserializeArray(array $data): void
+    public function __toString(): string
+    {
+        return $this->toJson();
+    }
+
+    public function serialize(): ?string
+    {
+        return serialize($this);
+    }
+
+    public function unserialize($data): void
+    {
+        unserialize($data);
+    }
+
+    /**
+     * toJson.
+     */
+    public function toJson(int $option = JSON_UNESCAPED_UNICODE): string
+    {
+        return json_encode($this->__serialize(), $option);
+    }
+
+    /**
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return $this->__serialize();
+    }
+
+    public function unserializeArray(array $data): self
     {
         foreach ($data as $key => $item) {
             if (method_exists($this, 'set')) {
                 $this->set($key, $item);
             }
         }
+
+        return $this;
     }
 }

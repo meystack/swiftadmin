@@ -12,6 +12,7 @@
 namespace EasyWeChat\OpenPlatform\Server\Handlers;
 
 use EasyWeChat\Kernel\Contracts\EventHandlerInterface;
+use EasyWeChat\Kernel\Traits\ResponseCastable;
 use EasyWeChat\OpenPlatform\Application;
 
 use function EasyWeChat\Kernel\data_get;
@@ -23,6 +24,8 @@ use function EasyWeChat\Kernel\data_get;
  */
 class VerifyTicketRefreshed implements EventHandlerInterface
 {
+    use ResponseCastable;
+
     /**
      * @var \EasyWeChat\OpenPlatform\Application
      */
@@ -30,6 +33,8 @@ class VerifyTicketRefreshed implements EventHandlerInterface
 
     /**
      * Constructor.
+     *
+     * @param \EasyWeChat\OpenPlatform\Application $app
      */
     public function __construct(Application $app)
     {

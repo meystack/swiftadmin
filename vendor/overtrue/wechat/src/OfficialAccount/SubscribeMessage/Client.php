@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the overtrue/wechat.
  *
@@ -18,13 +17,10 @@ use ReflectionClass;
 /**
  * Class Client.
  *
- * @author hugo <rabbitzhang52@gmail.com>
+ * @author tegic <teg1c@foxmail.com>
  */
 class Client extends BaseClient
 {
-    /**
-     * {@inheritdoc}.
-     */
     protected $message = [
         'touser' => '',
         'template_id' => '',

@@ -14,14 +14,18 @@ declare(strict_types=1);
 namespace app\admin\controller\system;
 
 use app\AdminController;
+use app\common\model\system\AdminNotice;
 use app\common\model\system\Jobs;
 use app\common\model\system\Department;
 use app\common\model\system\Admin as AdminModel;
 use app\common\model\system\AdminGroup as AdminGroupModel;
 use app\common\model\system\AdminAccess as AdminAccessModel;
+use support\Log;
+use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use think\Exception;
 use think\facade\Cache;
 use Webman\Http\Request;
 
@@ -32,24 +36,23 @@ use Webman\Http\Request;
  */
 class Admin extends AdminController
 {
-
     /**
      * 用户管理组
-     * @var null
+     * @var mixed
      */
-    protected $group = null;
+    protected mixed $group;
 
     /**
      * 用户岗位
-     * @var null
+     * @var mixed
      */
-    public $jobs = null;
+    public mixed $jobs;
 
     /**
      * 用户部门
-     * @var null
+     * @var mixed
      */
-    public $department = null;
+    public mixed $department;
 
     // 初始化函数
     public function __construct()
@@ -122,15 +125,18 @@ class Admin extends AdminController
         }
 
         return view('/system/admin/index', [
-            'jobs' => $this->jobs,
-            'group' => $this->group,
+            'jobs'       => $this->jobs,
+            'group'      => $this->group,
             'department' => json_encode($this->department),
         ]);
     }
 
     /**
      * 添加管理员
-     * @return \support\Response
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function add(): \support\Response
     {
@@ -294,56 +300,162 @@ class Admin extends AdminController
 
     /**
      * 模版页面
+     * @return Response
      */
-    public function theme()
+    public function theme(): Response
     {
         return view('/system/admin/theme');
     }
 
     /**
      * 消息模板
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function message()
+    public function bells(): Response
     {
-        // 配置消息
-        $msg = [
-            'msg' => [
-                '0' => [
-                    'title' => '你收到了几份周报！',
-                    'type' => '周报类型',
-                    'create_time' => '1周前',
-                ],
-                '1' => [
-                    'title' => '你收到了来自女下属的周报',
-                    'type' => '周报类型',
-                    'create_time' => '2周前',
-                ]
-            ],
-            'comment' => [
-                '0' => [
-                    'title' => '一个领导评论了你',
-                    'content' => '小伙子不错，继续努力！',
-                    'create_time' => '1周前',
-                ]
-            ],
-            'things' => [
-                '0' => [
-                    'title' => '客户说尽快修复瞟了么APP闪退的问题...',
-                    'type' => '0',
-                    'create_time' => '1周前',
-                ],
-                '1' => [
-                    'title' => '秦老板和经销商的下季度合同尽快签订！',
-                    'type' => '1',
-                    'create_time' => '2周前',
-                ]
-            ],
-        ];
+        $list = [];
+        $count = [];
+        $array = ['notice', 'message', 'todo'];
+        $type = input('type', 'notice');
 
+        if (\request()->isAjax()) {
+            $page = input('page', 1);
+            $limit = input('limit', 3);
+            // 计算最大页码
+            $data = AdminNotice::with(['admin'])->where(['type' => $type, 'admin_id' => \request()->admin_id])
+                ->order('id', 'desc')->paginate(['list_rows' => $limit, 'page' => $page])->toArray();
+            return $this->success('获取成功', '', $data);
+        }
 
-        return view('/system/admin/message', [
-            'list' => $msg
+        foreach ($array as $item) {
+            $where = [
+                ['type', '=', $item],
+                ['admin_id', '=', request()->admin_id]
+            ];
+            $count[$item] = AdminNotice::where($where)->where('status', 0)->count();
+            $list[$item] = AdminNotice::with(['admin'])->withoutField('content')->where($where)->limit(3)->order('id desc')->select()->toArray();
+        }
+
+        return view('/system/admin/bells', [
+            'list'  => $list,
+            'count' => $count
         ]);
+    }
+
+    /**
+     * 阅读消息
+     * @return response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function readNotice(): Response
+    {
+        $id = input('id', 0);
+        $type = input('type', 'notice');
+
+        if (!empty($id)) {
+            $detail = AdminNotice::with(['admin'])->where(['id' => $id, 'admin_id' => \request()->admin_id])->find();
+            if (empty($detail)) {
+                return $this->error('404 Not Found');
+            }
+
+            // 默认已读
+            if ($type !== 'todo') {
+                $detail->status = 1;
+                $detail->save();
+            }
+        }
+
+        return $this->view('/system/admin/' . $type, [
+            'detail' => $detail ?? []
+        ]);
+    }
+
+    /**
+     * 更新即时消息
+     * @return Response|void
+     */
+    public function saveNotice()
+    {
+        if (\request()->post()) {
+            $post = request()->post();
+            $post['send_id'] = request()->admin_id;
+            $post['type'] = 'message';
+            $post['send_ip'] = request()->getRealIp();
+            $post['create_time'] = time();
+
+            try {
+                AdminNotice::sendNotice($post, 'none');
+            } catch (\Exception $e) {
+                return $this->error('发送失败：' . $e->getMessage());
+            }
+
+            return $this->success('发送成功');
+
+        } else if (\request()->isAjax()) {
+            $id = input('id', 0);
+            $status = input('status', 1);
+
+            try {
+                if (empty($id)) {
+                    throw new Exception('参数错误');
+                }
+                AdminNotice::where(['id' => $id, 'admin_id' => request()->admin_id])->update(['status' => $status]);
+            } catch (Exception $e) {
+                return $this->error('更新失败');
+            }
+
+            return $this->success('更新成功');
+        }
+    }
+
+    /**
+     * 清空消息
+     * @return Response|void
+     */
+    public function clearNotice()
+    {
+        if (\request()->isAjax()) {
+            $type = input('type', 'notice');
+            $where = [
+                ['type', '=', $type],
+                ['status', '=', 1],
+                ['admin_id', '=', request()->admin_id]
+            ];
+            try {
+                AdminNotice::where($where)->delete();
+            } catch (Exception $e) {
+                return $this->error('清空失败');
+            }
+
+            return $this->success('清空成功');
+        }
+    }
+
+    /**
+     * 全部消息已读
+     * @return Response|void
+     */
+    public function readAllNotice()
+    {
+        if (\request()->isAjax()) {
+            $type = input('type', 'notice');
+            $where = [
+                ['type', '=', $type],
+                ['admin_id', '=', request()->admin_id]
+            ];
+            try {
+                AdminNotice::where($where)->update(['status' => 1]);
+            } catch (Exception $e) {
+                return $this->error('操作失败');
+            }
+
+            return $this->success('全部已读成功');
+        }
     }
 
     /**
@@ -359,7 +471,7 @@ class Admin extends AdminController
 
         if (request()->isPost()) {
             $post = request()->post();
-            $post['id'] = $request->adminId;
+            $post['id'] = $request->admin_id;
             if ($this->model->update($post)) {
                 return $this->success();
             }
@@ -368,7 +480,7 @@ class Admin extends AdminController
         }
 
         $title = [];
-        $data = $this->model->find($request->adminId);
+        $data = $this->model->find($request->admin_id);
         if (!empty($data['group_id'])) {
             $group = AdminGroupModel::field('title')
                 ->whereIn('id', $data['group_id'])
@@ -393,7 +505,7 @@ class Admin extends AdminController
     {
         if (request()->isAjax()) {
             $post = request()->post();
-            $id = $request->adminId;
+            $id = $request->admin_id;
             try {
                 //code...
                 switch ($post['field']) {
@@ -448,7 +560,7 @@ class Admin extends AdminController
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public function pwd(Request $request): \support\Response
+    public function pwd(): \support\Response
     {
         if (request()->isPost()) {
 
@@ -459,7 +571,7 @@ class Admin extends AdminController
             }
 
             // 查找数据
-            $where[] = ['id', '=', $request->admin_id];
+            $where[] = ['id', '=', request()->admin_id];
             $where[] = ['pwd', '=', encryptPwd($pwd)];
             $result = $this->model->where($where)->find();
 

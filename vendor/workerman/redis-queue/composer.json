@@ -6,7 +6,8 @@
     "description": "Message queue system written in PHP based on workerman and backed by Redis.",
     "require": {
         "php": ">=5.4",
-        "workerman/redis" : "^1.0"
+        "workerman/redis" : "^1.0",
+        "workerman/workerman" : "^4.0.20"
     },
     "autoload": {
         "psr-4": {"Workerman\\RedisQueue\\": "./src"}

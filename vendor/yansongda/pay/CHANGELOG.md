@@ -1,6 +1,103 @@
+## v3.1.12
+
+### fixed
+
+- fix: 微信代金券详情 url 不正确(#663)
+
+### refactor
+
+- refactor: 优化代码 (#661)
+
+## v3.1.11
+
+### added
+
+- feat: 微信退款自动增加回调url(#649)
+
+## v3.1.10
+
+### added
+
+- feat: 支付宝周期扣款签约接口(#644)
+
+## v3.1.9
+
+### fixed
+
+- fix: 微信服务商模式预下单存在子商户appid时，invoke 时也应该为子商户 appid (#638)
+
+## v3.1.8
+
+### fixed
+
+- fix: 提前读取响应数据造成数据错误的问题(#633, #634)
+
+## v3.1.7
+
+### fixed
+
+- fix: 微信内网页支付供应商模式 sub_appid 非必填(#628)
+
+## v3.1.6
+
+### fixed
+
+- fix: 微信注释中返回类型错误(#630)
+
+## v3.1.5
+
+### added
+
+- feat: 微信服务商退款及查询退款支持自动 sub_mchid 参数(#619)
+
+## v3.1.4
+
+### added
+
+- feat: 支持微信投诉API (#614)
+
+## v3.1.3
+
+### added
+
+- feat: 配置文件增加第三方应用授权token的支持 (#602)
+
+## v3.1.2
+
+### fixed
+
+- fix: alipay 中 event dispatch provider 是 wechat 的问题 #595
+
+## v3.1.1
+
+### fixed
+
+- fix: 设置 container，强制更新 config 后 container 不是设置的 container 的问题 #591
+
+## v3.1.0
+
+兼容 v3.0 版本，推荐升级(#579)
+
+### dependency
+
+- delete: 移除 `php-di/php-di` 依赖。如果您使用的框架非 `hyperf`, `laravel` 或 没有指定 `ContainerInterface`，仍需手动安装 `composer require php-di/php-di`
+- delete: 移除 `guzzlehttp/guzzle` 依赖。如果没有指定 `\Yansongda\Pay\Contract\HttpClientInterface` 仍需手动安装 `composer require guzzlehttp/guzzle`
+- upgrade: 升级 `yansongda/supports` 到 `~v3.2.0`
+- upgrade: 升级 `php` 最低版本到 `7.4.0`
+
+### fixed
+
+- fix: 解决 php8.1 下 deprecated 的提示
+
+### kernel
+
+- refactor: 自动识别 `hyperf`, `laravel` 框架，使用相应的 `container` 减少内存占用
+- refactor: 完全支持 `psr11`，可手动传入 `ContainerInterface` 使用
+- changed: `Pay::config(array $config = [], $container = null)` 方法第二个参数增加为 $container，可手动传入 `ContainerInterface`/`Closure`。注意 `Closure` 需最终返回一个 `ContainerInterface` 的实例。
+
 ## v3.0.27
 
-### fix
+### fixed
 
 - fix: 添加分账接受人姓名加密字段错误 (#566)
 

@@ -1,15 +1,23 @@
 <!--// 初始化菜单-->
 <ul class="layui-nav layui-nav-tree" lay-filter="master">
-	<li class="layui-nav-item layui-this">
-		<a lay-href="/user/profile">控制台</a>
-	</li>
-	<!--// 前台菜单-->
-	{:get_plugin_menu()}
+
 	<li class="layui-nav-item">
-		<a class="#" href="javascript:;">账号设置</a>
+		<a class="#" href="javascript:;">Dashboard</a>
 		<dl class="layui-nav-child">
-			<dd><a lay-href="/user/security">安全设置</a></dd>
+			<dd class="layui-this"><a lay-href="/index/user/center">控制台</a></dd>
+		</dl>
+	</li>
+	<!--// 插件菜单开始-->
+	{:get_plugin_menu_entry()}
+	<!--// 插件菜单结束-->
+	<li class="layui-nav-item">
+		<a class="#" href="javascript:;">我的账户</a>
+		<dl class="layui-nav-child">
+			<dd><a lay-href="/index/user/profile">我的资料</a></dd>
+			<dd><a lay-href="/index/user/message">站内消息</a></dd>
+			<dd><a lay-href="/index/user/login_log">登录日志</a></dd>
+			<dd><a lay-href="/index/user/certification">实名认证</a></dd>
+			<dd><a lay-href="/index/user/security">安全中心</a></dd>
 		</dl>
 	</li>
 </ul>
-

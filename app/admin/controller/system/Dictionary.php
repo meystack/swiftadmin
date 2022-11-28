@@ -13,6 +13,10 @@ namespace app\admin\controller\system;
 
 use app\AdminController;
 use app\common\model\system\Dictionary as DictionaryModel;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -31,7 +35,10 @@ class Dictionary extends AdminController
 
     /**
      * 字典首页
-     * @return \support\Response
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function index(): \support\Response
     {
@@ -46,7 +53,7 @@ class Dictionary extends AdminController
         if (request()->isAjax()) {
 
             // 生成查询数据
-            $pid = !strstr($pid,',') ? $pid : explode(',',$pid);
+            $pid = !str_contains($pid, ',') ? $pid : explode(',',$pid);
             $where[] = ['pid','in',$pid];
             if (!empty($post['name'])) {
                 $where[] = ['name','like','%'.$post['name'].'%'];

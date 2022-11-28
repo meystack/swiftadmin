@@ -26,6 +26,8 @@ class Client extends BaseClient
     /**
      * get certficates.
      *
+     * @param bool $returnRaw
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -62,6 +64,8 @@ class Client extends BaseClient
 
     /**
      * decrypt ciphertext.
+     *
+     * @param array $encryptCertificate
      *
      * @return string
      *

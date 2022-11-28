@@ -30,6 +30,9 @@ class Image extends Message
 
     /**
      * Image constructor.
+     *
+     * @param string $base64
+     * @param string $md5
      */
     public function __construct(string $base64, string $md5)
     {

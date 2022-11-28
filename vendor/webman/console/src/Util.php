@@ -1,6 +1,8 @@
 <?php
 namespace Webman\Console;
 
+use Doctrine\Inflector\InflectorFactory;
+
 class Util
 {
     public static function nameToNamespace($name)
@@ -14,10 +16,8 @@ class Util
 
     public static function classToName($class)
     {
-        $class = lcfirst($class);
-        return preg_replace_callback(['/([A-Z])/'], function ($matches) {
-            return '_' . strtolower($matches[1]);
-        }, $class);
+        $inflector = InflectorFactory::create()->build();
+        return $inflector->pluralize($inflector->tableize($class));
     }
 
     public static function nameToClass($class)

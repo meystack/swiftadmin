@@ -29,6 +29,8 @@ class EchoStrHandler implements EventHandlerInterface
 
     /**
      * EchoStrHandler constructor.
+     *
+     * @param ServiceContainer $app
      */
     public function __construct(ServiceContainer $app)
     {
@@ -52,5 +54,7 @@ class EchoStrHandler implements EventHandlerInterface
 
             return new FinallyResult($str);
         }
+
+        return null;
     }
 }

@@ -12,6 +12,10 @@ declare (strict_types=1);
 namespace app\common\library;
 
 use app\common\model\system\UserValidate;
+use Psr\SimpleCache\InvalidArgumentException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Event\Event;
 
 /**
@@ -21,27 +25,41 @@ use Webman\Event\Event;
 class Sms
 {
     /**
+     * 默认配置
+     * @var array
+     */
+    protected array $config = [];
+
+    /**
+     * 错误信息
+     * @var string
+     */
+    protected string $_error = '';
+
+    /**
+     * 验证码对象
+     * @var mixed
+     */
+    protected string $smsType = 'alisms';
+
+    /**
+     * 验证码过期时间
+     * @var int
+     */
+    private int $expireTime = 5; //验证码过期时间（分钟）
+
+    /**
      * @var object 对象实例
      */
     protected static $instance = null;
 
-    // 默认配置
-    protected $config = [];
-
-    // 错误信息
-    protected $_error = '';
-
-    protected $smsType = 'alisms';
-
-    /**
-     * 验证码过期时间
-     * @var string
-     */
-    private $expireTime = 5; //验证码过期时间（分钟）
-
     /**
      * 类构造函数
      * class constructor.
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function __construct()
     {
@@ -56,8 +74,11 @@ class Sms
      * @access public
      * @param array $options 参数
      * @return self
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
-
     public static function instance($options = [])
     {
         if (is_null(self::$instance)) {
@@ -164,7 +185,7 @@ class Sms
      * 设置错误
      * @param string $error 信息信息
      */
-    protected function setError(string $error)
+    protected function setError(string $error): void
     {
         $this->_error = $error;
     }

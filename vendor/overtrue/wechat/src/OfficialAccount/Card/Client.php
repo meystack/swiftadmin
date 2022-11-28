@@ -70,13 +70,14 @@ class Client extends BaseClient
      * 创建卡券.
      *
      * @param string $cardType
+     * @param array  $attributes
      *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function create($cardType = 'member_card', array $attributes)
+    public function create($cardType = 'member_card', array $attributes = [])
     {
         $params = [
             'card' => [
@@ -135,6 +136,7 @@ class Client extends BaseClient
      *
      * @param string $cardId
      * @param string $type
+     * @param array  $attributes
      *
      * @return mixed
      *
@@ -171,6 +173,8 @@ class Client extends BaseClient
 
     /**
      * 创建二维码.
+     *
+     * @param array $cards
      *
      * @return mixed
      *
@@ -290,6 +294,8 @@ class Client extends BaseClient
 
     /**
      * 设置测试白名单(by username).
+     *
+     * @param array $usernames
      *
      * @return mixed
      *

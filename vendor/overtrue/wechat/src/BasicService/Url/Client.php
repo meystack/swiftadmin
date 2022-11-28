@@ -23,6 +23,8 @@ class Client extends BaseClient
     /**
      * Shorten the url.
      *
+     * @param string $url
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException

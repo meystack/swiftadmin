@@ -42,6 +42,8 @@ class AccessToken extends BaseAccessToken
 
     /**
      * Credential for get token.
+     *
+     * @return array
      */
     protected function getCredentials(): array
     {

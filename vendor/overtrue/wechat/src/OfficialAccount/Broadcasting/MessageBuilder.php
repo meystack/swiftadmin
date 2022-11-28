@@ -39,6 +39,8 @@ class MessageBuilder
     /**
      * Set message.
      *
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     *
      * @return $this
      */
     public function message(MessageInterface $message)
@@ -51,6 +53,8 @@ class MessageBuilder
     /**
      * Set target user or group.
      *
+     * @param array $to
+     *
      * @return $this
      */
     public function to(array $to)
@@ -61,6 +65,8 @@ class MessageBuilder
     }
 
     /**
+     * @param int $tagId
+     *
      * @return \EasyWeChat\OfficialAccount\Broadcasting\MessageBuilder
      */
     public function toTag(int $tagId)
@@ -76,6 +82,8 @@ class MessageBuilder
     }
 
     /**
+     * @param array $openids
+     *
      * @return \EasyWeChat\OfficialAccount\Broadcasting\MessageBuilder
      */
     public function toUsers(array $openids)
@@ -100,6 +108,8 @@ class MessageBuilder
     }
 
     /**
+     * @param array $attributes
+     *
      * @return \EasyWeChat\OfficialAccount\Broadcasting\MessageBuilder
      */
     public function with(array $attributes)
@@ -111,6 +121,10 @@ class MessageBuilder
 
     /**
      * Build message.
+     *
+     * @param array $prepends
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
@@ -133,6 +147,11 @@ class MessageBuilder
 
     /**
      * Build preview message.
+     *
+     * @param string $by
+     * @param string $user
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */

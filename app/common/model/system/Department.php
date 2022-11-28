@@ -3,8 +3,11 @@ declare (strict_types = 1);
 
 namespace app\common\model\system;
 
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
+use think\db\Query;
 use think\Model;
-use think\facade\Db;
 use think\model\concern\SoftDelete;
 
 /**
@@ -21,21 +24,23 @@ class Department extends Model
     /**
      * 树形分类
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
 	public static function getListTree(): array
     {
         $array = self::select()->toArray();
-		if (is_array($array) && !empty($array)) {
+		if (!empty($array)) {
 			return list_to_tree($array);
 		}
 
         return [];
 	}
 
-    // 字段修改器
+    /**
+     * 字段修改器
+     */
     public function setSortAttr($value) 
     {
         if (is_empty($value)) {

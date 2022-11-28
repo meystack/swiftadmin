@@ -34,6 +34,10 @@ class ServiceProvider implements ServiceProviderInterface
             return new ContactWayClient($app);
         };
 
+        $app['group_chat_way'] = function ($app) {
+            return new GroupChatWayClient($app);
+        };
+
         $app['external_contact_statistics'] = function ($app) {
             return new StatisticsClient($app);
         };
@@ -44,6 +48,22 @@ class ServiceProvider implements ServiceProviderInterface
 
         $app['school'] = function ($app) {
             return new SchoolClient($app);
+        };
+
+        $app['external_contact_moment'] = function ($app) {
+            return new MomentClient($app);
+        };
+
+        $app['external_contact_message_template'] = function ($app) {
+            return new MessageTemplateClient($app);
+        };
+
+        $app['product'] = function ($app) {
+            return new ProductClient($app);
+        };
+
+        $app['intercept'] = function ($app) {
+            return new InterceptClient($app);
         };
     }
 }

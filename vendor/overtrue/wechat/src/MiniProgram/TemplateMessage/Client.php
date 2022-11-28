@@ -40,6 +40,9 @@ class Client extends BaseClient
     protected $required = ['touser', 'template_id', 'form_id'];
 
     /**
+     * @param int $offset
+     * @param int $count
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -51,6 +54,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $id
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -62,6 +67,9 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $id
+     * @param array  $keyword
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -76,6 +84,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $templateId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -89,6 +99,9 @@ class Client extends BaseClient
     }
 
     /**
+     * @param int $offset
+     * @param int $count
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException

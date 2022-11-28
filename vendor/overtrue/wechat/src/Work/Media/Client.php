@@ -24,6 +24,8 @@ class Client extends BaseClient
     /**
      * Get media.
      *
+     * @param string $mediaId
+     *
      * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -31,7 +33,132 @@ class Client extends BaseClient
      */
     public function get(string $mediaId)
     {
-        $response = $this->requestRaw('cgi-bin/media/get', 'GET', [
+        return $this->getResources($mediaId, 'cgi-bin/media/get');
+    }
+
+    /**
+     * Upload Image.
+     *
+     * @param string $path
+     * @param array $form
+     *
+     * @return mixed
+     */
+    public function uploadImage(string $path, array $form = [])
+    {
+        return $this->upload('image', $path, $form);
+    }
+
+    /**
+     * Upload Voice.
+     *
+     * @param string $path
+     * @param array $form
+     *
+     * @return mixed
+     */
+    public function uploadVoice(string $path, array $form = [])
+    {
+        return $this->upload('voice', $path, $form);
+    }
+
+    /**
+     * Upload Video.
+     *
+     * @param string $path
+     * @param array $form
+     *
+     * @return mixed
+     */
+    public function uploadVideo(string $path, array $form = [])
+    {
+        return $this->upload('video', $path, $form);
+    }
+
+    /**
+     * Upload File.
+     *
+     * @param string $path
+     * @param array $form
+     *
+     * @return mixed
+     */
+    public function uploadFile(string $path, array $form = [])
+    {
+        return $this->upload('file', $path, $form);
+    }
+
+    /**
+     * Upload media.
+     *
+     * @param string $type
+     * @param string $path
+     * @param array $form
+     *
+     * @return mixed
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function upload(string $type, string $path, array $form = [])
+    {
+        $files = [
+            'media' => $path,
+        ];
+
+        return $this->httpUpload('cgi-bin/media/upload', $files, $form, compact('type'));
+    }
+
+    /**
+     * Upload permanently valid images
+     *
+     * @see https://work.weixin.qq.com/api/doc/90000/90135/90256
+     * @param string $path
+     * @param array $form
+     *
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function uploadImg(string $path, array $form = [])
+    {
+        $files = [
+            'media' => $path,
+        ];
+
+        return $this->httpUpload('cgi-bin/media/uploadimg', $files, $form);
+    }
+
+
+    /**
+     * Get HD voice material
+     *
+     * @see https://work.weixin.qq.com/api/doc/90000/90135/90255
+     * @param string $mediaId
+     *
+     * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getHdVoice(string $mediaId)
+    {
+        return $this->getResources($mediaId, 'cgi-bin/media/get/jssdk');
+    }
+
+    /**
+     * @param string $mediaId
+     * @param string $uri
+     *
+     * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function getResources(string $mediaId, string $uri)
+    {
+        $response = $this->requestRaw($uri, 'GET', [
             'query' => [
                 'media_id' => $mediaId,
             ],
@@ -42,62 +169,5 @@ class Client extends BaseClient
         }
 
         return StreamResponse::buildFromPsrResponse($response);
-    }
-
-    /**
-     * Upload Image.
-     *
-     * @return mixed
-     */
-    public function uploadImage(string $path)
-    {
-        return $this->upload('image', $path);
-    }
-
-    /**
-     * Upload Voice.
-     *
-     * @return mixed
-     */
-    public function uploadVoice(string $path)
-    {
-        return $this->upload('voice', $path);
-    }
-
-    /**
-     * Upload Video.
-     *
-     * @return mixed
-     */
-    public function uploadVideo(string $path)
-    {
-        return $this->upload('video', $path);
-    }
-
-    /**
-     * Upload File.
-     *
-     * @return mixed
-     */
-    public function uploadFile(string $path)
-    {
-        return $this->upload('file', $path);
-    }
-
-    /**
-     * Upload media.
-     *
-     * @return mixed
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function upload(string $type, string $path)
-    {
-        $files = [
-            'media' => $path,
-        ];
-
-        return $this->httpUpload('cgi-bin/media/upload', $files, [], compact('type'));
     }
 }

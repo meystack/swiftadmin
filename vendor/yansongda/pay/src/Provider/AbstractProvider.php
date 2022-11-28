@@ -25,12 +25,11 @@ use Yansongda\Supports\Pipeline;
 abstract class AbstractProvider implements ProviderInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
+     * @return \Psr\Http\Message\MessageInterface|\Yansongda\Supports\Collection|array|null
+     *
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidParamsException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
-     *
-     * @return \Psr\Http\Message\MessageInterface|\Yansongda\Supports\Collection|array|null
      */
     public function call(string $plugin, array $params = [])
     {
@@ -47,12 +46,10 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
+     * @return \Psr\Http\Message\MessageInterface|\Yansongda\Supports\Collection|array|null
+     *
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidParamsException
-     * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
-     *
-     * @return \Psr\Http\Message\MessageInterface|\Yansongda\Supports\Collection|array|null
      */
     public function pay(array $plugins, array $params)
     {
@@ -70,9 +67,7 @@ abstract class AbstractProvider implements ProviderInterface
             ->send((new Rocket())->setParams($params)->setPayload(new Collection()))
             ->through($plugins)
             ->via('assembly')
-            ->then(function ($rocket) {
-                return $this->ignite($rocket);
-            });
+            ->then(fn ($rocket) => $this->ignite($rocket));
 
         Event::dispatch(new Event\PayFinish($rocket));
 
@@ -80,7 +75,6 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
      * @throws \Yansongda\Pay\Exception\InvalidResponseException
@@ -106,7 +100,7 @@ abstract class AbstractProvider implements ProviderInterface
         try {
             $response = $http->sendRequest($rocket->getRadar());
 
-            $contents = $response->getBody()->getContents();
+            $contents = (string) $response->getBody();
 
             $rocket->setDestination($response->withBody(Utils::streamFor($contents)))
                 ->setDestinationOrigin($response->withBody(Utils::streamFor($contents)));

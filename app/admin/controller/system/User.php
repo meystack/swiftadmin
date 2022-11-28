@@ -30,17 +30,11 @@ use Webman\Http\Request;
  */
 class User extends AdminController
 {
-    /**
-     * @var array
-     */
-    private $userGroup;
-
     // 初始化函数
     public function __construct()
     {
         parent::__construct();
         $this->model = new UserModel();
-        $this->userGroup = UserGroupModel::select()->toArray();
     }
 
     /**
@@ -52,7 +46,7 @@ class User extends AdminController
      */
     public function index(): \support\Response
     {
-
+        $userGroup = UserGroupModel::select()->toArray();
         if (request()->isAjax()) {
 
             // 获取数据
@@ -83,7 +77,7 @@ class User extends AdminController
                 $region = Ip2Region::instance()->memorySearch($value['login_ip']);
                 $region = explode('|', $region['region']);
                 $list[$key]['region'] = $region;
-                $result = list_search($this->userGroup, ['id' => $value['group_id']]);
+                $result = list_search($userGroup, ['id' => $value['group_id']]);
                 if (!empty($result)) {
                     $list[$key]['group'] = $result['title'];
                 }
@@ -94,7 +88,7 @@ class User extends AdminController
         }
 
         return view('/system/user/index', [
-            'UserGroup' => $this->userGroup,
+            'UserGroup' => $userGroup,
         ]);
     }
 
@@ -175,7 +169,7 @@ class User extends AdminController
     /**
      * 删除会员
      */
-    public function del()
+    public function del(): Response
     {
        return $this->error('不允许删除会员');
     }

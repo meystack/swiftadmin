@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace system\third;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * 微博登录类
@@ -64,22 +65,23 @@ class weibo
         return $url;        
     }
 
-   /**
+    /**
      * 获取用户信息
      * @param array $params
      * @return array
+     * @throws GuzzleException
      */
-    public function getUserInfo($params = [])
+    public function getUserInfo(array $params = []): array
     {
         $params = $params ? $params : input();
         if (isset($params['access_token']) || (isset($params['state']) && $params['state'] == session('state') && isset($params['code']))) {
             //获取access_token
             $data = isset($params['code']) ? $this->getAccessToken($params['code']) : $params;
-            $access_token = isset($data['access_token']) ? $data['access_token'] : '';
-            $refresh_token = isset($data['refresh_token']) ? $data['refresh_token'] : '';
-            $expires_in = isset($data['expires_in']) ? $data['expires_in'] : 0;
+            $access_token = $data['access_token'] ?? '';
+            $refresh_token = $data['refresh_token'] ?? '';
+            $expires_in = $data['expires_in'] ?? 0;
             if ($access_token) {
-                $uid = isset($data['uid']) ? $data['uid'] : '';
+                $uid = $data['uid'] ?? '';
                 //获取用户信息
                 $queryarr = [
                     "access_token" => $access_token,
@@ -91,17 +93,16 @@ class weibo
                     return [];
                 }
                 $userinfo = $userinfo ? $userinfo : [];
-                $userinfo['nickname'] = isset($userinfo['screen_name']) ? $userinfo['screen_name'] : '';
-                $userinfo['avatar'] = isset($userinfo['profile_image_url']) ? $userinfo['profile_image_url'] : '';
+                $userinfo['nickname'] = $userinfo['screen_name'] ?? '';
+                $userinfo['avatar'] = $userinfo['profile_image_url'] ?? '';
                 $userinfo['avatar'] = str_replace('http://','https://',$userinfo['avatar']);
-                $data = [
+                return [
                     'access_token'  => $access_token,
                     'refresh_token' => $refresh_token,
                     'expires_in'    => $expires_in,
                     'openid'        => $uid,
                     'userinfo'      => $userinfo
                 ];
-                return $data;
             }
         }
         return [];

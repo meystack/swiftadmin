@@ -3,6 +3,7 @@
 namespace app\index\middleware\system;
 
 use app\common\library\Auth;
+use app\common\library\ResultCode;
 use support\View;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
@@ -19,25 +20,25 @@ class IndexPermissions implements MiddlewareInterface
      * 控制器登录鉴权
      * @var bool
      */
-    public $needLogin = false;
+    public bool $needLogin = false;
 
     /**
      * 禁止登录重复
      * @var array
      */
-    public $repeatLogin = ['login', 'register'];
+    public array $repeatLogin = ['login', 'register'];
 
     /**
      * 非鉴权方法
      * @var array
      */
-    public $noNeedAuth = [];
+    public array $noNeedAuth = [];
 
     /**
      * 跳转URL地址
      * @var string
      */
-    public $JumpUrl = '/user/index';
+    public string $JumpUrl = '/user/index';
 
     /**
      * 校验权限
@@ -67,16 +68,21 @@ class IndexPermissions implements MiddlewareInterface
         // 是否验证登录器
         $auth = Auth::instance();
         if ($auth->isLogin()) {
-            $request->userId = $auth->userInfo['id'];
-            $request->userInfo = $auth->userInfo;
+            $request->user_id = $auth->userData['id'];
+            $request->userData = $auth->userData;
+            // 禁止重复登录
             if (in_array($action, $this->repeatLogin)) {
                 return redirect($this->JumpUrl);
             }
 
-            View::assign('user', $auth->userInfo);
+            View::assign('user', $auth->userData);
         } else {
             if ($this->needLogin && !in_array($action, $this->noNeedAuth)) {
-                return redirect('/');
+                if (\request()->isAjax()) {
+                    return json(ResultCode::PLEASELOGININ);
+                } else {
+                    return redirect('/user/login');
+                }
             }
         }
 

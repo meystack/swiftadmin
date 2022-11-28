@@ -13,7 +13,11 @@ declare(strict_types=1);
 
 namespace app\common\taglib;
 
+use Psr\SimpleCache\InvalidArgumentException;
 use system\Random;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use think\template\TagLib;
 
@@ -22,15 +26,15 @@ use think\template\TagLib;
  */
 class SaLibs extends TagLib
 {
-
     /**
      * 定义标签列表
      */
     protected $tags = [
         // 标签定义： attr 属性列表 close 是否闭合（0 或者1 默认1） alias 标签别名 level 嵌套层次
-        'variable'   => ['attr' => 'name', 'close' => 0],                    // 自定义变量
-        'company'    => ['attr' => 'name,alias', 'close' => 0],              // 公司信息
-        'dictionary' => ['attr' => 'id,value'],                              // 获取字典列表
+        'variable'   => ['attr' => 'name', 'close' => 0],                       // 自定义变量
+        'company'    => ['attr' => 'name,alias', 'close' => 0],                 // 公司信息
+        'usergroup'  => ['attr' => 'id, name,alias'],                           // 用户组列表
+        'dictionary' => ['attr' => 'id,value'],                                 // 获取字典列表
     ];
 
     /**
@@ -38,7 +42,10 @@ class SaLibs extends TagLib
      * @access public
      * @param  $tags
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function tagVariable($tags)
     {
@@ -57,7 +64,7 @@ class SaLibs extends TagLib
      * 获取公司变量
      * @access public
      * @param $tags
-     * @return mixed
+     * @return string
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -75,6 +82,33 @@ class SaLibs extends TagLib
         if (!empty($data) && isset($data[$tags['name']])) {
             return $data[$tags['name']];
         }
+
+        return '';
+    }
+
+    /**
+     * 获取用户组
+     * @access public
+     * @param array $tags
+     * @param string $content
+     * @return string
+     */
+    public function tagUsergroup(array $tags, string $content): string
+    {
+        $tags['id'] = $tags['id'] ?? 'vo';
+        $id = $this->autoBuildVar($tags['id']);
+        $_var = Random::alpha();
+        $where = [];
+        if (isset($tags['pay'])) {
+            $where[] = ['pay', '=', $tags['pay']];
+        }
+        $parse = '<?php ';
+        $parse .= '$_' . $_var . ' = \app\common\model\system\UserGroup::where('.var_exports($where).')->select();';
+        $parse .= ' ?>';
+        $parse .= '<?php foreach($_' . $_var . ' as $key=>' . $id . '):?>';
+        $parse .= $content;
+        $parse .= '<?php endforeach; ?>';
+        return $parse;
     }
 
     /**

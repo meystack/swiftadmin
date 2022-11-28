@@ -11,6 +11,7 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\common\middleware;
+use Webman\Event\Event;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
 use Webman\Http\Request;
@@ -20,7 +21,6 @@ use Webman\Http\Request;
  * @package app\common\middleware
  * @author meystack <
  */
-
 class AppInitialize implements MiddlewareInterface
 {
     public function process(Request $request, callable $handler): Response
@@ -29,6 +29,8 @@ class AppInitialize implements MiddlewareInterface
             return \response(request_error(), 404);
         }
 
+        // 执行插件初始化钩子
+        Event::emit('appInit', $request);
         return $handler($request);
     }
 }

@@ -19,6 +19,9 @@ use app\common\model\system\User;
 use app\common\model\system\UserThird;
 use support\Response;
 use system\Random;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 /**
  * 社会化登录
@@ -28,20 +31,20 @@ class Third extends HomeController
 {
     /**
      * 类型
-     * @var string
+     * @var mixed
      */
-    public $type = null;
+    public mixed $type;
 
     /**
      * 类型实例
-     * @var Object
+     * @var mixed
      */
-    public $oauth = null;
+    public mixed $oauth;
 
     /**
      * @var array
      */
-    public $repeatLogin = [];
+    public array $repeatLogin = [];
 
     /**
      * 初始化构造函数
@@ -70,7 +73,7 @@ class Third extends HomeController
     /**
      * 用户登录操作
      */
-    public function login(): \support\Response
+    public function login(): Response
     {
         try {
             $this->oauth = $this->oType();
@@ -85,9 +88,9 @@ class Third extends HomeController
     /**
      * 用户回调函数
      * @return mixed|void
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function callback()
     {
@@ -96,40 +99,40 @@ class Third extends HomeController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
-        $userInfos = $this->oauth->getUserInfo();
-        if (!empty($userInfos) && !$this->auth->isLogin()) {
-            return $this->register($userInfos, $this->type);
+        $userData = $this->oauth->getUserInfo();
+        if (!empty($userData) && !$this->auth->isLogin()) {
+            return $this->register($userData, $this->type);
         } else if ($this->auth->isLogin()) { // 绑定用户
-            return $this->doBind($userInfos, $this->type);
+            return $this->doBind($userData, $this->type);
         }
     }
 
     /**
      * 用户注册操作
-     * @param array $userInfos
+     * @param array $userDatas
      * @param string|null $type
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    protected function register(array $userInfos = [], string $type = null)
+    protected function register(array $userDatas = [], string $type = null)
     {
-        $openid = $userInfos['openid'] ?? $userInfos['id'];
-        $nickname = $userInfos['userinfo']['name'] ?? $userInfos['userinfo']['nickname'];
-        $userInfo = UserThird::alias('th')
+        $openid = $userDatas['openid'] ?? $userDatas['id'];
+        $nickname = $userDatas['userData']['name'] ?? $userDatas['userData']['nickname'];
+        $userData = UserThird::alias('th')
                              ->view('user', '*', 'user.id=th.user_id')
                              ->where(['openid' => $openid, 'type' => $type])
                              ->find();
 
-        if (!empty($userInfo)) {
-            $array['id'] = $userInfo['id'];
+        if (!empty($userData)) {
+            $array['id'] = $userData['id'];
             $array['login_time'] = time();
             $array['login_ip'] = request()->getRealIp();
-            $array['login_count'] = $userInfo['login_count'] + 1;
+            $array['login_count'] = $userData['login_count'] + 1;
 
             if (User::update($array)) {
-                $response = $this->auth->responseToken($userInfo);
+                $response = $this->auth->responseToken($userData);
                 $response->withBody(json_encode(ResultCode::LOGINSUCCESS))->redirect(request()->cookie('redirectUrl', '/'));
             }
 
@@ -137,7 +140,7 @@ class Third extends HomeController
 
             // 注册本地用户
             $data['nickname'] = $nickname;
-            $data['avatar'] = $userInfos['userinfo']['avatar'];
+            $data['avatar'] = $userDatas['userData']['avatar'];
             if (User::getByNickname($nickname)) {
                 $data['nickname'] .= Random::alpha(3);
             }
@@ -152,11 +155,11 @@ class Third extends HomeController
                     'user_id'       => $result['id'],
                     'openid'        => $openid,
                     'nickname'      => $nickname,
-                    'access_token'  => $userInfos['access_token'],
-                    'refresh_token' => $userInfos['refresh_token'],
-                    'expires_in'    => $userInfos['expires_in'],
+                    'access_token'  => $userDatas['access_token'],
+                    'refresh_token' => $userDatas['refresh_token'],
+                    'expires_in'    => $userDatas['expires_in'],
                     'login_time'    => time(),
-                    'expiretime'    => time() + $userInfos['expires_in'],
+                    'expiretime'    => time() + $userDatas['expires_in'],
                 ];
             }
 
@@ -176,7 +179,7 @@ class Third extends HomeController
      * 用户绑定操作
      * @return Response
      */
-    public function bind(): \support\Response
+    public function bind(): Response
     {
         if (Auth::instance()->isLogin()) {
             $buildQuery = [
@@ -193,10 +196,9 @@ class Third extends HomeController
 
     /**
      * 用户解除绑定
-     * @return mixed|void
-     * @throws \think\db\exception\DbException
+     * @throws DbException
      */
-    public function unbind(): \support\Response
+    public function unbind(): Response
     {
         try {
             $this->oauth = $this->oType();
@@ -205,7 +207,7 @@ class Third extends HomeController
         }
         if ($this->auth->isLogin()) {
 
-            $result = $this->auth->userInfo;
+            $result = $this->auth->userData;
             if (!empty($result)) {
 
                 if (empty($result['email']) || empty($result['pwd'])) {
@@ -225,18 +227,18 @@ class Third extends HomeController
 
     /**
      * 用户绑定操作实例
-     * @param array $userInfos
+     * @param array $userDatas
      * @param string|null $type
-     * @return \support\Response|null
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response|null
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    protected function doBind(array $userInfos = [], string $type = null)
+    protected function doBind(array $userDatas = [], string $type = null)
     {
 
-        $openid = $userInfos['openid'] ?? $userInfos['id'];
-        $nickname = $userInfos['userinfo']['name'] ?? $userInfos['userinfo']['nickname'];
+        $openid = $userDatas['openid'] ?? $userDatas['id'];
+        $nickname = $userDatas['userData']['name'] ?? $userDatas['userData']['nickname'];
 
         // 查询是否被注册
         $where['openid'] = $openid;
@@ -249,11 +251,11 @@ class Third extends HomeController
                 'user_id'       => request()->cookie('uid'),
                 'openid'        => $openid,
                 'nickname'      => $nickname,
-                'access_token'  => $userInfos['access_token'],
-                'refresh_token' => $userInfos['refresh_token'],
-                'expires_in'    => $userInfos['expires_in'],
+                'access_token'  => $userDatas['access_token'],
+                'refresh_token' => $userDatas['refresh_token'],
+                'expires_in'    => $userDatas['expires_in'],
                 'login_time'    => time(),
-                'expiretime'    => time() + $userInfos['expires_in'],
+                'expiretime'    => time() + $userDatas['expires_in'],
             ];
 
             if (UserThird::create($third)) {
@@ -268,9 +270,9 @@ class Third extends HomeController
 
     /**
      * 跳转URL
-     * @return void
+     * @return Response
      */
-    protected function redirectUrl(): \support\Response
+    protected function redirectUrl(): Response
     {
         $referer = request()->cookie('redirectUrl', '/');
 

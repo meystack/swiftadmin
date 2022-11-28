@@ -17,7 +17,6 @@ use Yansongda\Supports\Str;
 class CallbackPlugin implements PluginInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -45,9 +44,8 @@ class CallbackPlugin implements PluginInterface
 
     protected function formatPayload(Rocket $rocket): void
     {
-        $payload = (new Collection($rocket->getParams()))->filter(function ($v, $k) {
-            return '' !== $v && !is_null($v) && 'sign' != $k && 'sign_type' != $k && !Str::startsWith($k, '_');
-        });
+        $payload = (new Collection($rocket->getParams()))
+            ->filter(fn ($v, $k) => '' !== $v && !is_null($v) && 'sign' != $k && 'sign_type' != $k && !Str::startsWith($k, '_'));
 
         $rocket->setPayload($payload);
     }

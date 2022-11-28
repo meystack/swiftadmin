@@ -11,14 +11,12 @@ declare (strict_types = 1);
 // +----------------------------------------------------------------------
 namespace app\admin\controller\system;
 
-
 use app\AdminController;
-use app\common\model\system\Department as DepartmentModel;
 use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use Webman\Http\Request;
+use app\common\model\system\Department as DepartmentModel;
 
 /**
  * 部门管理

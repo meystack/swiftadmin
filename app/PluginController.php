@@ -23,9 +23,9 @@ abstract class PluginController
 {
     /**
      * 视图实例对象
-     * @var null
+     * @var mixed
      */
-    public $view = null;
+    public mixed $view;
 
     /**
      * 构造方法
@@ -43,10 +43,7 @@ abstract class PluginController
         return strtolower(array_pop($data));
     }
 
-    /**
-     * 必须实现以下方法
-     * @return mixed
-     */
+    // 必须实现以下方法
     abstract public function install();
     abstract public function uninstall();
     abstract public function enabled();

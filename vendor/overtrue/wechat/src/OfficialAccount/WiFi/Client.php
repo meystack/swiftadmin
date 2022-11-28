@@ -23,6 +23,10 @@ class Client extends BaseClient
     /**
      * Get Wi-Fi statistics.
      *
+     * @param string $beginDate
+     * @param string $endDate
+     * @param int    $shopId
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -41,6 +45,10 @@ class Client extends BaseClient
 
     /**
      * Get the material QR code.
+     *
+     * @param int    $shopId
+     * @param string $ssid
+     * @param int    $type
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -61,6 +69,8 @@ class Client extends BaseClient
     /**
      * Wi-Fi completion page jump applet.
      *
+     * @param array $data
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -73,6 +83,8 @@ class Client extends BaseClient
 
     /**
      * Set the top banner jump applet.
+     *
+     * @param array $data
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

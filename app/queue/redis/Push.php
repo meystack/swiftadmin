@@ -12,15 +12,14 @@ declare (strict_types=1);
 namespace app\queue\redis;
 
 use app\AdminController;
-use Webman\Push\Api;
 
 class Push extends AdminController
 {
     /**
      * api推送
-     * @var null
+     * @var mixed
      */
-    protected $api = null;
+    protected mixed $api;
 
     /**
      * 构造函数

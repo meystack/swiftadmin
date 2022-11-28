@@ -23,7 +23,8 @@ class Client extends BaseClient
     /**
      * Unify order.
      *
-     * @param bool $isContract
+     * @param array $params
+     * @param bool  $isContract
      *
      * @return ResponseInterface|Collection|array|object|string
      *
@@ -55,6 +56,8 @@ class Client extends BaseClient
     /**
      * Query order by out trade number.
      *
+     * @param string $number
+     *
      * @return ResponseInterface|Collection|array|object|string
      *
      * @throws InvalidArgumentException
@@ -70,6 +73,8 @@ class Client extends BaseClient
     /**
      * Query order by transaction id.
      *
+     * @param string $transactionId
+     *
      * @return ResponseInterface|Collection|array|object|string
      *
      * @throws InvalidArgumentException
@@ -83,6 +88,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array $params
+     *
      * @return ResponseInterface|Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -98,6 +105,8 @@ class Client extends BaseClient
 
     /**
      * Close order by out_trade_no.
+     *
+     * @param string $tradeNo
      *
      * @return ResponseInterface|Collection|array|object|string
      *

@@ -25,6 +25,9 @@ class ServerGuardResponseCreated
      */
     public $response;
 
+    /**
+     * @param \Symfony\Component\HttpFoundation\Response $response
+     */
     public function __construct(Response $response)
     {
         $this->response = $response;

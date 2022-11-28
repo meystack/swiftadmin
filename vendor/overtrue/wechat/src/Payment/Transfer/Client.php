@@ -26,6 +26,8 @@ class Client extends BaseClient
     /**
      * Query MerchantPay to balance.
      *
+     * @param string $partnerTradeNo
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -45,6 +47,8 @@ class Client extends BaseClient
 
     /**
      * Send MerchantPay to balance.
+     *
+     * @param array $params
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -70,6 +74,8 @@ class Client extends BaseClient
     /**
      * Query MerchantPay order to BankCard.
      *
+     * @param string $partnerTradeNo
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -88,6 +94,8 @@ class Client extends BaseClient
 
     /**
      * Send MerchantPay to BankCard.
+     *
+     * @param array $params
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

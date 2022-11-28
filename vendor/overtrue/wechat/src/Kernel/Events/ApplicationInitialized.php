@@ -25,6 +25,9 @@ class ApplicationInitialized
      */
     public $app;
 
+    /**
+     * @param \EasyWeChat\Kernel\ServiceContainer $app
+     */
     public function __construct(ServiceContainer $app)
     {
         $this->app = $app;

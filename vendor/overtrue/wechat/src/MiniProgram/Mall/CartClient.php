@@ -70,6 +70,7 @@ class CartClient extends BaseClient
      * 删除收藏.
      *
      * @param string $openid
+     * @param array  $products
      *
      * @return mixed
      *

@@ -11,11 +11,11 @@ body a:hover {
     margin: 0;
 }
 
-.layui-message-list-item:hover, .layui-message-footer a:hover, .message-btn-more:hover {
+.layui-instant-list-item:hover, .layui-instant-footer a:hover, .message-btn-more:hover {
     background: #F2F2F2;
 }
 
-.layui-message-list {
+.layui-instant-list {
     position: absolute;
     top: 51px;
     bottom: 44px;
@@ -26,7 +26,7 @@ body a:hover {
     clear: both;
 }
 
-.layui-message-list-item {
+.layui-instant-list-item {
     padding: 10px 24px;
     border-bottom: 1px solid #e8e8e8;
     -ms-flex-align: start;
@@ -36,11 +36,11 @@ body a:hover {
     flex: 1 1;
 }
 
-.layui-message-list-item:hover, .message-btn-clear:hover, .message-btn-more:hover {
+.layui-instant-list-item:hover, .message-btn-clear:hover, .message-btn-more:hover {
     background: #F2F2F2;
 }
 
-.layui-message-item-icon {
+.layui-instant-item-icon {
     width: 40px;
     height: 40px;
     margin-right: 16px;
@@ -48,27 +48,40 @@ body a:hover {
     margin-top: 4px;
 }
 
-.layui-message-item-right {
+.layui-instant-item-right {
     display: block;
     flex: 1 0;
     line-height: 24px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
-.layui-message-item-title {
+.layui-instant-item-title {
     font-size: 13px;
-    color: rgba(0, 0, 0, .65);
+    color: #000;
 }
 
-.layui-message-item-text {
-    color: rgba(0, 0, 0, .45);
+.layui-instant-item-text {
+    color: #000;
     font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.layui-instant-list .active_1 .layui-instant-item-title {
+    color: rgba(0, 0, 0, .55);
+}
+
+.layui-instant-list .active_1 .layui-instant-item-text {
+    color: rgba(0, 0, 0, .55);
 }
 
 .pull-right {
     float: right;
 }
 
-.layui-message-btn-clear, .layui-message-btn-more {
+.layui-instant-btn-clear, .layui-instant-btn-more {
     display: block;
     padding: 10px 5px;
     text-align: center;
@@ -76,23 +89,23 @@ body a:hover {
     color: #333;
 }
 
-.layui-message-btn-more {
+.layui-instant-btn-more {
     color: #666;
     font-size: 13px;
 }
 
-.layui-message-list-empty {
+.layui-instant-list-empty {
     text-align: center;
     color: rgba(0, 0, 0, .45);
     padding: 73px 0 88px;
 }
 
-.layui-message-list-empty img {
+.layui-instant-list-empty img {
     height: 76px;
     margin-bottom: 16px;
 }
 
-.layui-message-footer {
+.layui-instant-footer {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -100,9 +113,10 @@ body a:hover {
     right: 0;
     border-top: 1px solid #e8e8e8;
     text-align: center;
+    white-space: nowrap;
 }
 
-.layui-message-footer a {
+.layui-instant-footer a {
     display: inline-block;
     text-align: center;
     color: #333;
@@ -113,4 +127,58 @@ body a:hover {
 
 .layui-icon-email {
     font-size: 40px;
+}
+
+.layui-flow-more a {
+    height: 26px;
+    line-height: 26px;
+}
+
+.layui-flow-more a cite {
+    font-size: 12px;
+}
+
+#instant-content .layui-card-header {
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#instant-content .layui-card-header div {
+    display: inline-block;
+}
+
+#instant-content .layui-card-header .time {
+    float: right;
+    font-weight: normal;
+    color: #999;
+}
+
+#instant-content .layui-panel {
+    min-height: 250px;
+    padding: 0 20px 20px;
+    /*border-top: 2px solid #fe5d58;*/
+    position: relative;
+}
+
+#instant-content .layui-banner {
+    position: absolute;
+    bottom: 8px;
+    color: #999;
+}
+
+#instant-content #layui-info {
+    height: 150px;
+    overflow: auto;
+}
+
+#instant-content #layui-info img {
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+#instant-content .layui-footer {
+    text-align: right;
+    padding: 10px 0;
 }

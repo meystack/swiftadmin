@@ -15,7 +15,6 @@ use Yansongda\Supports\Str;
 class SignPlugin implements PluginInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -37,13 +36,9 @@ class SignPlugin implements PluginInterface
 
     protected function formatPayload(Rocket $rocket): void
     {
-        $payload = $rocket->getPayload()->filter(function ($v, $k) {
-            return '' !== $v && !is_null($v) && 'sign' != $k;
-        });
+        $payload = $rocket->getPayload()->filter(fn ($v, $k) => '' !== $v && !is_null($v) && 'sign' != $k);
 
-        $contents = array_filter($payload->get('biz_content', []), function ($v, $k) {
-            return !Str::startsWith(strval($k), '_');
-        }, ARRAY_FILTER_USE_BOTH);
+        $contents = array_filter($payload->get('biz_content', []), fn ($v, $k) => !Str::startsWith(strval($k), '_'), ARRAY_FILTER_USE_BOTH);
 
         $rocket->setPayload(
             $payload->merge(['biz_content' => json_encode($contents)])
@@ -51,7 +46,6 @@ class SignPlugin implements PluginInterface
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -64,22 +58,15 @@ class SignPlugin implements PluginInterface
 
         openssl_sign($content, $sign, $privateKey, OPENSSL_ALGO_SHA256);
 
-        $sign = base64_encode($sign);
-
-        !is_resource($privateKey) ?: openssl_free_key($privateKey);
-
-        return $sign;
+        return base64_encode($sign);
     }
 
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
-     *
-     * @return resource|string
      */
-    protected function getPrivateKey(array $params)
+    protected function getPrivateKey(array $params): string
     {
         $privateKey = get_alipay_config($params)->get('app_secret_cert');
 
@@ -87,6 +74,6 @@ class SignPlugin implements PluginInterface
             throw new InvalidConfigException(Exception::ALIPAY_CONFIG_ERROR, 'Missing Alipay Config -- [app_secret_cert]');
         }
 
-        return get_public_or_private_cert($privateKey);
+        return get_private_cert($privateKey);
     }
 }

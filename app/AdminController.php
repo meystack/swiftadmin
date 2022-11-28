@@ -21,117 +21,117 @@ class AdminController extends BaseController
      * 数据库实例
      * @var object
      */
-    public $model = null;
+    public object $model;
 
     /**
      * 是否验证
      * @var bool
      */
-    public $isValidate = true;
+    public bool $isValidate = true;
 
     /**
      * 验证场景
      * @var string
      */
-    public $scene = '';
+    public string $scene = '';
 
     /**
      * 数据表名称
      * @var string
      */
-    public $tableName = null;
+    public string $tableName;
 
     /**
      * 控制器/类名
      * @var string
      */
-    public $controller = null;
+    public string $controller;
 
     /**
      * 控制器方法
      * @var string
      */
-    public $action = null;
+    public string $action;
 
     /**
      * 控制器/方法名
      * @var string
      */
-    public $method = null;
+    public string $method;
 
     /**
      * 操作状态
-     * @var int
+     * @var mixed
      */
-    public $status = false;
+    public mixed $status;
 
     /**
      * 获取模板
      * @access   protected
      * @var      string
      */
-    public $template = null;
+    public string $template = '';
 
     /**
      * 权限验证类
      * @var object
      */
-    public $auth = null;
+    public object $auth;
 
     /**
      * 当前表字段
      *
      * @var array
      */
-    protected $tableFields = [];
+    protected array $tableFields = [];
 
     /**
      * 默认开关
      *
      * @var string
      */
-    protected $keepField = 'status';
+    protected string $keepField = 'status';
 
     /**
      * 开启数据限制
      * 默认关闭
      * @var boolean
      */
-    protected $dataLimit = false;
+    protected bool $dataLimit = false;
 
     /**
      * 数据限制字段
      *
      * @var string
      */
-    protected $dataLimitField = 'admin_id';
+    protected string $dataLimitField = 'admin_id';
 
     /**
      * 需要排除的字段
      *
-     * @var string
+     * @var mixed
      */
-    protected $ruleOutFields = "";
+    protected mixed $ruleOutFields = '';
 
     /**
      * 查询过滤字段
      *
      * @var array
      */
-    protected $filterWhere = ['page', 'limit'];
+    protected array $filterWhere = ['page', 'limit'];
 
     /**
      * 查询转换字段
      *
      * @var array
      */
-    protected $converTime = ['create_time', 'update_time', 'delete_time'];
+    protected array $converTime = ['create_time', 'update_time', 'delete_time'];
 
     /**
      * 跳转URL地址
      * @var string
      */
-    protected $JumpUrl = '/';
+    protected string $JumpUrl = '/';
 
     /**
      * 构造函数
@@ -144,7 +144,7 @@ class AdminController extends BaseController
 
     /**
      * 获取资源
-     * @return mixed
+     * @return Response|void
      */
     public function index()
     {
@@ -155,10 +155,33 @@ class AdminController extends BaseController
             $count = $this->model->where($where)->count();
             $limit = is_empty($limit) ? 10 : $limit;
             $page = $count <= $limit ? 1 : $page;
-            $order = !array_key_exists('sort', $this->model->getFields()) ? 'id' : 'sort';
+            $fieldList = $this->model->getFields();
+            $order = !array_key_exists('sort', $fieldList) ? 'id' : 'sort';
+            $relation = [];
+            $relListKey = [];
+            try {
+                $refClass = new \ReflectionClass($this->model);
+                foreach ($refClass->getMethods() as $method) {
+                    $doc = $method->getDocComment();
+                    preg_match('/@localKey\s+(\w+)/', $doc, $localKey);
+                    preg_match('/@bind\s+(\w+)/', $doc, $bind);
+                    if (!empty($localKey) && !empty($bind)) {
+                        $relation[] = $method->getName();
+                        $expBind = explode(',', $bind[1]);
+                        $relListKey[] = ['key'=>$localKey[1], 'value'=>$expBind[0]];
+                    }
+                }
+            } catch (\ReflectionException $e) {}
             $subQuery = $this->model->field('id')->where($where)->order($order, 'desc')->limit($limit)->page($page)->buildSql();
             $subQuery = '( SELECT object.id FROM ' . $subQuery . ' AS object )';
-            $list = $this->model->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
+            $list = $this->model->with($relation)->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
+            foreach ($list as $key => $value) {
+                foreach ($relation as $index => $item) {
+                    if (isset($value[$relListKey[$index]['key']])) {
+                        $list[$key][$relListKey[$index]['key']] = $value[$relListKey[$index]['value']];
+                    }
+                }
+            }
             return $this->success('查询成功', null, $list, $count);
         }
 
@@ -175,7 +198,7 @@ class AdminController extends BaseController
 
             $post = $this->preRuleOutFields(\request()->post());
             if ($this->dataLimit) {
-                $post[$this->dataLimitField] = request()->adminInfo['id'];
+                $post[$this->dataLimitField] = request()->adminData['id'];
             }
 
             $validate = $this->isValidate ? get_class($this->model) : $this->isValidate;
@@ -203,7 +226,7 @@ class AdminController extends BaseController
         // 限制数据调用
         if (!$this->auth->SuperAdmin() && $this->dataLimit
             && in_array($this->dataLimitField, $this->model->getFields())) {
-            if ($data[$this->dataLimitField] != request()->adminInfo['id']) {
+            if ($data[$this->dataLimitField] != request()->adminData['id']) {
                 return $this->error('没有权限');
             }
         }
@@ -230,7 +253,6 @@ class AdminController extends BaseController
 
     /**
      * 删除资源
-     * @return Response|void
      */
     public function del()
     {
@@ -244,7 +266,7 @@ class AdminController extends BaseController
             foreach ($list as $item) {
                 if (!$this->auth->SuperAdmin() && $this->dataLimit
                     && in_array($this->dataLimitField, $this->model->getFields())) {
-                    if ($item[$this->dataLimitField] != request()->adminInfo['id']) {
+                    if ($item[$this->dataLimitField] != request()->adminData['id']) {
                         continue;
                     }
                 }
@@ -274,7 +296,7 @@ class AdminController extends BaseController
             $where[] = ['id', '=', input('id')];
             if (!$this->auth->SuperAdmin() && $this->dataLimit
                 && in_array($this->dataLimitField, $this->model->getFields())) {
-                $where[] = [$this->dataLimitField, '=',request()->adminInfo['id']];
+                $where[] = [$this->dataLimitField, '=',request()->adminData['id']];
             }
 
             try {
@@ -374,8 +396,7 @@ class AdminController extends BaseController
 
     /**
      * 获取查询参数
-     *
-     * @return array|false
+     * @return mixed|void
      */
     protected function buildSelectParams()
     {
@@ -501,7 +522,7 @@ class AdminController extends BaseController
             // 限制数据字段
             if (!$this->auth->SuperAdmin() && $this->dataLimit) {
                 if (in_array($this->dataLimitField, $this->tableFields)) {
-                    $where[] = [$this->dataLimitField, '=', request()->adminInfo['id']];
+                    $where[] = [$this->dataLimitField, '=', request()->adminData['id']];
                 }
             }
 
@@ -537,7 +558,6 @@ class AdminController extends BaseController
 
         return $array;
     }
-
 
     /**
      * 管理员退出

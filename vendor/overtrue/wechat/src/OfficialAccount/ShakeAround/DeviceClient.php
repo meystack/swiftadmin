@@ -21,6 +21,8 @@ use EasyWeChat\Kernel\BaseClient;
 class DeviceClient extends BaseClient
 {
     /**
+     * @param array $data
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -33,6 +35,8 @@ class DeviceClient extends BaseClient
 
     /**
      * Get audit status.
+     *
+     * @param int $applyId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -50,6 +54,9 @@ class DeviceClient extends BaseClient
 
     /**
      * Update a device comment.
+     *
+     * @param array  $deviceIdentifier
+     * @param string $comment
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -69,6 +76,9 @@ class DeviceClient extends BaseClient
     /**
      * Bind location for device.
      *
+     * @param array $deviceIdentifier
+     * @param int   $poiId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -85,6 +95,10 @@ class DeviceClient extends BaseClient
     }
 
     /**
+     * @param array  $deviceIdentifier
+     * @param int    $poiId
+     * @param string $appId
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -105,6 +119,8 @@ class DeviceClient extends BaseClient
     /**
      * Fetch batch of devices by deviceIds.
      *
+     * @param array $deviceIdentifiers
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function listByIds(array $deviceIdentifiers)
@@ -119,6 +135,9 @@ class DeviceClient extends BaseClient
 
     /**
      * Pagination to get batch of devices.
+     *
+     * @param int $lastId
+     * @param int $count
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
@@ -136,6 +155,10 @@ class DeviceClient extends BaseClient
     /**
      * Fetch batch of devices by applyId.
      *
+     * @param int $applyId
+     * @param int $lastId
+     * @param int $count
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      */
     public function listByApplyId(int $applyId, int $lastId, int $count)
@@ -152,6 +175,8 @@ class DeviceClient extends BaseClient
 
     /**
      * Fetch batch of devices.
+     *
+     * @param array $params
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

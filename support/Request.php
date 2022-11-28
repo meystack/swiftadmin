@@ -27,34 +27,34 @@ class Request extends \Webman\Http\Request
      * 用户ID
      * @var int
      */
-    public $userId = 0;
+    public mixed $user_id = 0;
 
     /**
      * 用户信息
      */
-    public $userInfo = [];
+    public mixed $userData = [];
 
     /**
      * 管理员ID
      * @var int
      */
-    public $adminId = 0;
+    public mixed $admin_id = 0;
 
     /**
      * 管理员信息
      * @return string
      */
-    public $adminInfo = [];
+    public mixed $adminData = [];
 
     /**
      * 生成请求令牌
      * @access public
      * @param string $name 令牌名称
-     * @param mixed $type 令牌生成方法
+     * @param string $type 令牌生成方法
      * @return string
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function buildToken(string $name = '__token__', $type = 'md5'): string
+    public function buildToken(string $name = '__token__',string $type = 'md5'): string
     {
         $type = is_callable($type) ? $type : 'md5';
         $token = call_user_func($type, Random::alpha(32));
@@ -89,7 +89,7 @@ class Request extends \Webman\Http\Request
         }
 
         if (empty($data)) {
-            $data = request()->all();
+            $data = request()->session()->all();
         }
 
         // 令牌验证

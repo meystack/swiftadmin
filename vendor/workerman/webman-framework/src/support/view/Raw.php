@@ -12,14 +12,14 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace support\View;
+namespace support\view;
 
 use Webman\View;
 use Throwable;
 
 /**
  * Class Raw
- * @package Support\View
+ * @package support\view
  */
 class Raw implements View
 {
@@ -51,14 +51,14 @@ class Raw implements View
         $view_suffix = \config("{$config_prefix}view.options.view_suffix", 'html');
         $app = $app === null ? $request->app : $app;
         $base_view_path = $plugin ? \base_path() . "/plugin/$plugin/app" : \app_path();
-        $view_path = $app === '' ? "$base_view_path/view/$template.$view_suffix" : "$base_view_path/$app/view/$template.$view_suffix";
+        $__template_path__ = $app === '' ? "$base_view_path/view/$template.$view_suffix" : "$base_view_path/$app/view/$template.$view_suffix";
 
-        \extract(static::$_vars, \EXTR_SKIP);
-        \extract($vars, \EXTR_SKIP);
+        \extract(static::$_vars);
+        \extract($vars);
         \ob_start();
         // Try to include php file.
         try {
-            include $view_path;
+            include $__template_path__;
         } catch (Throwable $e) {
             static::$_vars = [];
             \ob_end_clean();

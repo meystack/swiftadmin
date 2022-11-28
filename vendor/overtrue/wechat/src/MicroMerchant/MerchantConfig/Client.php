@@ -24,6 +24,11 @@ class Client extends BaseClient
     /**
      * Service providers configure recommendation functions for small and micro businesses.
      *
+     * @param string $subAppId
+     * @param string $subscribeAppId
+     * @param string $receiptAppId
+     * @param string $subMchId
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -52,6 +57,10 @@ class Client extends BaseClient
     /**
      * Configure the new payment directory.
      *
+     * @param string $jsapiPath
+     * @param string $appId
+     * @param string $subMchId
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -68,6 +77,10 @@ class Client extends BaseClient
 
     /**
      * bind appid.
+     *
+     * @param string $subAppId
+     * @param string $appId
+     * @param string $subMchId
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -86,6 +99,8 @@ class Client extends BaseClient
     /**
      * add sub dev config.
      *
+     * @param array $params
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -99,6 +114,9 @@ class Client extends BaseClient
 
     /**
      * query Sub Dev Config.
+     *
+     * @param string $subMchId
+     * @param string $appId
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

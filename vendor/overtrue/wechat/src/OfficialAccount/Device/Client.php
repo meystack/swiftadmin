@@ -23,6 +23,10 @@ use EasyWeChat\Kernel\BaseClient;
 class Client extends BaseClient
 {
     /**
+     * @param string $deviceId
+     * @param string $openid
+     * @param string $content
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -43,6 +47,8 @@ class Client extends BaseClient
     /**
      * Get device qrcode.
      *
+     * @param array $deviceIds
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -59,6 +65,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array  $devices
+     * @param string $productId
+     * @param int    $opType
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -79,6 +89,8 @@ class Client extends BaseClient
     /**
      * 获取 device id 和二维码
      *
+     * @param string $productId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -93,6 +105,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $openid
+     * @param string $deviceId
+     * @param string $ticket
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -110,6 +126,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $openid
+     * @param string $deviceId
+     * @param string $ticket
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -127,6 +147,9 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $openid
+     * @param string $deviceId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -143,6 +166,9 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $openid
+     * @param string $deviceId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -159,6 +185,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $deviceId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -173,6 +201,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $ticket
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -187,6 +217,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $deviceId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -202,6 +234,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $openid
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException

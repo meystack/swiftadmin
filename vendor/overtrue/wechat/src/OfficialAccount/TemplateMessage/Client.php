@@ -128,6 +128,8 @@ class Client extends BaseClient
     /**
      * Send a template message.
      *
+     * @param array $data
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -146,6 +148,8 @@ class Client extends BaseClient
     /**
      * Send template-message for subscription.
      *
+     * @param array $data
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -162,6 +166,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array $data
+     *
      * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -184,6 +190,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param array $data
+     *
      * @return array
      */
     protected function formatData(array $data)

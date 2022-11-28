@@ -2,12 +2,12 @@
 
 namespace app\admin\middleware\system;
 
+use support\View;
 use app\admin\library\Auth;
 use app\common\library\ResultCode;
 use app\common\model\system\Admin as AdminModel;
 use app\common\model\system\SystemLog;
 use Psr\SimpleCache\InvalidArgumentException;
-use support\View;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
@@ -27,7 +27,7 @@ class AdminPermissions implements MiddlewareInterface
      * 不需要鉴权的方法
      * @var array
      */
-    protected $noNeedAuth = [
+    protected array $noNeedAuth = [
         '/Index/index',
         '/Login/index',
         '/Login/logout',
@@ -54,11 +54,11 @@ class AdminPermissions implements MiddlewareInterface
         }
 
         // 判断是否需要鉴权
-        $request->adminId  = $AdminLogin['id'] ?? 0;
-        $request->adminInfo = $AdminLogin ?? [];
+        $request->admin_id  = $AdminLogin['id'] ?? 0;
+        $request->adminData = $AdminLogin ?? [];
         $method = '/' . $controller. '/' .$action;
         if (!in_array($method, $this->noNeedAuth) && !in_array('*', $this->noNeedAuth)) {
-            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, $request->adminId)) {
+            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, $request->admin_id)) {
                 if (request()->isAjax()) {
                     return json(['code' => 101, 'msg' => '没有权限']);
                 } else {
@@ -98,7 +98,6 @@ class AdminPermissions implements MiddlewareInterface
 
     /**
      * 写入后台操作日志
-     * @return void
      * @throws InvalidArgumentException
      * @throws DataNotFoundException
      * @throws DbException

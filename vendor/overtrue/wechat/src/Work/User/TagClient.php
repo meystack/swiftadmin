@@ -23,6 +23,9 @@ class TagClient extends BaseClient
     /**
      * Create tag.
      *
+     * @param string   $tagName
+     * @param int|null $tagId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -40,6 +43,9 @@ class TagClient extends BaseClient
 
     /**
      * Update tag.
+     *
+     * @param int    $tagId
+     * @param string $tagName
      *
      * @return mixed
      *
@@ -59,6 +65,8 @@ class TagClient extends BaseClient
     /**
      * Delete tag.
      *
+     * @param int $tagId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -69,6 +77,8 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param int $tagId
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -79,6 +89,9 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param int   $tagId
+     * @param array $userList
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -90,6 +103,9 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param int   $tagId
+     * @param array $partyList
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -101,6 +117,9 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param int   $tagId
+     * @param array $userList
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -112,6 +131,9 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param int   $tagId
+     * @param array $partyList
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -123,6 +145,11 @@ class TagClient extends BaseClient
     }
 
     /**
+     * @param string $endpoint
+     * @param int    $tagId
+     * @param array  $userList
+     * @param array  $partyList
+     *
      * @return mixed
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException

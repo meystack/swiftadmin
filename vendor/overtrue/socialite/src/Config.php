@@ -1,59 +1,32 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
-use InvalidArgumentException;
+use JsonSerializable;
 
-/**
- * Class Config.
- */
-class Config implements ArrayAccess
+class Config implements ArrayAccess, JsonSerializable
 {
-    /**
-     * @var array
-     */
-    protected $config;
+    protected array $config;
 
     /**
-     * Config constructor.
-     *
-     * @param array $config
+     * @param  array  $config
      */
     public function __construct(array $config)
     {
         $this->config = $config;
     }
 
-    /**
-     * Get an item from an array using "dot" notation.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $config = $this->config;
 
-        if (is_null($key)) {
-            return $config;
-        }
         if (isset($config[$key])) {
             return $config[$key];
         }
-        foreach (explode('.', $key) as $segment) {
-            if (!is_array($config) || !array_key_exists($segment, $config)) {
+
+        foreach (\explode('.', $key) as $segment) {
+            if (! \is_array($config) || ! \array_key_exists($segment, $config)) {
                 return $default;
             }
             $config = $config[$segment];
@@ -62,119 +35,64 @@ class Config implements ArrayAccess
         return $config;
     }
 
-    /**
-     * Set an array item to a given value using "dot" notation.
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return array
-     */
-    public function set($key, $value)
+    public function set(string $key, mixed $value): array
     {
-        if (is_null($key)) {
-            throw new InvalidArgumentException('Invalid config key.');
-        }
-
-        $keys = explode('.', $key);
+        $keys = \explode('.', $key);
         $config = &$this->config;
 
-        while (count($keys) > 1) {
-            $key = array_shift($keys);
-            if (!isset($config[$key]) || !is_array($config[$key])) {
+        while (\count($keys) > 1) {
+            $key = \array_shift($keys);
+            if (! isset($config[$key]) || ! \is_array($config[$key])) {
                 $config[$key] = [];
             }
             $config = &$config[$key];
         }
 
-        $config[array_shift($keys)] = $value;
+        $config[\array_shift($keys)] = $value;
 
         return $config;
     }
 
-    /**
-     * Determine if the given configuration value exists.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function has($key)
+    public function has(string $key): bool
     {
         return (bool) $this->get($key);
     }
 
-    /**
-     * Whether a offset exists.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     *
-     * @return bool true on success or false on failure.
-     *              </p>
-     *              <p>
-     *              The return value will be casted to boolean if non-boolean was returned
-     *
-     * @since 5.0.0
-     */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
-        return array_key_exists($offset, $this->config);
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
+        return \array_key_exists($offset, $this->config);
     }
 
-    /**
-     * Offset to retrieve.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     *
-     * @return mixed Can return all value types
-     *
-     * @since 5.0.0
-     */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         return $this->get($offset);
     }
 
-    /**
-     * Offset to set.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         $this->set($offset, $value);
     }
 
-    /**
-     * Offset to unset.
-     *
-     * @see  http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
+        \is_string($offset) || throw new Exceptions\InvalidArgumentException('The $offset must be type of string here.');
+
         $this->set($offset, null);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->config;
+    }
+
+    public function __toString(): string
+    {
+        return \json_encode($this, \JSON_UNESCAPED_UNICODE) ?: '';
     }
 }

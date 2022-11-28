@@ -1,0 +1,13 @@
+{
+  "name": "webman/gateway-worker",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "workerman/gateway-worker": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Webman\\GatewayWorker\\": "src"
+    }
+  }
+}

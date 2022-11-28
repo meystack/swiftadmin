@@ -23,6 +23,9 @@ class RelationClient extends BaseClient
     /**
      * Bind pages for device.
      *
+     * @param array $deviceIdentifier
+     * @param array $pageIds
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -41,6 +44,8 @@ class RelationClient extends BaseClient
     /**
      * Get pageIds by deviceId.
      *
+     * @param array $deviceIdentifier
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -58,6 +63,10 @@ class RelationClient extends BaseClient
 
     /**
      * Get devices by pageId.
+     *
+     * @param int $pageId
+     * @param int $begin
+     * @param int $count
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

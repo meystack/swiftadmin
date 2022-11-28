@@ -28,24 +28,24 @@ class Event
     protected static $logger;
 
     /**
-     * @param $event_name
-     * @param $callback
+     * @param mixed $event_name
+     * @param callable $listener
      * @return int
      */
-    public static function on($event_name, callable $callback): int
+    public static function on($event_name, callable $listener): int
     {
-        $is_prefix_name = $event_name[strlen($event_name)-1] === '*';
+        $is_prefix_name = $event_name[strlen($event_name) - 1] === '*';
         if ($is_prefix_name) {
-            static::$prefixEventMap[substr($event_name, 0, -1)][++static::$id] = $callback;
+            static::$prefixEventMap[substr($event_name, 0, -1)][++static::$id] = $listener;
         } else {
-            static::$eventMap[$event_name][++static::$id] = $callback;
+            static::$eventMap[$event_name][++static::$id] = $listener;
         }
         return static::$id;
     }
 
     /**
-     * @param $event_name
-     * @param $id
+     * @param mixed $event_name
+     * @param integer $id
      * @return int
      */
     public static function off($event_name, int $id): int
@@ -71,44 +71,45 @@ class Event
         foreach ($listeners as $listener) {
             try {
                 $response = $listener($data, $event_name);
-            } catch (\Throwable $th) {
+            } catch (\Throwable $e) {
+                $responses[] = $e;
                 if (!static::$logger && is_callable('\support\Log::error')) {
                     static::$logger = Log::channel();
                 }
                 if (static::$logger) {
-                    static::$logger->error($th->getMessage());
+                    static::$logger->error($e);
                 }
                 continue;
             }
-
             $responses[] = $response;
             if ($halt && !is_null($response)) {
                 return $response;
             }
+            if ($response === false) {
+                break;
+            }
         }
-
         return $halt ? null : $responses;
     }
-
 
     /**
      * @return array
      */
     public static function list(): array
     {
-        $callbacks = [];
+        $listeners = [];
         foreach (static::$eventMap as $event_name => $callback_items) {
             foreach ($callback_items as $id => $callback_item) {
-                $callbacks[$id] = [$event_name, $callback_item];
+                $listeners[$id] = [$event_name, $callback_item];
             }
         }
         foreach (static::$prefixEventMap as $event_name => $callback_items) {
             foreach ($callback_items as $id => $callback_item) {
-                $callbacks[$id] = [$event_name.'*', $callback_item];
+                $listeners[$id] = [$event_name . '*', $callback_item];
             }
         }
-        ksort($callbacks);
-        return $callbacks;
+        ksort($listeners);
+        return $listeners;
     }
 
     /**

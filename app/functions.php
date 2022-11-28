@@ -3,6 +3,7 @@
  * 全局公共函数库
  */
 
+use app\common\model\system\UserThird;
 use think\facade\Cache;
 use app\common\model\system\Config;
 use think\helper\Str;
@@ -83,10 +84,10 @@ if (!function_exists('url')) {
         $vars = !empty($vars) ? '?' . http_build_query($vars) : '';
 
         if (!Str::startsWith($url, '/')) {
-            $url = DIRECTORY_SEPARATOR . $url;
+            $url = '/' . $url;
         }
 
-        return $app == 'index' ? $url . $vars : '/' . $app . $url . $vars;
+        return '/' . $app . $url . $vars;
     }
 }
 
@@ -101,8 +102,7 @@ if (!function_exists('token')) {
     {
         try {
             return \request()->buildToken($name, $type);
-        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
-        }
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {}
 
         return '';
     }
@@ -604,16 +604,12 @@ if (!function_exists('saenv')) {
 if (!function_exists('system_cache')) {
     /**
      * 全局缓存控制函数
-     * @param string|null $name
+     * @param string $name
      * @param null $options
      * @param null $tag
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    function system_cache(string $name = null, $value = '', $options = null, $tag = null)
+    function system_cache(string $name = '', $value = '', $options = null, $tag = null)
     {
         // 调试模式关闭缓存
         if (getenv('APP_DEBUG') || !saenv('cache_status')) {
@@ -748,17 +744,23 @@ if (!function_exists('list_search')) {
 if (!function_exists('list_to_tree')) {
     /**
      * 根据ID和PID返回一个树形结构
-     * @param array $list 数组结构
+     * @param $list
      * @param string $id
      * @param string $pid
      * @param string $child
      * @param int $level
      * @return mixed
      */
-    function list_to_tree(array $list, string $id = 'id', string $pid = 'pid', string $child = 'children', int $level = 0): array
+    function list_to_tree($list, string $id = 'id', string $pid = 'pid', string $child = 'children', int $level = 0) : array
     {
         // 创建Tree
         $tree = $refer = array();
+
+        // 数组不得为空
+        if (empty($list)) {
+            return [];
+        }
+
         if (is_array($list)) {
 
             // 创建基于主键的数组引用
@@ -932,6 +934,40 @@ if (!function_exists('is_today')) {
     }
 }
 
+
+if (!function_exists('published_date')) {
+    /**
+     * 格式化时间
+     *
+     * @param [type] $time
+     * @return string
+     */
+    function published_date($time): string
+    {
+        $time = preg_replace('/\D/', '', $time);
+        $currentTime = time() - $time;
+        $published = array(
+            '86400' => '天',
+            '3600'  => '小时',
+            '60'    => '分钟',
+            '1'     => '秒'
+        );
+        if ($currentTime == 0) {
+            return '1秒前';
+        } else if ($currentTime >= 604800 || $currentTime < 0) {
+            return date('Y-m-d H:i:s', $time);
+        } else {
+            foreach ($published as $k => $v) {
+                if (0 != $c = floor($currentTime / (int)$k)) {
+                    return $c . $v . '前';
+                }
+            }
+        }
+
+        return date('Y-m-d H:i:s', $time);
+    }
+}
+
 // +----------------------------------------------------------------------
 // | 系统安全函数开始
 // +----------------------------------------------------------------------
@@ -970,32 +1006,79 @@ if (!function_exists('request_validate_rules')) {
 if (!function_exists('check_user_third')) {
     /**
      * 获取第三方登录
-     * @param mixed $type
-     * @param int $id
+     * @param $type
+     * @param $id
      * @return bool
      */
-    function check_user_third($type, $id = 0): bool
+    function check_user_third($type, $id): bool
     {
         if (!$id || !$type) {
             return false;
         }
 
-        if (\app\common\model\system\UserThird::where('user_id', $id)->getByType($type)) {
+        if (UserThird::where('user_id', $id)->getByType($type)) {
             return true;
         }
+
         return false;
+    }
+}
+
+if (!function_exists('supplement_id')) {
+    /**用户ID风格
+     * @param string $id
+     * @return string
+     */
+    function supplement_id(string $id): string
+    {
+        $len = strlen($id);
+        $buf = '000000';
+        return $len < 6 ? substr($buf, 0, (6 - $len)) . $id : $id;
+    }
+}
+
+if (!function_exists('createOrderId')) {
+    /**
+     * 生成订单号
+     * @param string $letter
+     * @return string
+     */
+    function createOrderId(string $letter = ''): string
+    {
+        $gradual = 0;
+        $orderId = date('YmdHis') . mt_rand(10000000, 99999999);
+        $length = strlen($orderId);
+
+        // 循环处理随机数
+        for ($i = 0; $i < $length; $i++) {
+            $gradual += (int)(substr($orderId, $i, 1));
+        }
+
+        $code = (100 - $gradual % 100) % 100;
+        return $letter . $orderId . str_pad((string)$code, 2, '0', STR_PAD_LEFT);
+    }
+}
+
+if (!function_exists('createOrderShortId')) {
+    /**
+     * 生成订单短ID
+     * @param string $letter
+     * @return string
+     */
+    function createOrderShortId(string $letter = ''): string
+    {
+        return $letter . date('Ymd') . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
     }
 }
 
 if (!function_exists('distance_day')) {
     /**
      * 计算天数
-     * @param mixed $time
-     * @return false|float
+     * @param $time
+     * @return int|mixed
      */
-    function distance_day($time = '')
+    function distance_day($time)
     {
-
         if (!$time) {
             return false;
         }
@@ -1046,6 +1129,7 @@ spl_autoload_register(function ($class) {
     if (!is_dir($pluginPath)) {
         @mkdir($pluginPath,0777);
     }
+
     $dirs = traverse_scanDir(plugin_path(), false);
     foreach ($dirs as $index => $dir) {
         $functions = plugin_path($dir) . 'function.php';
@@ -1196,7 +1280,7 @@ if (!function_exists('remove_empty_dir')) {
                     }
                 }
 
-                if (readdir($handle) == false) {
+                if (!readdir($handle)) {
                     @rmdir($dir);
                 }
 
@@ -1264,14 +1348,14 @@ if (!function_exists('set_plugin_config')) {
     }
 }
 
-if (!function_exists('get_plugin_menu')) {
+if (!function_exists('get_plugin_menu_entry')) {
     /**
-     * 获取前台插件菜单
+     * 获取插件快捷入口
      * @return void
      */
-    function get_plugin_menu()
+    function get_plugin_menu_entry(string $type = 'menu')
     {
-        $pluginNav = '';
+        $quickEntry = '';
         $pluginList = get_plugin_list();
 
         foreach ($pluginList as $item) {
@@ -1282,16 +1366,16 @@ if (!function_exists('get_plugin_menu')) {
                     continue;
                 }
 
-                $file = plugin_path($item['name']) . 'data/menu.html';
+                $file = plugin_path($item['name']) . 'data/'.$type.'.html';
                 if (is_file($file)) {
-                    $pluginNav .= file_get_contents($file) . PHP_EOL;
+                    $quickEntry .= file_get_contents($file) . PHP_EOL;
                 }
             } catch (\Throwable $th) {
                 continue;
             }
         }
 
-        echo $pluginNav;
+        echo $quickEntry;
     }
 }
 
@@ -1344,7 +1428,7 @@ if (!function_exists('plugin_refresh_hooks')) {
             }
         }
 
-        $taglib && arr2file(root_path('config') . 'taglib.php', $taglib);
+        arr2file(root_path('config') . 'taglib.php', $taglib);
         $routePath = root_path('config') . 'defineRoute.php';
         write_file($routePath, str_replace('array', $routeList, $parseRules));
         $hooks = include/** @lang text */

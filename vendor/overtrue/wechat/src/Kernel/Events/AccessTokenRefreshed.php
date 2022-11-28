@@ -25,6 +25,9 @@ class AccessTokenRefreshed
      */
     public $accessToken;
 
+    /**
+     * @param \EasyWeChat\Kernel\AccessToken $accessToken
+     */
     public function __construct(AccessToken $accessToken)
     {
         $this->accessToken = $accessToken;

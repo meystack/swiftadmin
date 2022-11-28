@@ -46,12 +46,14 @@ use EasyWeChat\Kernel\ServiceContainer;
  * @property \EasyWeChat\OfficialAccount\Comment\Client                $comment
  * @property \EasyWeChat\OfficialAccount\OCR\Client                    $ocr
  * @property \EasyWeChat\OfficialAccount\Goods\Client                  $goods
- * @property \Overtrue\Socialite\Providers\WeChatProvider              $oauth
+ * @property \Overtrue\Socialite\Providers\WeChat                      $oauth
  * @property \EasyWeChat\OfficialAccount\WiFi\Client                   $wifi
  * @property \EasyWeChat\OfficialAccount\WiFi\CardClient               $wifi_card
  * @property \EasyWeChat\OfficialAccount\WiFi\DeviceClient             $wifi_device
  * @property \EasyWeChat\OfficialAccount\WiFi\ShopClient               $wifi_shop
  * @property \EasyWeChat\OfficialAccount\Guide\Client                  $guide
+ * @property \EasyWeChat\OfficialAccount\Draft\Client                  $draft
+ * @property \EasyWeChat\OfficialAccount\FreePublish\Client            $free_publish
  */
 class Application extends ServiceContainer
 {
@@ -82,6 +84,8 @@ class Application extends ServiceContainer
         OCR\ServiceProvider::class,
         Goods\ServiceProvider::class,
         WiFi\ServiceProvider::class,
+        Draft\ServiceProvider::class,
+        FreePublish\ServiceProvider::class,
         // Base services
         BasicService\QrCode\ServiceProvider::class,
         BasicService\Media\ServiceProvider::class,

@@ -58,6 +58,8 @@ trait Observable
     }
 
     /**
+     * @param array $handlers
+     *
      * @return $this
      */
     public function setHandlers(array $handlers = [])
@@ -155,7 +157,7 @@ trait Observable
                         case true === $response:
                             continue 2;
                         case false === $response:
-                            break 2;
+                            break 3;
                         case !empty($response) && !($result instanceof FinallyResult):
                             $result = $response;
                     }
@@ -176,6 +178,8 @@ trait Observable
 
     /**
      * @param mixed $handler
+     *
+     * @return \EasyWeChat\Kernel\Clauses\Clause
      */
     protected function newClause($handler): Clause
     {
@@ -203,7 +207,8 @@ trait Observable
     }
 
     /**
-     * @param mixed $payload
+     * @param callable $handler
+     * @param mixed    $payload
      *
      * @return mixed
      */
@@ -263,6 +268,8 @@ trait Observable
     /**
      * @param mixed $handler
      * @param mixed $condition
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \ReflectionException

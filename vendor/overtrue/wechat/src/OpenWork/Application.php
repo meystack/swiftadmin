@@ -25,7 +25,13 @@ use EasyWeChat\OpenWork\Work\Application as Work;
  * @property \EasyWeChat\OpenWork\SuiteAuth\AccessToken   $suite_access_token
  * @property \EasyWeChat\OpenWork\Auth\AccessToken        $provider_access_token
  * @property \EasyWeChat\OpenWork\SuiteAuth\SuiteTicket   $suite_ticket
- * @property \EasyWeChat\OpenWork\MiniProgram\Auth\Client $mini_program
+ * @property \EasyWeChat\OpenWork\MiniProgram\Client      $mini_program
+ * @property \EasyWeChat\OpenWork\Media\Client            $media
+ * @property \EasyWeChat\OpenWork\Contact\Client          $contact
+ * @property \EasyWeChat\OpenWork\License\Client          $license_order
+ * @property \EasyWeChat\OpenWork\License\Account         $license_account
+ * @property \EasyWeChat\OpenWork\Device\Client           $device
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 class Application extends ServiceContainer
 {
@@ -39,6 +45,10 @@ class Application extends ServiceContainer
         Corp\ServiceProvider::class,
         Provider\ServiceProvider::class,
         MiniProgram\ServiceProvider::class,
+        Media\ServiceProvider::class,
+        Contact\ServiceProvider::class,
+        License\ServiceProvider::class,
+        Device\ServiceProvider::class,
     ];
 
     /**
@@ -53,6 +63,8 @@ class Application extends ServiceContainer
 
     /**
      * Creates the miniProgram application.
+     *
+     * @return \EasyWeChat\Work\MiniProgram\Application
      */
     public function miniProgram(): \EasyWeChat\Work\MiniProgram\Application
     {
@@ -62,6 +74,8 @@ class Application extends ServiceContainer
     /**
      * @param string $authCorpId    企业 corp_id
      * @param string $permanentCode 企业永久授权码
+     *
+     * @return Work
      */
     public function work(string $authCorpId, string $permanentCode): Work
     {

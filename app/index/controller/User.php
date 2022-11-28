@@ -13,29 +13,40 @@ declare(strict_types=1);
 namespace app\index\controller;
 
 use app\common\library\ResultCode;
+use app\common\model\system\UserLog;
+use app\common\model\system\UserNotice;
 use app\HomeController;
 use app\common\library\Sms;
 use app\common\library\Email;
 use app\common\library\Upload;
 use app\common\model\system\User as UserModel;
+use PHPMailer\PHPMailer\Exception;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\Request;
 use support\Response;
+use system\Http;
 use system\Random;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use Webman\Event\Event;
 
 class User extends HomeController
 {
     /**
      * 鉴权控制器
      */
-    public $needLogin = true;
+    public bool $needLogin = true;
+
+    /**
+     * 超时时间
+     */
+    public int $expire = 604800;
 
     /**
      * 非登录鉴权方法
      */
-    public $noNeedAuth = ['login', 'register', 'forgot', 'check'];
+    public array $noNeedAuth = ['login', 'register', 'forgot', 'check'];
 
     public function __construct()
     {
@@ -44,34 +55,28 @@ class User extends HomeController
     }
 
     /**
-     * 退出登录
-     * @return Response
-     * @throws \Exception
-     */
-    public function logout(): \support\Response
-    {
-        $this->auth->logout();
-        return $this->success('退出成功', url('index/index'));
-    }
-
-    /**
      * 用户中心
      * @return mixed
+     * @throws DbException
      */
-    public function index(): \support\Response
+    public function index(): Response
     {
-        return view('/user/index');
+        // 未读短消息
+        $unread = UserNotice::where('user_id', \request()->user_id)->where('status', 0)->count();
+        return view('/user/index', [
+            'unread' => $unread,
+        ]);
     }
 
     /**
      * 用户注册
-     * @return \support\Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws InvalidArgumentException
      */
-    public function register(): \support\Response
+    public function register(): Response
     {
         if (request()->isPost()) {
 
@@ -107,9 +112,9 @@ class User extends HomeController
 
     /**
      * 用户登录
-     * @return \support\Response
+     * @return Response
      */
-    public function login(): \support\Response
+    public function login(): Response
     {
 
         if (request()->isPost()) {
@@ -132,12 +137,14 @@ class User extends HomeController
 
     /**
      * 找回密码
-     * @return \support\Response
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
+     * @throws Exception
      */
-    public function forgot(): \support\Response
+    public function forgot(): Response
     {
         if (request()->isPost()) {
 
@@ -158,15 +165,15 @@ class User extends HomeController
             }
 
             $where = $email ? ['email' => $email] : ['mobile' => $mobile];
-            $userInfo = $this->model->where($where)->find();
-            if (!$userInfo) {
+            $userData = $this->model->where($where)->find();
+            if (!$userData) {
                 return $this->error('用户不存在');
             }
 
             try {
                 $salt = Random::alpha();
                 $pwd = encryptPwd($pwd, $salt);
-                $this->model->update(['id' => $userInfo['id'], 'pwd' => $pwd, 'salt' => $salt]);
+                $this->model->update(['id' => $userData['id'], 'pwd' => $pwd, 'salt' => $salt]);
 
             } catch (\Exception $e) {
                 return $this->error('修改密码失败，请联系管理员');
@@ -186,7 +193,7 @@ class User extends HomeController
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public function profile(Request $request): \support\Response
+    public function center(Request $request): Response
     {
         if (request()->isPost()) {
 
@@ -200,13 +207,245 @@ class User extends HomeController
                 return $this->error('当前昵称已被占用，请更换！');
             }
 
-            if ($this->model->update(['id' => $request->userId, 'nickname' => $nickname])) {
+            if ($this->model->update(['id' => $request->user_id, 'nickname' => $nickname])) {
                 return $this->success('修改昵称成功！', (string)url('/user/index'));
             }
 
             return $this->error();
         }
-        return view('/user/profile');
+
+        /**
+         * 初始化请求新闻
+         */
+        $files = public_path('upload/upgrade') . DIRECTORY_SEPARATOR . 'news.html';
+        if (!is_file($files)) {
+            $result = Http::get(config('app.api_url') . '/news/index');
+            write_file($files, $result);
+        } else {
+            $result = read_file($files);
+            if (filemtime($files) + $this->expire <= time()) {
+                @unlink($files);
+            }
+        }
+
+        return view('/user/center', [
+            'newsHtml'     => $result ?? '服务器错误',
+            'userList'     => $this->model->order('login_count', 'desc')->limit(12)->select()->toArray(),
+            'invite_count' => $this->model->where('invite_id', $request->user_id)->count(),
+        ]);
+    }
+
+    /**
+     * 消息列表
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function message(): Response
+    {
+        if (request()->isAjax()) {
+
+            $page = input('page', 1);
+            $limit = input('limit', 1);
+
+            $status = input('status', 'all');
+            if ($status !== 'all') {
+                $where[] = ['status', '=', $status];
+            }
+
+            $where[] = ['user_id', '=', \request()->user_id];
+            $count = UserNotice::where($where)->count();
+            $page = ($count <= $limit) ? 1 : $page;
+            $list = UserNotice::where($where)->order('id', 'desc')->limit((int)$limit)->page((int)$page)->select()->toArray();
+            return $this->success('查询成功', "", $list, $count);
+        }
+
+        return view('/user/message');
+    }
+
+    /**
+     * 查看消息
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function viewMessage(): Response
+    {
+        $id = input('id');
+        $info = UserNotice::where('id', $id)->find();
+        if (!$info) {
+            return $this->error('消息不存在');
+        }
+
+        if ($info['user_id'] != \request()->user_id) {
+            return $this->error('非法操作');
+        }
+
+        if ($info['status'] == 0) {
+            UserNotice::update(['id' => $id, 'status' => 1]);
+        }
+
+        if ($info['send_id'] > 0) {
+            $fromInfo = $this->model->where('id', $info['send_id'])->find();
+            $info['nickname'] = $fromInfo['nickname'];
+        }
+
+        // 更新未读
+        $unread = UserNotice::where(['user_id' => \request()->user_id, 'status' => 0])->count();
+        return view('/user/viewMessage', [
+            'info'   => $info,
+            'unread' => $unread,
+        ]);
+    }
+
+    /**
+     * 全部删除消息
+     * @return Response
+     * @throws DbException
+     */
+    public function derMessage(): Response
+    {
+        if (\request()->isPost()) {
+            $ids = input('id');
+            $type = input('type', 'del');
+            $where[] = ['id', 'in', implode(',', $ids)];
+            $where[] = ['user_id', '=', \request()->user_id];
+            if ($type === 'del') {
+                if (UserNotice::where($where)->delete()) {
+                    return $this->success('删除成功');
+                }
+            } else {
+
+                if (UserNotice::where($where)->update(['status' =>1])) {
+                    return $this->success('操作成功');
+                }
+            }
+
+            return $this->error('操作失败');
+        }
+
+        return $this->error('非法操作');
+    }
+
+    /**
+     * 用户资料
+     * @param Request $request
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function profile(Request $request): Response
+    {
+        if (request()->isPost()) {
+            $nickname = input('nickname');
+            $post = request_validate_rules(request()->Post(), get_class($this->model), 'nickname');
+            if (!is_array($post)) {
+                return $this->error($post);
+            }
+
+            if ($nickname != \request()->userData['nickname']
+                &&$this->model->where('nickname', $nickname)->find()) {
+                return $this->error('当前昵称已被占用，请更换！');
+            }
+
+            unset($post['money']);
+            unset($post['score']);
+            $user = $this->model->find(\request()->user_id);
+            if ($user->save($post)) {
+                return $this->success('更新资料成功');
+            }
+
+            return $this->error();
+        }
+
+        return view('/user/profile',[
+            'user' => \request()->userData,
+        ]);
+    }
+
+    /**
+     * 实名认证
+     * @return Response
+     */
+    public function certification(): Response
+    {
+
+        if (request()->isPost()) {
+            $name = input('name');
+            $mobile = input('mobile');
+            $idCard = input('idCard');
+            $captcha = input('captcha');
+
+            if (!empty(\request()->userData['prove'])) {
+                return $this->error('您已经实名认证过了！');
+            }
+
+            // 判断是否安装实名认证插件
+            if (!Event::hasListener('certification')) {
+                return $this->error('实名认证插件未安装');
+            }
+
+            // 判断验证码
+            if (!$captcha || !$this->captchaCheck($captcha)) {
+                return $this->error('验证码错误');
+            }
+
+            try {
+                $result = Event::emit('certification', [
+                    'name'   => $name,
+                    'mobile' => $mobile,
+                    'idCard' => $idCard,
+                ]);
+
+                if ($result['code'] != 1) {
+                    throw new \Exception($result['msg']);
+                }
+
+                // 更新系统认证信息
+                $this->model->where('id', \request()->user_id)->update([
+                    'prove'      => 1,
+                    'name'       => $name,
+                    'idCard'     => $idCard,
+                    'mobile'     => $mobile,
+                    'prove_time' => date('Y-m-d H:i:s', time())
+                ]);
+
+            } catch (\Exception $e) {
+                return $this->error('实名认证失败，请联系管理员');
+            }
+
+            return $this->success('实名认证成功！');
+        }
+
+        return view('/user/certification',['prove' => \request()->userData['prove']]);
+    }
+
+    /**
+     * 用户登录日志
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function login_log(): Response
+    {
+        if (request()->isAjax()) {
+
+            // 获取数据
+            $page = input('page', 1);
+            $limit = input('limit', 1);
+            $where[] = ['login_id', '=', \request()->user_id];
+            $count = UserLog::where($where)->count();
+            $page = ($count <= $limit) ? 1 : $page;
+            $list = UserLog::where($where)->order('id', 'desc')->limit((int)$limit)->page((int)$page)->select()->toArray();
+            return $this->success('查询成功', "", $list, $count);
+
+        }
+
+        return view('/user/login_log');
     }
 
     /**
@@ -214,22 +453,22 @@ class User extends HomeController
      * @param Request $request
      * @return Response
      */
-    public function changePwd(Request $request): \support\Response
+    public function changePwd(Request $request): Response
     {
         if (request()->isPost()) {
 
             // 获取参数
             $pwd = input('pwd');
             $oldPwd = input('oldpwd');
-            $yPwd = encryptPwd($oldPwd, $request->userInfo->salt);
+            $yPwd = encryptPwd($oldPwd, $request->userData->salt);
 
-            if ($yPwd != $request->userInfo->pwd) {
+            if ($yPwd != $request->userData->pwd) {
                 return $this->error('原密码输入错误！');
             }
 
             $salt = Random::alpha();
             $pwd = encryptPwd($pwd, $salt);
-            $result = $this->model->update(['id' => $request->userId, 'pwd' => $pwd, 'salt' => $salt]);
+            $result = $this->model->update(['id' => $request->user_id, 'pwd' => $pwd, 'salt' => $salt]);
             if (!empty($result)) {
                 return $this->success('修改密码成功！');
             }
@@ -248,8 +487,8 @@ class User extends HomeController
     {
         if (request()->isPost()) {
             $data = array();
-            $data['id'] = $request->userId;
-            $data['app_id'] = 10000 + $request->userId;
+            $data['id'] = $request->user_id;
+            $data['app_id'] = 10000 + $request->user_id;
             $data['app_secret'] = Random::alpha(22);
             if ($this->model->update($data)) {
                 return $this->success();
@@ -260,13 +499,15 @@ class User extends HomeController
 
     /**
      * 修改邮箱
-     * @return \support\Response
-     * @throws \PHPMailer\PHPMailer\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @param Request $request
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
-    public function email(Request $request): \support\Response
+    public function email(Request $request): Response
     {
         if (request()->isPost()) {
 
@@ -286,7 +527,7 @@ class User extends HomeController
             if (!empty($email) && !empty($captcha)) {
 
                 if ($Ems->check($email, $captcha, $event)) {
-                    $this->model->update(['id' => $request->userId, 'email' => $email]);
+                    $this->model->update(['id' => $request->user_id, 'email' => $email]);
                     return $this->success('修改邮箱成功！');
                 }
 
@@ -308,14 +549,13 @@ class User extends HomeController
         return view('/user/email');
     }
 
-
     /**
      * 修改手机号
      * @param Request $request
      * @return Response
      * @throws DataNotFoundException
      * @throws DbException
-     * @throws ModelNotFoundException
+     * @throws ModelNotFoundException|InvalidArgumentException
      */
     public function mobile(Request $request): Response
     {
@@ -338,7 +578,7 @@ class User extends HomeController
             if (!empty($mobile) && !empty($captcha)) {
 
                 if ($Sms->check($mobile, $captcha, $event)) {
-                    $this->model->update(['id' => $request->userId, 'mobile' => (int)$mobile]);
+                    $this->model->update(['id' => $request->user_id, 'mobile' => (int)$mobile]);
                     return $this->success('修改手机号成功！');
                 }
 
@@ -366,7 +606,7 @@ class User extends HomeController
      * @param Request $request
      * @return Response
      */
-    public function protection(Request $request): \support\Response
+    public function protection(Request $request): Response
     {
         $validate = [
             '你家的宠物叫啥？',
@@ -387,9 +627,9 @@ class User extends HomeController
             }
 
             try {
-                $request->userInfo->question = $question;
-                $request->userInfo->answer = $answer;
-                $request->userInfo->save();
+                $request->userData->question = $question;
+                $request->userData->answer = $answer;
+                $request->userData->save();
             } catch (\Throwable $th) {
                 return $this->error();
             }
@@ -412,19 +652,19 @@ class User extends HomeController
         $maxProgress = 5;
         $thisProgress = 1;
 
-        if ($request->userInfo->email) {
+        if ($request->userData->email) {
             $thisProgress++;
         }
 
-        if ($request->userInfo->mobile) {
+        if ($request->userData->mobile) {
             $thisProgress++;
         }
 
-        if ($request->userInfo->answer) {
+        if ($request->userData->answer) {
             $thisProgress++;
         }
 
-        if ($request->userInfo->wechat) {
+        if ($request->userData->wechat) {
             $thisProgress++;
         }
 
@@ -438,18 +678,21 @@ class User extends HomeController
     /**
      * 用户头像上传
      * @param Request $request
-     * @return Response|void
-     * @throws \Exception
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
-    public function avatar(Request $request)
+    public function avatar(Request $request): Response
     {
         if (request()->isPost()) {
             $response = Upload::instance()->upload();
             if (!$response) {
                 return $this->error(Upload::instance()->getError());
             }
-            $request->userInfo->avatar = $response['url'] . '?' . Random::alpha(12);
-            if ($request->userInfo->save()) {
+            $request->userData->avatar = $response['url'] . '?' . Random::alpha(12);
+            if ($request->userData->save()) {
                 return json($response);
             }
         }
@@ -459,10 +702,8 @@ class User extends HomeController
 
     /**
      * 文件上传函数
-     * @return mixed
-     * @throws \Exception
      */
-    public function upload()
+    public function upload(): Response
     {
         if (request()->isPost()) {
             $file = Upload::instance()->upload();
@@ -473,5 +714,34 @@ class User extends HomeController
         }
 
         return json(ResultCode::SUCCESS);
+    }
+
+    /**
+     * 远程下载图片
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
+     */
+    public function getImage()
+    {
+        if (request()->isPost()) {
+            $file = Upload::instance()->download(input('url'));
+            if (!$file) {
+                return $this->error(Upload::instance()->getError());
+            }
+            return json($file);
+        }
+    }
+
+    /**
+     * 退出登录
+     * @return Response
+     * @throws \Exception
+     */
+    public function logout(): Response
+    {
+        $this->auth->logout();
+        return $this->success('退出成功', url('/'));
     }
 }

@@ -25,6 +25,9 @@ class HttpResponseCreated
      */
     public $response;
 
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     */
     public function __construct(ResponseInterface $response)
     {
         $this->response = $response;

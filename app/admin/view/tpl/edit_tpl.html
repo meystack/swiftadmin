@@ -24,11 +24,11 @@
 
 <script>
     layui.use(['layer','jquery','admin'],function(){
-        var $ = layui.jquery;
-        var layer = layui.layer;
-        var admin = layui.admin;
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        let admin = layui.admin;
 
-        var editor = CodeMirror.fromTextArea(document.getElementById("htmlcode"), {
+        let editor = CodeMirror.fromTextArea(document.getElementById("htmlcode"), {
             lineNumbers: true,
             lineWrapping: true,
             mode: "text/html",

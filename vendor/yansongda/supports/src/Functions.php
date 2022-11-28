@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-use Yansongda\Supports\Arr;
-use Yansongda\Supports\Collection;
+namespace Yansongda\Supports;
+
+use Closure;
 
 if (!function_exists('collect')) {
     /**

@@ -23,6 +23,8 @@ class CardClient extends BaseClient
     /**
      * Set shop card coupon delivery information.
      *
+     * @param array $data
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -35,6 +37,8 @@ class CardClient extends BaseClient
 
     /**
      * Get shop card coupon delivery information.
+     *
+     * @param int $shopId
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

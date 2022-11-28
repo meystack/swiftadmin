@@ -15,6 +15,9 @@ use app\common\model\system\AdminAccess;
 use app\common\model\system\Admin as AdminModel;
 use app\common\model\system\AdminRules as AdminRulesModel;
 use app\common\model\system\AdminGroup as AdminGroupModel;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use Webman\Event\Event;
 
@@ -25,49 +28,48 @@ class Auth
 {
     /**
      * 数据库实例
-     * @var object
+     * @var mixed
      */
-    protected $model = null;
+    protected mixed $model;
 
     /**
      * 管理员数据
-     * @var array
+     * @var mixed
      */
-    private $admin;
+    private mixed $admin;
 
     /**
      * 分组标记
-     * @var array
+     * @var string
      */
-    public $authGroup = 'authGroup';
+    public string $authGroup = 'authGroup';
 
     /**
      * 用户私有标记
-     * @var array
+     * @var string
      */
-    public $authPrivate = 'authPrivate';
+    public string $authPrivate = 'authPrivate';
 
     /**
      * 默认权限字段
      *
      * @var string
      */
-    public $authFields = 'id,cid,pid,title,auth';
+    public string $authFields = 'id,cid,pid,title,auth';
 
     /**
      * 错误信息
      * @var string
      */
-    protected $_error = '';
+    protected string $_error = '';
 
     /**
-     * @var object 对象实例
+     * @var mixed
      */
+    private mixed $groupIDs;
+
+    // 对象实例
     protected static $instance = null;
-    /**
-     * @var false|string[]
-     */
-    private $groupIDs;
 
     /**
      * 类构造函数
@@ -83,7 +85,6 @@ class Auth
      * @param array $options 参数
      * @return object
      */
-
     public static function instance($options = [])
     {
         if (is_null(self::$instance)) {
@@ -111,7 +112,7 @@ class Auth
         // 转换格式
         if (is_string($name)) {
             $name = strtolower($name);
-            if (strpos($name, ',') !== false) {
+            if (str_contains($name, ',')) {
                 $name = explode(',', $name);
             } else {
                 $name = [$name];
@@ -166,11 +167,11 @@ class Auth
      * @param mixed $admin_id
      * @param string $type
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function getRulesNode($admin_id = 0, string $type = AUTH_RULES): array
+    public function getRulesNode(mixed $admin_id = 0, string $type = AUTH_RULES): array
     {
         // 私有节点
         $authGroup = $authPrivate = [];
@@ -260,13 +261,12 @@ class Auth
      * @param mixed|null $type
      * @param mixed|null $class
      * @param bool $tree
-     * @return false|string|\think\response\Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \Exception
+     * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function getRuleCatesTree($type = null, $class = null, bool $tree = true)
+    public function getRuleCatesTree(mixed $type = null, mixed $class = null, bool $tree = true)
     {
         $list = [];
         if (is_array($type) && $type) {
@@ -292,16 +292,19 @@ class Auth
                 $list = AdminRulesModel::where($where)->order('sort asc')->select()->toArray();
             }
         } else {
-
+            /**
+             * 栏目二次开发接口
+             * @param $list
+             */
             if (!$this->superAdmin()) {
                 if (!empty($auth_nodes[$class])) {
-                    $list = Event::emit('cmscategoryPermissions', [
+                    $list = Event::emit('cmsCategoryPermissions', [
                         'field' => $this->authFields,
                         'nodes' => $auth_nodes[$class]
                     ], true);
                 }
             } else {
-                $list = Event::emit('cmscategoryPermissions', [
+                $list = Event::emit('cmsCategoryPermissions', [
                     'field' => $this->authFields
                 ], true);
             }
@@ -313,13 +316,13 @@ class Auth
     /**
      * 校验节点 避免越权
      * @access public
-     * @param mixed|null $rules
+     * @param null $rules
      * @param string|null $type
-     * @param string|null $class
+     * @param string $class
      * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function checkRuleOrCateNodes($rules = null, string $type = null, string $class = 'pri'): bool
     {
@@ -391,26 +394,24 @@ class Auth
     /**
      * 获取用户信息
      * @param $admin_id
-     * @return array|mixed|Db|\think\Model|null
+     * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserInfo($admin_id)
+    public function getAdminData($admin_id): array
     {
 
         $admin_id = $admin_id ?? session('AdminLogin.id');
-        static $userinfo = [];
-
+        static $AdminData = [];
         $user = Db::name('admin');
-
         // 获取用户表主键
         $_pk = is_string($user->getPk()) ? $user->getPk() : 'id';
-        if (!isset($userinfo[$admin_id])) {
-            $userinfo[$admin_id] = $user->where($_pk, $admin_id)->find();
+        if (!isset($AdminData[$admin_id])) {
+            $AdminData[$admin_id] = $user->where($_pk, $admin_id)->find();
         }
 
-        return $userinfo[$admin_id];
+        return $AdminData[$admin_id];
     }
 
     /**
@@ -425,8 +426,9 @@ class Auth
     /**
      * 设置错误
      * @param string $error 信息信息
+     * @return void
      */
-    protected function setError(string $error)
+    protected function setError(string $error): void
     {
         $this->_error = $error;
     }

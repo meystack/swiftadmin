@@ -28,7 +28,7 @@ class Client extends BaseClient
     /**
      * @var string
      */
-    protected $ticketEndpoint = '/cgi-bin/ticket/getticket';
+    protected $ticketEndpoint = 'cgi-bin/ticket/getticket';
 
     /**
      * Current URI.
@@ -40,19 +40,20 @@ class Client extends BaseClient
     /**
      * Get config json for jsapi.
      *
-     * @param array  $jsApiList
-     * @param bool   $debug
-     * @param bool   $beta
-     * @param bool   $json
-     * @param array  $openTagList
-     * @param string $url
+     * @param array       $jsApiList
+     * @param bool        $debug
+     * @param bool        $beta
+     * @param bool        $json
+     * @param array       $openTagList
+     * @param string|null $url
      *
      * @return array|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function buildConfig(array $jsApiList, bool $debug = false, bool $beta = false, bool $json = true, array $openTagList = [], string $url = null)
     {
@@ -64,18 +65,18 @@ class Client extends BaseClient
     /**
      * Return jsapi config as a PHP array.
      *
-     * @param array  $apis
-     * @param bool   $debug
-     * @param bool   $beta
-     * @param array  $openTagList
-     * @param string $url
+     * @param array       $apis
+     * @param bool        $debug
+     * @param bool        $beta
+     * @param array       $openTagList
+     * @param string|null $url
      *
-     * @return array
-     *
+     * @return array|string
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getConfigArray(array $apis, bool $debug = false, bool $beta = false, array $openTagList = [], string $url = null)
     {
@@ -84,6 +85,11 @@ class Client extends BaseClient
 
     /**
      * Get js ticket.
+     *
+     * @param bool   $refresh
+     * @param string $type
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -117,11 +123,16 @@ class Client extends BaseClient
     /**
      * Build signature.
      *
-     * @param int|null $timestamp
+     * @param string|null $url
+     * @param string|null $nonce
+     * @param null        $timestamp
+     *
+     * @return array
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     protected function configSignature(string $url = null, string $nonce = null, $timestamp = null): array
@@ -146,6 +157,8 @@ class Client extends BaseClient
      * @param string $nonce
      * @param int    $timestamp
      * @param string $url
+     *
+     * @return string
      */
     public function getTicketSignature($ticket, $nonce, $timestamp, $url): string
     {
@@ -167,6 +180,8 @@ class Client extends BaseClient
     /**
      * Set current url.
      *
+     * @param string $url
+     *
      * @return $this
      */
     public function setUrl(string $url)
@@ -178,6 +193,8 @@ class Client extends BaseClient
 
     /**
      * Get current url.
+     *
+     * @return string
      */
     public function getUrl(): string
     {
@@ -194,5 +211,13 @@ class Client extends BaseClient
     protected function getAppId()
     {
         return $this->app['config']->get('app_id');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAgentId()
+    {
+        return $this->app['config']->get('agent_id');
     }
 }

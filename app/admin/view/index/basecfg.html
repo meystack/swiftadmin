@@ -298,7 +298,19 @@
                                             condition="$config['site_clearLink'] eq 0 "> checked </if>>
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">
-                                        <font color="red">* </font>{:__('开启后发送内容自动清理非本站链接')}
+                                        <span style="color: red; ">* </span>{:__('开启后发送内容自动清理非本站链接')}
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('启用minify模板')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="radio" name="minify_page" value="1" title="开启" <if
+                                            condition="$config['minify_page'] eq 1 "> checked </if> >
+                                        <input type="radio" name="minify_page" value="0" title="关闭" <if
+                                            condition="$config['minify_page'] eq 0 "> checked </if>>
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">
+                                        <span style="color: red; ">* </span>{:__('启用后页面加载速度会更快，但注意代码编写注释规范')}
                                     </div>
                                 </div>
 
@@ -1407,26 +1419,26 @@
                                         </h2>
                                         <div class="layui-colla-content">
 
-                                            <div class="layui-card-header" style="margin-bottom:20px;"><i
-                                                    class="layui-icon">
-                                                    <img src="/static/images/interface/aliyun.png?12x" width="16"
-                                                        height="16" alt="">
-                                                </i>{:__('阿里SMS短信')}</div>
-
                                             <div class="layui-form-item">
                                                 <label class="layui-form-label">{:__('短信服务商')}</label>
                                                 <div class="layui-input-inline">
                                                     <select name="smstype">
                                                         <option value="alisms" <eq name="$config['smstype']"
-                                                            value="alisms"> selected="" </eq> >{:__('阿里云短信')}</option>
+                                                                                   value="alisms"> selected="" </eq> >{:__('阿里云短信')}</option>
                                                         <option value="tensms" <eq name="$config['smstype']"
-                                                            value="tensms"> selected="" </eq> >{:__('腾讯云短信')}</option>
+                                                                                   value="tensms"> selected="" </eq> >{:__('腾讯云短信')}</option>
                                                     </select>
                                                 </div>
                                                 <div class="layui-form-mid layui-word-aux">* <font color="red">
-                                                        {:__('请选择短信服务商类型')}！。</font>
+                                                    {:__('请选择短信服务商类型')}！。</font>
                                                 </div>
                                             </div>
+
+                                            <div class="layui-card-header" style="margin-bottom:20px;"><i
+                                                    class="layui-icon">
+                                                    <img src="/static/images/interface/aliyun.png?12x" width="16"
+                                                        height="16" alt="">
+                                                </i>{:__('阿里SMS短信')}</div>
 
                                             <div class="layui-form-item">
                                                 <label class="layui-form-label">APP_ID</label>

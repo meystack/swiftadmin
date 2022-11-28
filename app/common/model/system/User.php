@@ -2,9 +2,12 @@
 declare (strict_types = 1);
 
 namespace app\common\model\system;
+use Psr\SimpleCache\InvalidArgumentException;
 use think\Model;
 use app\common\library\ParseData;
 use think\model\concern\SoftDelete;
+use think\model\relation\HasMany;
+use think\model\relation\HasOne;
 
 /**
  * @mixin \think\Model
@@ -17,8 +20,11 @@ class User extends Model
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
 
-    // 定义第三方关联
-    public function third(): \think\model\relation\HasMany
+    /**
+     * 定义第三方登录
+     * @return HasMany
+     */
+    public function third(): HasMany
     {
         return $this->hasMany(UserThird::class,'user_id');
     }
@@ -26,9 +32,9 @@ class User extends Model
     /**
      * 关联用户组
      *
-     * @return \think\model\relation\HasOne
+     * @return HasOne
      */
-    public function group(): \think\model\relation\HasOne
+    public function group(): HasOne
     {
         return $this->hasOne(UserGroup::class,'id','group_id');
     }
@@ -64,12 +70,13 @@ class User extends Model
      */
     public static function onAfterUpdate(object $model)
     {}
-    
+
     /**
      * 获取头像
      * @param string $value
      * @param array $data
      * @return string
+     * @throws InvalidArgumentException
      */
     public function getAvatarAttr(string $value, array $data): string
     {
@@ -97,6 +104,7 @@ class User extends Model
      * @param string $value
      * @param array $data
      * @return string
+     * @throws InvalidArgumentException
      */
     public function setAvatarAttr(string $value, array $data): string
     {
@@ -113,66 +121,6 @@ class User extends Model
         }
 
         return $value;
-    }
-
-    /**
-     * 设置创建IP
-     * @param $ip
-     * @return mixed
-     */
-    public function setCreateIpAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取创建IP
-     * @param $ip
-     * @return mixed
-     */
-    public function getCreateIpAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
-    }
-
-    /**
-     * 设置登录IP
-     * @param $ip
-     * @return mixed
-     */
-    public function setLoginIpAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取登录IP
-     */
-    public function getLoginIpAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
-    }
-
-    /**
-     * 设置IP转换
-     * @access  public
-     * @param  $ip
-     * @return mixed
-     */
-    public function setIPAttr($ip)
-    {
-        return ParseData::setIPAttr($ip);
-    }
-
-    /**
-     * 获取IP转换
-     * @access  public
-     * @param  $ip
-     * @return mixed
-     */
-    public function getIPAttr($ip)
-    {
-        return ParseData::getIPAttr($ip);
     }
 
     /**

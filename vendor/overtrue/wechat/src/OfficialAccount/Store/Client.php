@@ -47,6 +47,9 @@ class Client extends BaseClient
     /**
      * Search store from tencent map.
      *
+     * @param int    $districtId
+     * @param string $keyword
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -72,11 +75,13 @@ class Client extends BaseClient
      */
     public function getStatus()
     {
-        return $this->httpPostJson('wxa/get_merchant_audit_info');
+        return $this->httpGet('wxa/get_merchant_audit_info');
     }
 
     /**
      * Create a merchant.
+     *
+     * @param array $baseInfo
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -91,6 +96,8 @@ class Client extends BaseClient
     /**
      * Update a merchant.
      *
+     * @param array $params
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -103,6 +110,8 @@ class Client extends BaseClient
 
     /**
      * Create a store from tencent map.
+     *
+     * @param array $baseInfo
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -117,6 +126,8 @@ class Client extends BaseClient
     /**
      * Create a store.
      *
+     * @param array $baseInfo
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -129,6 +140,9 @@ class Client extends BaseClient
 
     /**
      * Update a store.
+     *
+     * @param int   $poiId
+     * @param array $baseInfo
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -145,6 +159,8 @@ class Client extends BaseClient
     /**
      * Get store by ID.
      *
+     * @param int $poiId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -157,6 +173,9 @@ class Client extends BaseClient
 
     /**
      * List store.
+     *
+     * @param int $offset
+     * @param int $limit
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -175,6 +194,8 @@ class Client extends BaseClient
 
     /**
      * Delete a store.
+     *
+     * @param int $poiId
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *

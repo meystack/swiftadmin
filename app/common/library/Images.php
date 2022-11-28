@@ -15,12 +15,10 @@ class Images
      * @access public
      * @param string $filename 文件路径
      * @param array $config 配置数组
-     * @return mixed
      * @throws \Exception
      */
     public function waterMark(string $filename, array $config)
     {
-
         try {
 
             // 获取文件信息
@@ -48,7 +46,6 @@ class Images
                 }
 
                 $ImageWaterInfo = getimagesize($config['upload_water_img']);
-
                 // 对比图片大小
                 if ($ImageWaterInfo[0] >= $ImageInfo[0] ||
                     $ImageWaterInfo[1] >= $ImageInfo[1]) {
@@ -74,6 +71,7 @@ class Images
      * @param bool $avatar
      * @param bool $newfile
      * @return Image|void
+     * @throws \Exception
      */
     public function thumb($filepath, $filename, $config, bool $avatar = false, bool $newfile = true)
     {
@@ -95,10 +93,8 @@ class Images
                         // 保留原来的图片 新文件名建议源文件名+_thumb.jpg 格式
                         $resource = $filepath . '/thumb_' . $filename;
                     }
-
                     $resThumb = $Image->thumb($config['upload_thumb_w'], $config['upload_thumb_h'], 6)->save($resource, NULL, 90);
                 }
-
                 return $resThumb;
             }
         } catch (\Exception $e) {

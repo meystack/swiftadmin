@@ -2,16 +2,15 @@
 
 namespace app\admin\controller;
 
+use support\Response;
+use Webman\Event\Event;
 use app\AdminController;
 use app\common\model\system\Admin;
-use app\common\model\system\LoginLog;
+use app\common\model\system\AdminLog;
 use Psr\SimpleCache\InvalidArgumentException;
-use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use Webman\Event\Event;
-use Webman\Http\Request;
 
 class Login extends AdminController
 {
@@ -38,7 +37,7 @@ class Login extends AdminController
     public function index(): \support\Response
     {
         // 禁止重复访问
-        if (isset(request()->adminInfo['id'])) {
+        if (isset(request()->adminData['id'])) {
             return $this->redirect('/admin/index');
         }
 
@@ -47,10 +46,10 @@ class Login extends AdminController
             $user = request()->post('name');
             $pwd = request()->post('pwd');
             $captcha = request()->post('captcha');
-            if ((isset(request()->adminInfo['count'])
-                    && request()->adminInfo['count'] >= 5)
-                && (isset(request()->adminInfo['time'])
-                    && request()->adminInfo['time'] >= strtotime('- 5 minutes'))
+            if ((isset(request()->adminData['count'])
+                    && request()->adminData['count'] >= 5)
+                && (isset(request()->adminData['time'])
+                    && request()->adminData['time'] >= strtotime('- 5 minutes'))
             ) {
                 $error = '错误次数过多，请稍后再试！';
                 $this->writeLoginLogs($error);
@@ -58,7 +57,7 @@ class Login extends AdminController
             }
 
             // 验证码
-            if (isset(request()->adminInfo['isCaptcha'])) {
+            if (isset(request()->adminData['isCaptcha'])) {
                 if (!$captcha || !$this->captchaCheck($captcha)) {
                     $error = '验证码错误！';
                     $this->writeLoginLogs($error);
@@ -75,10 +74,10 @@ class Login extends AdminController
 
                 $result = Admin::checkLogin($user, $pwd);
                 if (empty($result)) {
-                    request()->adminInfo['time'] = time();
-                    request()->adminInfo['isCaptcha'] = true;
-                    request()->adminInfo['count'] = isset(request()->adminInfo['count']) ? request()->adminInfo['count'] + 1 : 1;
-                    request()->session()->set(AdminSession, request()->adminInfo);
+                    request()->adminData['time'] = time();
+                    request()->adminData['isCaptcha'] = true;
+                    request()->adminData['count'] = isset(request()->adminData['count']) ? request()->adminData['count'] + 1 : 1;
+                    request()->session()->set(AdminSession, request()->adminData);
                     $error = '用户名或密码错误！';
                     $this->writeLoginLogs($error);
                     Event::emit('adminLoginError', \request()->all());
@@ -98,7 +97,7 @@ class Login extends AdminController
                 try {
 
                     $result->save();
-                    $session = array_merge(request()->adminInfo, $result->toArray());
+                    $session = array_merge(request()->adminData, $result->toArray());
                     request()->session()->set(AdminSession, $session);
                 } catch (\Throwable $th) {
                     return $this->error($th->getMessage());
@@ -112,7 +111,7 @@ class Login extends AdminController
         }
 
         return view('login/index', [
-            'captcha' => request()->adminInfo['isCaptcha'] ?? false,
+            'captcha' => request()->adminData['isCaptcha'] ?? false,
         ]);
     }
 
@@ -120,7 +119,6 @@ class Login extends AdminController
      * 写入登录日志
      * @param string $error
      * @param int $status
-     * @return void
      */
     private function writeLoginLogs(string $error, int $status = 0)
     {
@@ -146,6 +144,6 @@ class Login extends AdminController
             'status'       => $status,
         ];
 
-        LoginLog::create($data);
+        AdminLog::create($data);
     }
 }

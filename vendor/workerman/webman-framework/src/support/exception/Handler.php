@@ -21,7 +21,7 @@ use Webman\Http\Response;
 
 /**
  * Class Handler
- * @package Support\Exception
+ * @package support\exception
  */
 class Handler extends ExceptionHandler
 {
@@ -36,6 +36,11 @@ class Handler extends ExceptionHandler
 
     public function render(Request $request, Throwable $exception): Response
     {
+        if(($exception instanceof BusinessException) && ($response = $exception->render($request)))
+        {
+            return $response;
+        }
+
         return parent::render($request, $exception);
     }
 

@@ -14,11 +14,15 @@ namespace app\admin\controller\system;
 
 
 use GuzzleHttp\Exception\TransferException;
+use support\Response;
 use system\File;
 use system\Http;
 use system\ZipArchives;
 use app\AdminController;
 use app\admin\library\Auth;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Throwable;
 use app\common\library\DataBase;
 use app\common\model\system\AdminRules;
@@ -32,21 +36,21 @@ class Plugin extends AdminController
 {
     /**
      * 查询最大数量
-     * @var int
+     * @var mixed
      */
-    protected $limit = 500;
+    protected mixed $limit = 500;
 
     /**
      * 错误信息
-     * @var array
+     * @var mixed
      */
-    static $errData = [];
+    static mixed $errData;
 
     /**
      * 获取本地插件列表
-     * @return \support\Response
+     * @return Response
      */
-    public function index(): \support\Response
+    public function index(): Response
     {
         $pluginList = get_plugin_list();
         if (request()->isAjax()) {
@@ -59,7 +63,7 @@ class Plugin extends AdminController
 
     /**
      * 安装插件
-     * @return \support\Response|void
+     * @return Response|void
      * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
      */
     public function install()
@@ -98,7 +102,7 @@ class Plugin extends AdminController
 
     /**
      * 卸载插件
-     * @return \support\Response|void
+     * @return Response|void
      * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
      */
     public function uninstall()
@@ -266,10 +270,10 @@ class Plugin extends AdminController
 
     /**
      * 修改插件配置
-     * @return \support\Response
+     * @return Response
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function config(): \support\Response
+    public function config(): Response
     {
         $name = input('name');
         if (preg_replace('/[^a-zA-Z0-9]/i', '', $name) !== $name) {
@@ -298,7 +302,7 @@ class Plugin extends AdminController
     /**
      * 修改插件状态
      * 启用 / 禁用
-     * @return \support\Response|void
+     * @return Response|void
      */
     public function status()
     {
@@ -350,7 +354,6 @@ class Plugin extends AdminController
      * 执行SQL脚本文件
      * @param string $name
      * @param string $type
-     * @return void
      */
     public static function executeSql(string $name, string $type = 'install')
     {
@@ -362,10 +365,9 @@ class Plugin extends AdminController
     /**
      * 获取菜单项
      * @param string $name
-     * @return void
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function pluginMenu(string $name)
     {

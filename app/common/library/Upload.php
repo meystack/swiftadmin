@@ -11,10 +11,14 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
+use Psr\SimpleCache\InvalidArgumentException;
 use system\Http;
 
 use app\common\model\system\Attachment;
 use app\common\validate\system\UploadFile;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Event\Event;
 
 /**
@@ -32,46 +36,50 @@ class Upload
     /**
      * 文件类型
      */
-    protected $fileClass;
+    protected mixed $fileClass;
 
     /**
      * 文件名称
      */
-    protected $filename;
+    protected mixed $filename;
 
     /**
      * 文件保存路径
      */
-    protected $filepath;
+    protected mixed $filepath;
 
     /**
      * 文件全路径名称
      */
-    protected $resource;
+    protected mixed $resource;
 
     /**
      * 附件信息
      */
-    protected $fileInfo = [];
+    protected mixed $fileInfo = [];
 
     /**
      * 图形对象实例
      */
-    protected $Images;
+    protected mixed $Images;
 
     /**
      * 错误信息
      */
-    protected $_error = '';
+    protected string $_error = '';
 
     /**
      * 配置文件
      */
-    protected $config = [];
+    protected mixed $config = [];
 
     /**
      * 类构造函数
      * class constructor.
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function __construct()
     {
@@ -86,6 +94,10 @@ class Upload
      * @access public
      * @param array $options 参数
      * @return self
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
     public static function instance(array $options = [])
     {
@@ -100,7 +112,7 @@ class Upload
     /**
      * 文件上传
      * @return array|false
-     * @throws \Exception
+     * @throws \Exception|InvalidArgumentException
      */
     public function upload()
     {
@@ -159,6 +171,7 @@ class Upload
      * @param object $file
      * @param array $params
      * @return array|false
+     * @throws InvalidArgumentException
      */
     public function multiPartUpload(object $file, array $params = [])
     {
@@ -199,6 +212,7 @@ class Upload
      * 分片合并
      * @param array $params
      * @return array|false
+     * @throws InvalidArgumentException
      */
     public function multiMarge(array $params = [])
     {
@@ -284,6 +298,7 @@ class Upload
      * 文件下载函数
      * @param string|null $url
      * @return array|false
+     * @throws InvalidArgumentException
      */
     public function download(string $url = null)
     {
@@ -323,7 +338,7 @@ class Upload
     /**
      * 删除本地文件
      * @return void
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function uploadAfterDelete()
     {
@@ -367,7 +382,7 @@ class Upload
     /**
      * 获取文件扩展名
      * @param object $file
-     * @return false|mixed|string
+     * @return false|string
      */
     public function getFileExt(object $file)
     {
@@ -416,7 +431,7 @@ class Upload
      * @param string|null $dir
      * @return void
      */
-    public function getFileSavePath(object $file, string $dir = null)
+    public function getFileSavePath(object $file, string $dir = null): void
     {
         $this->filename = uniqid() . '.' . strtolower($file->getUploadExtension());
         $this->filepath = DS . $this->config['upload_path'] . DS . ($dir ?? $this->fileClass) . DS . date($this->config['upload_style']);
@@ -428,7 +443,7 @@ class Upload
      * @param string $filePath
      * @param array $extend
      * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function success(string $msg, string $filePath, array $extend = []): array
     {
@@ -464,7 +479,7 @@ class Upload
      * 设置错误
      * @param string $error 信息信息
      */
-    protected function setError(string $error)
+    protected function setError(string $error): void
     {
         $this->_error = $error;
     }

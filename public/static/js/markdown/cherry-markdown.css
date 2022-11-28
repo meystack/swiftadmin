@@ -1926,12 +1926,10 @@ div[data-type=codeBlock] .token.inserted {
 }
 
 .cherry {
-  font-family: "Helvetica Neue", Arial, "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   font-size: 16px;
-  line-height: 27px;
+  line-height: 25px;
   color: #3f4a56;
   background: #f8fafb;
-  box-shadow: 0 0 10px rgba(128, 145, 165, 0.2);
 }
 .cherry .ch-icon {
   vertical-align: middle;

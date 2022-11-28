@@ -12,6 +12,9 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\model\system;
 
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\Model;
 
 /**
@@ -26,13 +29,12 @@ class Config extends Model
 
     /**
      * 获取系统配置
-     *
      * @param string $name
      * @param bool $group
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public static function all(string $name = '', bool $group = false): array
     {

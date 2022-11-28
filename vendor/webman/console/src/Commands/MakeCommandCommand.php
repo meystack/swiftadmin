@@ -29,7 +29,7 @@ class MakeCommandCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $command = $name = $input->getArgument('name');
+        $command = $name = trim($input->getArgument('name'));
         $output->writeln("Make command $name");
 
         // make:command 不支持子目录
@@ -37,12 +37,14 @@ class MakeCommandCommand extends Command
         if (!$command_str = Util::guessPath(app_path(), 'command')) {
             $command_str = Util::guessPath(app_path(), 'controller') === 'Controller' ? 'Command' : 'command';
         }
-        $upper = $command_str === 'Command';
-        $name = ucfirst($name);
+        $items= explode(':', $name);
+        $name='';
+        foreach ($items as $item) {
+            $name.=ucfirst($item);
+        }
         $file = app_path() . "/$command_str/$name.php";
+        $upper = $command_str === 'Command';
         $namespace = $upper ? 'App\Command' : 'app\command';
-
-        
         $this->createCommand($name, $namespace, $file, $command);
 
         return self::SUCCESS;

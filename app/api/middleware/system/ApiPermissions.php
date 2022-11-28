@@ -20,19 +20,19 @@ class ApiPermissions implements MiddlewareInterface
      * 控制器登录鉴权
      * @var bool
      */
-    public $needLogin = false;
+    public bool $needLogin = false;
 
     /**
      * API验证流程
      * @var bool
      */
-    public $authWorkflow = true;
+    public bool $authWorkflow = true;
 
     /**
      * 非鉴权方法
      * @var array
      */
-    public $noNeedAuth = [];
+    public array $noNeedAuth = [];
 
     /**
      * 校验权限
@@ -57,10 +57,10 @@ class ApiPermissions implements MiddlewareInterface
 
         $auth = Auth::instance();
         if ($auth->isLogin()) {
-            $request->userId = $auth->userInfo['id'];
-            $request->userInfo = $auth->userInfo;
+            $request->user_id = $auth->userData['id'];
+            $request->userData = $auth->userData;
             if ($this->authWorkflow && Event::hasListener('apiAuth')) {
-                $result = Event::emit('apiAuth', ['method' => $method, 'userId' => $request->userId], true);
+                $result = Event::emit('apiAuth', ['method' => $method, 'user_id' => $request->user_id], true);
                 if (isset($result['code']) && $result['code'] != 200) {
                     return json($result);
                 }

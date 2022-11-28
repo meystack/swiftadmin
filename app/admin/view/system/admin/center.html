@@ -172,7 +172,7 @@
             <div class="layui-card">
                 <div class="layui-card-body">
 
-                    <div class="layui-tab layui-tab-brief" lay-filter="userInfoTab">
+                    <div class="layui-tab layui-tab-brief" lay-filter="userDataTab">
                         <ul class="layui-tab-title">
                             <li class="layui-this">{:__('基本信息')}</li>
                             <li>{:__('账号绑定')}</li>
@@ -287,7 +287,7 @@
         admin.callback.imgHead = function(clickthis, colletction) {
 
             var res = colletction.res;
-            if (res.code == 200) { // 查找元素
+            if (res.code === 200) { // 查找元素
                 jquery('.imgHead').attr('src',res.url);
                 // // 执行后端投递工作
                 // jquery.post('{:url("/system/admin/modify")}',{

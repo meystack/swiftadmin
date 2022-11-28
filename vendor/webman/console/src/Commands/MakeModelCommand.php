@@ -58,7 +58,15 @@ class MakeModelCommand extends Command
             $file = app_path() . "/$path/$name.php";
             $namespace = str_replace('/', '\\', ($upper ? 'App/' : 'app/') . $path);
         }
-        if (!config('database') && config('thinkorm')) {
+        $database = config('database');
+        if (isset($database['default']) && strpos($database['default'], 'plugin.') === 0) {
+            $database = false;
+        }
+        $thinkorm = config('thinkorm');
+        if (isset($thinkorm['default']) && strpos($thinkorm['default'], 'plugin.') === 0) {
+            $thinkorm = false;
+        }
+        if (!$database && $thinkorm) {
             $this->createTpModel($name, $namespace, $file);
         } else {
             $this->createModel($name, $namespace, $file);

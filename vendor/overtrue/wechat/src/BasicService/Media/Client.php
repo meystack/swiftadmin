@@ -92,6 +92,9 @@ class Client extends BaseClient
     /**
      * Upload temporary material.
      *
+     * @param string $type
+     * @param string $path
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -108,10 +111,14 @@ class Client extends BaseClient
             throw new InvalidArgumentException(sprintf("Unsupported media type: '%s'", $type));
         }
 
-        return $this->httpUpload('/cgi-bin/media/upload', ['media' => $path], ['type' => $type]);
+        return $this->httpUpload('cgi-bin/media/upload', ['media' => $path], ['type' => $type]);
     }
 
     /**
+     * @param string $path
+     * @param string $title
+     * @param string $description
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -132,6 +139,10 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $mediaId
+     * @param string $title
+     * @param string $description
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -139,7 +150,7 @@ class Client extends BaseClient
      */
     public function createVideoForBroadcasting(string $mediaId, string $title, string $description)
     {
-        return $this->httpPostJson('/cgi-bin/media/uploadvideo', [
+        return $this->httpPostJson('cgi-bin/media/uploadvideo', [
             'media_id' => $mediaId,
             'title' => $title,
             'description' => $description,
@@ -149,6 +160,8 @@ class Client extends BaseClient
     /**
      * Fetch item from WeChat server.
      *
+     * @param string $mediaId
+     *
      * @return \EasyWeChat\Kernel\Http\StreamResponse|\Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -156,7 +169,7 @@ class Client extends BaseClient
      */
     public function get(string $mediaId)
     {
-        $response = $this->requestRaw('/cgi-bin/media/get', 'GET', [
+        $response = $this->requestRaw('cgi-bin/media/get', 'GET', [
             'query' => [
                 'media_id' => $mediaId,
             ],
@@ -170,6 +183,8 @@ class Client extends BaseClient
     }
 
     /**
+     * @param string $mediaId
+     *
      * @return array|\EasyWeChat\Kernel\Http\Response|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -177,7 +192,7 @@ class Client extends BaseClient
      */
     public function getJssdkMedia(string $mediaId)
     {
-        $response = $this->requestRaw('/cgi-bin/media/get/jssdk', 'GET', [
+        $response = $this->requestRaw('cgi-bin/media/get/jssdk', 'GET', [
             'query' => [
                 'media_id' => $mediaId,
             ],

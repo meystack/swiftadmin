@@ -64,7 +64,7 @@ class UploadFile extends File
     /**
      * @return string
      */
-    public function getUploadMineType()
+    public function getUploadMimeType()
     {
         return $this->_uploadMimeType;
     }
@@ -93,4 +93,12 @@ class UploadFile extends File
         return $this->_uploadErrorCode === UPLOAD_ERR_OK;
     }
 
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getUploadMineType()
+    {
+        return $this->_uploadMimeType;
+    }
 }

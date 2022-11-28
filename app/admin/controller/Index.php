@@ -12,48 +12,58 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
+use Psr\SimpleCache\InvalidArgumentException;
+use support\Response;
+use think\db\exception\BindParamException;
+use think\facade\Cache;
+use think\facade\Db;
+use Webman\Event\Event;
+use system\Random;
+use think\cache\driver\Memcached;
+use think\cache\driver\Redis;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use app\AdminController;
 use app\common\library\Email;
 use app\common\library\Ftp;
-use think\cache\driver\Memcached;
-use think\cache\driver\Redis;
-use think\facade\Cache;
-use Webman\Event\Event;
+use app\common\model\system\AdminNotice;
 use app\common\model\system\Attachment;
 use app\common\model\system\Config;
 use app\common\model\system\User;
 use app\common\model\system\UserGroup;
 use app\common\model\system\UserThird;
 use app\common\model\system\UserValidate;
-use system\Random;
-use think\facade\Db;
 
 class Index extends AdminController
 {
 
+    /**
+     * 初始化函数
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\DataNotFoundException
      * @throws \Exception
      */
     public function index()
     {
-        return view('index/index');
+        $notice_count = AdminNotice::where('status', 0)->count();
+        return view('index/index', [
+            'notice_count' => $notice_count,
+        ]);
     }
 
     /**
      * 控制台首页
-     * @return mixed
-     * @throws \think\db\exception\BindParamException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws BindParamException
      */
     public function console()
     {
@@ -64,17 +74,14 @@ class Index extends AdminController
         if (request()->isPost()) {
 
             $cycle = input('cycle');
-            if (Event::hasListener('cmsuserEcharts')) {
-                [$dataList, $seriesList] = Event::emit('cmsuserEcharts', $cycle, true);
-                if (empty($seriesList)) {
-                    return $this->error('暂无数据');
-                }
 
-                $userChartsOptions = $this->getEchartsData(array_values($dataList), $seriesList);
-                return $this->success('操作成功', '', $userChartsOptions);
+            [$dataList, $seriesList] = $this->getUserEcharts($cycle);
+            if (empty($seriesList)) {
+                return $this->error('暂无数据');
             }
 
-            return $this->error('请安装CMS插件');
+            $userChartsOptions = $this->getEchartsData(array_values($dataList), $seriesList);
+            return $this->success('操作成功', '', $userChartsOptions);
         }
 
         for ($i = -29; $i <= 0; $i++) {
@@ -87,13 +94,13 @@ class Index extends AdminController
         foreach ($columns as $index => $field) {
             $time = str_replace('invite_id', 'create_time', $field);
             $resultList = User::where($time, 'between time', [$dateBefore, $dateAfter])
-                              ->when($condition, function ($query) use ($condition, $time, $field) {
-                                  $query->field("FROM_UNIXTIME($time, '$condition') as day,count(*) as count");
-                                  if ($field == 'invite_id') {
-                                      $query->where('invite_id', '<>', 0);
-                                  }
-                                  $query->group($time);
-                              })->select()->toArray();
+                ->when($condition, function ($query) use ($condition, $time, $field) {
+                    $query->field("FROM_UNIXTIME($time, '$condition') as day,count(*) as count");
+                    if ($field == 'invite_id') {
+                        $query->where('invite_id', '<>', 0);
+                    }
+                    $query->group($time);
+                })->select()->toArray();
             $tempList = [];
             foreach ($dataList as $key => $item) {
                 $data = list_search($resultList, ['day' => $item]);
@@ -139,11 +146,11 @@ class Index extends AdminController
 
         // 搜索词云数据
         if (Event::hasListener('cmsHotSearch')) {
-            $searchWords = Event::emit('cmsHotSearch', null, true);
+            $searchWords = Event::emit('cmsHotSearch', [], true);
         } else {  // 模拟数据
             for ($i = 0; $i < 50; $i++) {
                 $searchWords[] = [
-                    'name'  => Random::alpha(),
+                    'name'  => Random::lower(),
                     'value' => Random::number(),
                 ];
             }
@@ -223,10 +230,104 @@ class Index extends AdminController
     }
 
     /**
+     *
+     * @param string $cycle
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    protected function getUserEcharts(string $cycle): array
+    {
+        $seriesList = [];
+        $dataList = [];
+        $condition = '%w';
+        $dateBefore = date('Y-m-d', strtotime('-7 day'));
+        $dateAfter = date('Y-m-d 23:59:59');
+        switch ($cycle) {
+            case 'week':
+                $dataList = array('周日', '周一', '周二', '周三', '周四', '周五', '周六');
+                break;
+            case 'month':
+                $condition = '%d';
+                $dateBefore = date('Y-m-01');
+                $dateAfter = date('Y-m-d', strtotime("+1 day"));
+                $dataList = array('01' => ['1'], '02' => ['2'], '03' => ['3'], '04' => ['4'], '05' => ['5'], '06' => ['6'], '07' => ['7'], '08' => ['8'],
+                                  '09' => ['9'], '10' => ['10'], '11' => ['11'], '12' => ['12'], '13' => ['13'], '14' => ['14'], '15' => ['15'], '16' => ['16'],
+                                  '17' => ['17'], '18' => ['18'], '19' => ['19'], '20' => ['20'], '21' => ['21'], '22' => ['22'], '23' => ['23'], '24' => ['24'],
+                                  '25' => ['25'], '26' => ['26'], '27' => ['27'], '28' => ['28'], '29' => ['29'], '30' => ['30'], '31' => ['31']);
+                break;
+            case 'year':
+                $condition = '%m';
+                $dateBefore = date('Y-01-01');
+                $dateAfter = date('Y-12-31 23:59:59');
+                $dataList = array('01' => ['一月'], '02' => ['二月'], '03' => ['三月'], '04' => ['四月'], '05' => ['五月'], '06' => ['六月'],
+                                  '07' => ['七月'], '08' => ['八月'], '09' => ['九月'], '10' => ['十月'], '11' => ['十一月'], '12' => ['十二月']);
+                break;
+            default:
+                break;
+        }
+
+        $resultList = $this->getCycleEcharts($dateBefore, $dateAfter, $condition);
+        foreach ($resultList as $index => $item) {
+            $tempList = [];
+
+            foreach ($dataList as $key => $value) {
+                $data = list_search($item, ['day' => $key]);
+                if (!empty($data)) {
+                    $tempList[$key] = $data;
+                } else {
+                    $tempList[$key] = ['day' => $value, 'count' => 0];
+                }
+            }
+
+            $seriesList[] = [
+                'name'       => $index,
+                'type'       => 'line',
+                'stack'      => 'Total',
+                'showSymbol' => false,
+                'itemStyle'  => ['normal' => ['areaStyle' => ['type' => 'default']]],
+                'data'       => array_column($tempList, 'count'),
+            ];
+        }
+
+        return [$dataList, $seriesList];
+    }
+
+    /**
+     * 获取一段时间内订单列表
+     * @param $dateBefore
+     * @param $dateAfter
+     * @param $condition
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    protected function getCycleEcharts($dateBefore, $dateAfter, $condition): array
+    {
+        $resultList = [];
+        $columns = ['用户注册' => 'create_time', '用户登录' => 'login_time', '邀请注册' => 'invite_id'];
+        foreach ($columns as $index => $field) {
+            $time = str_replace('invite_id', 'create_time', $field);
+            $resultList[$index] = \app\common\model\system\User::where($time, 'between time', [$dateBefore, $dateAfter])
+                ->when($condition, function ($query) use ($condition, $time, $field) {
+                    $query->field("FROM_UNIXTIME($time, '$condition') as day,count(*) as count");
+                    if ($field == 'invite_id') {
+                        $query->where('invite_id', '<>', 0);
+                    }
+                    $query->group("FROM_UNIXTIME($time, '$condition')");
+                })->order($time, 'asc')->select()->toArray();
+        }
+
+        return $resultList;
+    }
+
+    /**
      * 分析页
      * @return mixed
      */
-    public function analysis(): \support\Response
+    public function analysis(): Response
     {
         return view('/index/analysis');
     }
@@ -235,15 +336,19 @@ class Index extends AdminController
      * 监控页
      * @return mixed
      */
-    public function monitor(): \support\Response
+    public function monitor(): Response
     {
         return view('/index/monitor');
     }
 
     /**
      * 获取系统配置
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function basecfg(): \support\Response
+    public function basecfg(): Response
     {
         $config = Config::all();
         $config['fsockopen'] = function_exists('fsockopen');
@@ -254,14 +359,13 @@ class Index extends AdminController
     /**
      * 编辑系统配置
      *
-     * @param array $config
-     * @return \support\Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws InvalidArgumentException
      */
-    public function baseSet(): \support\Response
+    public function baseSet(): Response
     {
         if (request()->isPost()) {
             $config = [];
@@ -309,7 +413,7 @@ class Index extends AdminController
     /**
      * FTP测试上传
      */
-    public function testFtp(): \support\Response
+    public function testFtp(): Response
     {
         if (request()->isPost()) {
             if (Ftp::instance()->ftpTest(request()->post())) {

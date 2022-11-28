@@ -14,8 +14,15 @@ declare(strict_types=1);
 namespace app\common\library;
 
 use app\common\model\system\UserValidate;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use Psr\SimpleCache\InvalidArgumentException;
 use system\Random;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
+use think\db\Query;
+use think\Model;
 
 /**
  * 邮件发送类
@@ -32,28 +39,28 @@ class Email
     /**
      * @PHPMailer 对象实例
      */
-    protected $mail = [];
+    protected mixed $mail;
 
     /**
      * 验证码对象
-     * @var UserValidate
+     * @var mixed
      */
-    private $userVModel;
+    private mixed $userVModel;
 
     /**
      * 验证码过期时间
-     * @var string
+     * @var int
      */
-    private $expireTime = 5; //验证码过期时间（分钟）
+    private int $expireTime = 5; //验证码过期时间（分钟）
 
     /**
      * 错误信息
      * @var string
      */
-    protected $_error = '';
+    protected string $_error = '';
 
     //默认配置
-    protected $config = [
+    protected array $config = [
         'smtp_debug' => false,                           // 是否调试
         'smtp_host'  => 'smtp.163.com',                  // 服务器地址
         'smtp_port'  => 587,                             // 服务器端口
@@ -65,6 +72,11 @@ class Email
     /**
      * 类构造函数
      * class constructor.
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function __construct()
     {
@@ -105,6 +117,11 @@ class Email
      * @access public
      * @param array $options 参数
      * @return EMAIL
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
     public static function instance($options = [])
     {
@@ -158,10 +175,10 @@ class Email
 
     /**
      * 设置收件人
-     * @param mixed $email 收件人,多个收件人以,进行分隔
-     * @param string $name 收件人名称
+     * @param $email
+     * @param string $name
      * @return $this
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     public function to($email, string $name = ''): Email
     {
@@ -191,7 +208,7 @@ class Email
 
     /**
      * 构建Email地址
-     * @param mixed $emails Email数据
+     * @param $emails
      * @return array
      */
     protected function buildAddress($emails): array
@@ -209,10 +226,10 @@ class Email
     /**
      * 获取最后一条
      * @param string $email
-     * @return UserValidate|array|mixed|\think\Model|null
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @return mixed
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getLast(string $email)
     {
@@ -297,7 +314,7 @@ class Email
      * 设置错误
      * @param string $error 信息信息
      */
-    protected function setError(string $error)
+    protected function setError(string $error): void
     {
         $this->_error = $error;
     }
@@ -321,13 +338,10 @@ class Email
     }
 
     /**
-     * 测试发送
-     * @return boolean
-     * @throws \PHPMailer\PHPMailer\Exception
+     * 测试发送邮件
      */
     public function testEmail($config)
     {
-
         if (empty($config) || !is_array($config)) {
             return '缺少必要的信息';
         }

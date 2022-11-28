@@ -1,204 +1,128 @@
 <?php
 
-/*
- * This file is part of the overtrue/socialite.
- *
- * (c) overtrue <i@overtrue.me>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Overtrue\Socialite;
 
 use ArrayAccess;
 use JsonSerializable;
 
-/**
- * Class User.
- */
-class User implements ArrayAccess, UserInterface, JsonSerializable, \Serializable
+class User implements ArrayAccess, Contracts\UserInterface, JsonSerializable
 {
-    use HasAttributes;
+    use Traits\HasAttributes;
 
-    /**
-     * User constructor.
-     *
-     * @param array $attributes
-     */
-    public function __construct(array $attributes)
+    public function __construct(array $attributes, protected ?Contracts\ProviderInterface $provider = null)
     {
         $this->attributes = $attributes;
     }
 
-    /**
-     * Get the unique identifier for the user.
-     *
-     * @return string
-     */
-    public function getId()
+    public function getId(): mixed
     {
-        return $this->getAttribute('id');
+        return $this->getAttribute(Contracts\ABNF_ID) ?? $this->getEmail();
     }
 
-    /**
-     * Get the username for the user.
-     *
-     * @return string
-     */
-    public function getUsername()
+    public function getNickname(): ?string
     {
-        return $this->getAttribute('username', $this->getId());
+        return $this->getAttribute(Contracts\ABNF_NICKNAME) ?? $this->getName();
     }
 
-    /**
-     * Get the nickname / username for the user.
-     *
-     * @return string
-     */
-    public function getNickname()
+    public function getName(): ?string
     {
-        return $this->getAttribute('nickname');
+        return $this->getAttribute(Contracts\ABNF_NAME);
     }
 
-    /**
-     * Get the full name of the user.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getEmail(): ?string
     {
-        return $this->getAttribute('name');
+        return $this->getAttribute(Contracts\ABNF_EMAIL);
     }
 
-    /**
-     * Get the e-mail address of the user.
-     *
-     * @return string
-     */
-    public function getEmail()
+    public function getAvatar(): ?string
     {
-        return $this->getAttribute('email');
+        return $this->getAttribute(Contracts\ABNF_AVATAR);
     }
 
-    /**
-     * Get the avatar / image URL for the user.
-     *
-     * @return string
-     */
-    public function getAvatar()
+    public function setAccessToken(string $value): self
     {
-        return $this->getAttribute('avatar');
-    }
-
-    /**
-     * Set the token on the user.
-     *
-     * @param \Overtrue\Socialite\AccessTokenInterface $token
-     *
-     * @return $this
-     */
-    public function setToken(AccessTokenInterface $token)
-    {
-        $this->setAttribute('token', $token->getToken());
-        $this->setAttribute('access_token', $token->getToken());
-
-        if (\is_callable([$token, 'getRefreshToken'])) {
-            $this->setAttribute('refresh_token', $token->getRefreshToken());
-        }
+        $this->setAttribute(Contracts\RFC6749_ABNF_ACCESS_TOKEN, $value);
 
         return $this;
     }
 
-    /**
-     * @param string $provider
-     *
-     * @return $this
-     */
-    public function setProviderName($provider)
+    public function getAccessToken(): ?string
     {
-        $this->setAttribute('provider', $provider);
+        return $this->getAttribute(Contracts\RFC6749_ABNF_ACCESS_TOKEN);
+    }
+
+    public function setRefreshToken(?string $value): self
+    {
+        $this->setAttribute(Contracts\RFC6749_ABNF_REFRESH_TOKEN, $value);
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getProviderName()
+    public function getRefreshToken(): ?string
     {
-        return $this->getAttribute('provider');
+        return $this->getAttribute(Contracts\RFC6749_ABNF_REFRESH_TOKEN);
     }
 
-    /**
-     * Get the authorized token.
-     *
-     * @return \Overtrue\Socialite\AccessToken
-     */
-    public function getToken()
+    public function setExpiresIn(int $value): self
     {
-        return new AccessToken([
-            'access_token' => $this->getAccessToken(),
-            'refresh_token' => $this->getAttribute('refresh_token')
-        ]);
+        $this->setAttribute(Contracts\RFC6749_ABNF_EXPIRES_IN, $value);
+
+        return $this;
     }
 
-    /**
-     * Get user access token.
-     *
-     * @return string
-     */
-    public function getAccessToken()
+    public function getExpiresIn(): ?int
     {
-        return $this->getAttribute('token') ?: $this->getAttribute('access_token');
+        return $this->getAttribute(Contracts\RFC6749_ABNF_EXPIRES_IN);
     }
 
-    /**
-     * Get user refresh token.
-     *
-     * @return string
-     */
-    public function getRefreshToken()
+    public function setRaw(array $user): self
     {
-        return $this->getAttribute('refresh_token');
+        $this->setAttribute('raw', $user);
+
+        return $this;
     }
 
-    /**
-     * Get the original attributes.
-     *
-     * @return array
-     */
-    public function getOriginal()
+    public function getRaw(): array
     {
-        return $this->getAttribute('original');
+        return $this->getAttribute('raw');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize()
+    public function setTokenResponse(array $response): self
+    {
+        $this->setAttribute('token_response', $response);
+
+        return $this;
+    }
+
+    public function getTokenResponse(): mixed
+    {
+        return $this->getAttribute('token_response');
+    }
+
+    public function jsonSerialize(): array
     {
         return $this->attributes;
     }
 
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize($this->attributes);
+        return $this->attributes;
     }
 
-    /**
-     * Constructs the object.
-     *
-     * @see  https://php.net/manual/en/serializable.unserialize.php
-     *
-     * @param string $serialized <p>
-     *                           The string representation of the object.
-     *                           </p>
-     *
-     * @since 5.1.0
-     */
-    public function unserialize($serialized)
+    public function __unserialize(array $serialized): void
     {
-        $this->attributes = unserialize($serialized) ?: [];
+        $this->attributes = $serialized ?: [];
+    }
+
+    public function getProvider(): Contracts\ProviderInterface
+    {
+        return $this->provider ?? throw new Exceptions\Exception('The provider instance doesn\'t initialized correctly.');
+    }
+
+    public function setProvider(Contracts\ProviderInterface $provider): self
+    {
+        $this->provider = $provider;
+
+        return $this;
     }
 }

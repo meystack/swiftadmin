@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace app\common\validate\system;
 
+use Psr\SimpleCache\InvalidArgumentException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\Validate;
 
 class User extends Validate
@@ -37,22 +41,25 @@ class User extends Validate
 
     // 测试验证场景
     protected $scene = [
-        'test' => ['test_filed'],
+        'test'     => ['test_filed'],
+        'nickname' => ['nickname'],
     ];
 
     /**
      * 自定义验证规则
      * @param $value
      * @return bool
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     protected function filters($value): bool
     {
         $notAllow = saenv('user_reg_notallow');
         $notAllow = explode(',', $notAllow);
-        foreach ($notAllow as $values) {
-            if ($value == $values) {
-                return false;
-            }
+        if (in_array($value, $notAllow)) {
+            return false;
         }
         return true;
     }

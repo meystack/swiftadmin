@@ -3,10 +3,6 @@ xm-select > .xm-label .scroll .label-content {
     padding-right: 10px;
 }
 
-.layui-card {
-    overflow: hidden!important;
-}
-
 .layui-form-item .layui-input-inline {
     width: 320px;
 }

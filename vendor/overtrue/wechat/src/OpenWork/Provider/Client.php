@@ -23,6 +23,9 @@ class Client extends BaseClient
 {
     /**
      * Client constructor.
+     *
+     *
+     * @param  ServiceContainer  $app
      */
     public function __construct(ServiceContainer $app)
     {
@@ -32,12 +35,16 @@ class Client extends BaseClient
     /**
      * 单点登录 - 获取登录的地址.
      *
+     * @param  string  $redirectUri
+     * @param  string  $userType
+     * @param  string  $state
+     *
      * @return string
      */
     public function getLoginUrl(string $redirectUri = '', string $userType = 'admin', string $state = '')
     {
         $redirectUri || $redirectUri = $this->app->config['redirect_uri_single'];
-        $state || $state = rand();
+        $state || $state = random_bytes(64);
         $params = [
             'appid' => $this->app['config']['corp_id'],
             'redirect_uri' => $redirectUri,
@@ -50,6 +57,8 @@ class Client extends BaseClient
 
     /**
      * 单点登录 - 获取登录用户信息.
+     *
+     * @param  string  $authCode
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -67,6 +76,8 @@ class Client extends BaseClient
 
     /**
      * 获取注册定制化URL.
+     *
+     * @param  string  $registerCode
      *
      * @return string
      *
@@ -91,6 +102,11 @@ class Client extends BaseClient
     /**
      * 获取注册码.
      *
+     * @param  string  $corpName
+     * @param  string  $adminName
+     * @param  string  $adminMobile
+     * @param  string  $state
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -100,7 +116,8 @@ class Client extends BaseClient
         string $corpName = '',
         string $adminName = '',
         string $adminMobile = '',
-        string $state = ''
+        string $state = '',
+        string $templateId = ''
     ) {
         $params = [];
         $params['template_id'] = $this->app['config']['reg_template_id'];
@@ -108,6 +125,7 @@ class Client extends BaseClient
         !empty($adminName) && $params['admin_name'] = $adminName;
         !empty($adminMobile) && $params['admin_mobile'] = $adminMobile;
         !empty($state) && $params['state'] = $state;
+        !empty($templateId) && $params['template_id'] = $templateId;
 
         return $this->httpPostJson('cgi-bin/service/get_register_code', $params);
     }
@@ -116,6 +134,8 @@ class Client extends BaseClient
      * 查询注册状态.
      *
      * Desc:该API用于查询企业注册状态，企业注册成功返回注册信息.
+     *
+     * @param  string  $registerCode
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -139,6 +159,12 @@ class Client extends BaseClient
      *      如需修改应用可见范围，服务商可以调用该接口设置授权应用的可见范围。
      *      该接口只能使用注册完成回调事件或者查询注册状态返回的access_token。
      *      调用设置通讯录同步完成后或者access_token超过30分钟失效（即解除通讯录锁定状态）则不能继续调用该接口。
+     *
+     * @param  string  $accessToken
+     * @param  string  $agentId
+     * @param  array  $allowUser
+     * @param  array  $allowParty
+     * @param  array  $allowTag
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -167,6 +193,8 @@ class Client extends BaseClient
      *
      * Desc:该API用于设置通讯录同步完成，解除通讯录锁定状态，同时使通讯录迁移access_token失效。
      *
+     * @param  string  $accessToken
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -181,18 +209,20 @@ class Client extends BaseClient
     /**
      * 通讯录单个搜索
      *
-     * @param string $queryWord
-     * @param        $agentId
-     * @param int    $offset
-     * @param int    $limit
-     * @param int    $queryType
-     * @param null   $fullMatchField
+     * @param  string  $corpId
+     * @param  string  $queryWord
+     * @param  int|string  $agentId
+     * @param  int  $offset
+     * @param  int  $limit
+     * @param  int  $queryType
+     * @param  null  $fullMatchField
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function searchContact(
+        string $corpId,
         string $queryWord,
         $agentId,
         int $offset = 0,
@@ -201,7 +231,7 @@ class Client extends BaseClient
         $fullMatchField = null
     ) {
         $params = [];
-        $params['auth_corpid'] = $this->app['config']['corp_id'];
+        $params['auth_corpid'] = $corpId;
         $params['query_word'] = $queryWord;
         $params['query_type'] = $queryType;
         $params['agentid'] = $agentId;
@@ -210,5 +240,20 @@ class Client extends BaseClient
         !empty($fullMatchField) && $params['full_match_field'] = $fullMatchField;
 
         return $this->httpPostJson('cgi-bin/service/contact/search', $params);
+    }
+
+    /**
+     * 自建应用代开发获取带参授权链接
+     *
+     * @see https://developer.work.weixin.qq.com/document/path/95436
+     *
+     * @param array $params 请求参数
+     *
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function getCustomizedAuthUrl(array $params)
+    {
+        return $this->httpPostJson('cgi-bin/service/get_customized_auth_url', $params);
     }
 }

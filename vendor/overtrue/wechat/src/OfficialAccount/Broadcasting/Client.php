@@ -40,6 +40,8 @@ class Client extends BaseClient
     /**
      * Send a message.
      *
+     * @param array $message
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -60,6 +62,8 @@ class Client extends BaseClient
     /**
      * Preview a message.
      *
+     * @param array $message
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -72,6 +76,9 @@ class Client extends BaseClient
 
     /**
      * Delete a broadcast.
+     *
+     * @param string $msgId
+     * @param int    $index
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -91,6 +98,8 @@ class Client extends BaseClient
     /**
      * Get a broadcast status.
      *
+     * @param string $msgId
+     *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
@@ -108,7 +117,9 @@ class Client extends BaseClient
     /**
      * Send a text message.
      *
-     * @param mixed $reception
+     * @param string $message
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -123,7 +134,9 @@ class Client extends BaseClient
     /**
      * Send a news message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -138,7 +151,9 @@ class Client extends BaseClient
     /**
      * Send a voice message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -153,7 +168,9 @@ class Client extends BaseClient
     /**
      * Send a image message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -168,7 +185,9 @@ class Client extends BaseClient
     /**
      * Send a video message.
      *
-     * @param mixed $reception
+     * @param string $mediaId
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
@@ -183,7 +202,9 @@ class Client extends BaseClient
     /**
      * Send a card message.
      *
-     * @param mixed $reception
+     * @param string $cardId
+     * @param mixed  $reception
+     * @param array  $attributes
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
@@ -298,7 +319,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @param string $method
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     * @param string                                        $reception
+     * @param string                                        $method
      *
      * @return mixed
      *
@@ -313,8 +336,9 @@ class Client extends BaseClient
     }
 
     /**
-     * @param mixed $reception
-     * @param array $attributes
+     * @param \EasyWeChat\Kernel\Contracts\MessageInterface $message
+     * @param mixed                                         $reception
+     * @param array                                         $attributes
      *
      * @return mixed
      *

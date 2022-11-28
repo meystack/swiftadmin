@@ -18,7 +18,6 @@ use Yansongda\Supports\Collection;
 class CallbackPlugin implements PluginInterface
 {
     /**
-     * @throws \Yansongda\Pay\Exception\ContainerDependencyException
      * @throws \Yansongda\Pay\Exception\ContainerException
      * @throws \Yansongda\Pay\Exception\InvalidConfigException
      * @throws \Yansongda\Pay\Exception\ServiceNotFoundException
@@ -34,7 +33,7 @@ class CallbackPlugin implements PluginInterface
         /* @phpstan-ignore-next-line */
         verify_wechat_sign($rocket->getDestinationOrigin(), $rocket->getParams());
 
-        $body = json_decode($rocket->getDestination()->getBody()->getContents(), true);
+        $body = json_decode((string) $rocket->getDestination()->getBody(), true);
 
         $rocket->setDirection(NoHttpRequestParser::class)->setPayload(new Collection($body));
 
@@ -58,7 +57,7 @@ class CallbackPlugin implements PluginInterface
             throw new InvalidParamsException(Exception::REQUEST_NULL_ERROR);
         }
 
-        $contents = $request->getBody()->getContents();
+        $contents = (string) $request->getBody();
 
         $rocket->setDestination($request->withBody(Utils::streamFor($contents)))
             ->setDestinationOrigin($request->withBody(Utils::streamFor($contents)))

@@ -405,7 +405,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 content: n
             })
         },
-        message: function () {
+        bells: function () {
             var that = $(this),
                 n = that.data("url");
             admin.event.flowOpen({
@@ -445,7 +445,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
             var elemWidth = 0, client = that[0].getBoundingClientRect();
 
-            if (n.title == undefined) {
+            if (n.title === undefined) {
                 n.title = false;
                 n.closeBtn = false
             }
@@ -460,8 +460,8 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             }
             elemWidth = parseInt(elemWidth);
             n.anim || (n.anim = 5);
-            n.resize = n.resize != undefined ? n.resize : false;
-            n.shade = n.shade != undefined ? n.shade : 0.1;
+            n.resize = n.resize !== undefined ? n.resize : false;
+            n.shade = n.shade !== undefined ? n.shade : 0.1;
             var top = client.height,
                 padding = (that.innerWidth() - that.width()) / 2, // 不用计算 padding
                 left = client.left + (client.width / 2) - (elemWidth / 2);
@@ -473,7 +473,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         }
         , pupupOpen: function (n) {
 
-            if (n.title == undefined) {
+            if (n.title === undefined) {
                 n.title = false;
                 n.closeBtn = false
             }

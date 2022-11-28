@@ -24,6 +24,8 @@ class Client extends BaseClient
     /**
      * update settlement card.
      *
+     * @param array $params
+     *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -46,6 +48,8 @@ class Client extends BaseClient
 
     /**
      * update contact info.
+     *
+     * @param array $params
      *
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      *

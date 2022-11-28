@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace app\common\model\system;
 
+use think\Collection;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use think\db\Query;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -39,12 +41,12 @@ class Dictionary extends Model
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public static function getValueList(string $value = '')
+    public static function getValueList(string $value = ''): array
     {
         $list = [];
         $data = self::where(['pid'   => 0,'value' => $value])->find();
         if (!empty($data)) {
-            $list = self::where('pid', $data['id'])->select();
+            $list = self::where('pid', $data['id'])->select()->toArray();
         }
 
         return $list;

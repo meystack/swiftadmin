@@ -14,6 +14,10 @@ namespace app\admin\controller\system;
 
 use app\AdminController;
 use app\common\model\system\Company as CompanyModel;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -33,7 +37,10 @@ class Company extends AdminController
 
     /**
      * 获取资源列表
-     * @return \support\Response
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function index(): \support\Response
     {

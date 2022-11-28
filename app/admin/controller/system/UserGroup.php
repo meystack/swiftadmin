@@ -37,8 +37,8 @@ class UserGroup extends AdminController
         if (request()->isAjax()) {
 
 			$param = input();
-			$param['page'] = input('page/d');
-			$param['limit'] = input('limit/d');
+			$param['page'] = input('page/',1);
+			$param['limit'] = input('limit',10);
 
 			// 查询条件
 			$where = array();
@@ -54,9 +54,9 @@ class UserGroup extends AdminController
 
 			// 查询数据
             $count = $this->model->where($where)->count();
-            $limit = is_empty($param['limit']) ? 10 : $param['limit'];
+            $limit = empty($param['limit']) ? 10 : $param['limit'];
             $page = ($count <= $limit) ? 1 : $param['page'];
-			$list = $this->model->where($where)->order("id asc")->limit($limit)->page($page)->select()->toArray();
+			$list = $this->model->where($where)->order("id asc")->limit($limit)->page((int)$page)->select()->toArray();
 			foreach ($list as $key => $value) {
 				$list[$key]['title'] = __($value['title']);
 			}

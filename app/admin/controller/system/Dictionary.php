@@ -60,7 +60,7 @@ class Dictionary extends AdminController
             }
 
             $count = $this->model->where($where)->count();
-            $list = $this->model->where($where)->limit($limit)->page($page)->select()
+            $list = $this->model->where($where)->limit((int)$limit)->page((int)$page)->select()
                 ->each(function($item,$key) use ($pid){
                 if ($key == 0 && $pid == '0') {
                     $item['LAY_CHECKED'] = true;

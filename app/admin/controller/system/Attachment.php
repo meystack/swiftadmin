@@ -70,7 +70,7 @@ class Attachment extends AdminController
             $page = ($count <= $limit) ? 1 : $page;            
 
             // 生成查询数据
-            $list = $this->model->where($where)->order("id desc")->limit($limit)->page($page)->select()->toArray();
+            $list = $this->model->where($where)->order("id desc")->limit((int)$limit)->page((int)$page)->select()->toArray();
             return $this->success('查询成功', "", $list, $count);
         }
 

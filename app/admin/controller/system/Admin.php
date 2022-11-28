@@ -97,7 +97,7 @@ class Admin extends AdminController
             $where[] = ['status', '=', $status];
             $count = $this->model->where($where)->count();
             $page = ($count <= $limit) ? 1 : $page;
-            $list = $this->model->where($where)->order("id asc")->withoutField('pwd')->limit($limit)->page($page)->select()->toArray();
+            $list = $this->model->where($where)->order("id asc")->withoutField('pwd')->limit((int)$limit)->page((int)$page)->select()->toArray();
 
             // 循环处理数据
             foreach ($list as $key => $value) {

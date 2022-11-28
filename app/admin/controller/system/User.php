@@ -68,7 +68,7 @@ class User extends AdminController
             $where[] = ['status', '=', $status];
             $count = $this->model->where($where)->count();
             $page = ($count <= $limit) ? 1 : $page;
-            $list = $this->model->where($where)->order("id asc")->limit($limit)->page($page)->select();
+            $list = $this->model->where($where)->order("id asc")->limit((int)$limit)->page((int)$page)->select();
 
             // 循环处理数据
             foreach ($list as $key => $value) {

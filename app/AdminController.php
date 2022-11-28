@@ -172,7 +172,7 @@ class AdminController extends BaseController
                     }
                 }
             } catch (\ReflectionException $e) {}
-            $subQuery = $this->model->field('id')->where($where)->order($order, 'desc')->limit($limit)->page($page)->buildSql();
+            $subQuery = $this->model->field('id')->where($where)->order($order, 'desc')->limit((int)$limit)->page((int)$page)->buildSql();
             $subQuery = '( SELECT object.id FROM ' . $subQuery . ' AS object )';
             $list = $this->model->with($relation)->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
             foreach ($list as $key => $value) {

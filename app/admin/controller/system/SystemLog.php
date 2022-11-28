@@ -69,7 +69,7 @@ class SystemLog extends AdminController
             $where[] = ['status','=','1'];
             $count = $this->model->where($where)->count();
             $page = ($count <= $limit) ? 1 : $page;
-            $list = $this->model->where($where)->order('id', 'desc')->limit($limit)->page($page)->select()->toArray();
+            $list = $this->model->where($where)->order('id', 'desc')->limit((int)$limit)->page((int)$page)->select()->toArray();
             return $this->success('查询成功', "", $list, $count);
         }
 

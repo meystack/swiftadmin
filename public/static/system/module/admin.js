@@ -639,7 +639,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 auto: clickObject.data('auto') || undefined,
                 shadeClose: clickObject.data('shadeclose') || false,
                 scrollbar: clickObject.data('scrollbar') || undefined,
-                disableform: clickObject.data('disable') || false,
+                disableForm: clickObject.data('disable') || false,
                 callback: clickObject.attr('callback') || undefined,
                 iframeAuto: false
             };
@@ -651,9 +651,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 options.type = 1;
                 options.url = $(options.url).html();
                 if (typeof tableThis !== 'undefined') {
-                    let htmls = $(options.url);
-                    $(htmls).find('*[data-disabled]').addClass('layui-disabled').attr('disabled', '');
-                    options.url = htmls.prop("outerHTML");
+                    let html_text = $(options.url);
+                    $(html_text).find('*[data-disabled]').addClass('layui-disabled').attr('disabled', '');
+                    options.url = html_text.prop("outerHTML");
                 }
             }
 
@@ -691,7 +691,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                     if (options.type <= 1) {
                         // 禁止滚动条
                         $(layero).children('.layui-layer-content').css('overflow', 'visible');
-                        if (typeof tableThis !== 'undefined' && !options.disableform) {
+                        if (typeof tableThis !== 'undefined' && !options.disableForm) {
                             form.val(options.id, tableThis.data);
                         }
 
@@ -734,6 +734,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                 dataType: 'json',
                                 data: post.field,
                                 success: function (res) {
+
                                     for (var elem in post.field) {
                                         var lay = $(clickObject).parents("tr").find('*[data-field=' + elem + ']').find('*[lay-skin]');
                                         if (lay.length !== 0) {
@@ -772,9 +773,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
                             return false;
                         })
-
                     }
-
                 }
             })
         }
@@ -1565,11 +1564,12 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         }
 
         var _parent = that.data('reload') || false;
-        that.attr("disabled", true);
+
         $.post(_url, data.field, function (res) {
 
             if (res.code === 200) {
                 top.layer.msg(res.msg);
+                that.attr("disabled", true);
                 if (_close === undefined) {
                     admin.event.closeDialog(that);
                 }
@@ -1594,6 +1594,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
         }, 'json');
 
+        // 延迟释放按钮
         setTimeout(function (e) {
             that.attr("disabled", false);
         }, 2000);

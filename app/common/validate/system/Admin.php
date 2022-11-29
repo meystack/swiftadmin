@@ -31,6 +31,9 @@ class Admin extends Validate
         'name.max'     	    => '用户名不能超过12个字符',
         'name.filters'      => '用户名包含禁止注册字符',
         'name.chsAlphaNum'  => '用户名只能是汉字、字母和数字',
+        'pwd.require'		=> '密码不能为空',
+        'pwd.min'     	    => '密码不能少于6个字符',
+        'pwd.max'     	    => '密码不能超过64个字符',
     ];
 
     // 测试验证场景

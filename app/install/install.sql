@@ -396,7 +396,7 @@ INSERT INTO `__PREFIX__config` VALUES (18, 'auth_code', 0, NULL, 'string', 'wMRk
 INSERT INTO `__PREFIX__config` VALUES (19, 'system_logs', 0, NULL, 'string', '0', '后台日志');
 INSERT INTO `__PREFIX__config` VALUES (20, 'system_exception', 0, NULL, 'string', '0', '异常日志');
 INSERT INTO `__PREFIX__config` VALUES (21, 'cache_status', 0, 'cache', 'string', '1', '缓存状态');
-INSERT INTO `__PREFIX__config` VALUES (22, 'cache_type', 0, 'cache', 'string', 'redis', '缓存类型');
+INSERT INTO `__PREFIX__config` VALUES (22, 'cache_type', 0, 'cache', 'string', 'file', '缓存类型');
 INSERT INTO `__PREFIX__config` VALUES (23, 'cache_time', 0, 'cache', 'string', '6000', '缓存时间');
 INSERT INTO `__PREFIX__config` VALUES (24, 'cache_host', 0, 'cache', 'string', '127.0.0.1', '服务器IP');
 INSERT INTO `__PREFIX__config` VALUES (25, 'cache_port', 0, 'cache', 'string', '6379', '端口');

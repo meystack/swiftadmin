@@ -13,20 +13,18 @@
  */
 
 return [
-
-    'type'                  => 'redis',    // or redis or redis_cluster
-    'handler'               => Webman\Session\RedisSessionHandler::class,
+    'type'                  => getenv('CACHE_DRIVER') ?: 'file',    // or redis or redis_cluster
+    'handler'               => getenv('CACHE_DRIVER') == 'redis' ? Webman\Session\RedisSessionHandler::class : Webman\Session\FileSessionHandler::class,
     'config'                => [
         'file'          => [
             'save_path' => runtime_path() . '/sessions',
         ],
         'redis'         => [
-            'host'     => '127.0.0.1',
-            'port'     => 6379,
-            'auth'     => '',
-            'timeout'  => 2,
-            'database' => getenv('CACHE_SELECT') ?? 0,
-            'prefix'   => '',
+            'host'     => getenv('CACHE_HOSTNAME') ?: '127.0.0.1',
+            'port'     => getenv('CACHE_HOSTPORT') ?: 6379,
+            'database' => getenv('CACHE_SELECT') ?: 0,
+            'auth'     => getenv('CACHE_PASSWORD') ?: '',
+            'prefix'   => '', // session key prefix
         ],
         'redis_cluster' => [
             'host'    => ['127.0.0.1:7000', '127.0.0.1:7001', '127.0.0.1:7001'],
@@ -35,7 +33,7 @@ return [
             'prefix'  => '',
         ]
     ],
-    'session_name'          => 'SAPHPID',
+    'session_name'          => 'SESSION_ID',
     'auto_update_timestamp' => false,
     'lifetime'              => 7 * 24 * 60 * 60,
     'cookie_lifetime'       => 7 * 24 * 60 * 60,

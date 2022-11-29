@@ -329,7 +329,7 @@
                 // 获取用户id
                 var pageThat = layui.$(this),
                 _pageUrl = !status ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
-                pageThat.attr("disabled",true);
+
                 // 开始POST提交数据
                 layui.$.post(_pageUrl,
                     post.field, function(res){
@@ -338,6 +338,7 @@
                             // 关闭当前窗口
                             table.reload('lay-tableList');
                             layer.close(colletction.index);
+                            pageThat.attr("disabled",true);
                         }
                         else {
                             layer.error(res.msg);
@@ -379,7 +380,6 @@
                         // 增加节点数据
                         post.field[event] = tree.getChecked('authTree', true);
                         // 开始POST提交数据
-                        clickthis.attr("disabled", true);
                         layui.$.post("{:url('/system/admin/edit" + event + "')}",
                             post.field, function (res) {
                                 if (res.code === 200) {
@@ -391,6 +391,7 @@
                                     // 关闭当前窗口
                                     layer.msg(res.msg);
                                     layer.close(colletction.index);
+                                    clickthis.attr("disabled", true);
                                 } else {
                                     layer.error(res.msg);
                                 }

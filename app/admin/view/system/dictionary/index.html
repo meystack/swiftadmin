@@ -10,6 +10,17 @@
         font-size: 16px;
     }
 
+    #layui-dic_group {
+        padding-bottom: 25px;
+    }
+
+    #layui-dic_group .layui-table-view .layui-table {
+        width: 100%;
+    }
+
+    #layui-dic_group table thead tr:first-child i {
+        display: none;
+    }
 
     @media screen and (max-width: 1200px){
         .layui-table-tool-temp .layui-btn {
@@ -24,21 +35,8 @@
         }
     }
 
-    #layui_side_left {
-        padding-bottom: 25px;
-    }
-
-    #layui_side_left .layui-table-view .layui-table {
-        width: 100%;
-    }
-
-    #layui_side_left table thead tr:first-child i 
-    { 
-        display: none;
-    }
-
 </style>
-<div class="layui-col-md3">
+<div class="layui-col-md4">
     <div class="layui-fluid">
         <div class="layui-card">
             <div class="layui-card-header layadmin-card-header-auto" style="padding-bottom: 5px">
@@ -52,35 +50,20 @@
                         <i class="layui-icon layui-icon-edit"></i>{:__('修改')}
                     </button>
                     <!-- // 删除所有 -->
-                    <button class="layui-btn icon-btn layui-btn-danger" lay-batch="lay-tree"  data-url="{:url('/system/Dictionary/del')}" >
+                    <button class="layui-btn icon-btn layui-btn-danger" lay-batch="" data-table="lay-tree" data-url="{:url('/system/Dictionary/del')}" >
                       <i class="layui-icon layui-icon-delete"></i>{:__('删除')}
                     </button>
                 </div>
             </div>
-            <div class="layui-card-body" id="layui_side_left">
-                <!-- // 创建数据实例 -->
-                <table class="layui-table" 
-                        lay-data="{
-                        url:'{:url('/system/Dictionary/index')}?pid=0',
-                        toolbar: '#toolbar',
-                        defaultToolbar: [],
-
-                        limit: 20,
-                        id:'lay-tree'}" 
-                        lay-filter="lay-tree" >
-                  <thead>
-                    <tr>
-                      <th lay-data="{type:'radio'}"></th>
-                      <th lay-data="{field:'name'}">{:__('字典名称')}</th>
-                    </tr>
-                  </thead>
-                </table>
+            <div class="layui-card-body" id="layui-dic_group">
+                <!-- // 创建字典组实例 -->
+                <table id="lay-tableGroup" lay-filter="lay-tableGroup"></table>
             </div>
         </div>
     </div>
 </div>
 
-<div class="layui-col-md9" >
+<div class="layui-col-md8" >
     <!-- // 展示数据 -->
     <div class="layui-fluid">
         <div class="layui-card">
@@ -125,13 +108,13 @@
 </div>
 
 <!-- // 添加编辑数据 -->
-<script type="text/html" id="editforms" >
+<section id="editforms" class="layui-hide">
 <div class="layui-fluid layui-bg-white">
     <form class="layui-form layui-form-fixed" lay-filter="editforms">
     <input type="text" name="id" hidden="">
     <input type="text" class="pid" name="pid" value="{$pid}" hidden="">
     <div class="layui-form-item">
-        <label class="layui-form-label"><font color="red">* </font>{:__('字典名称')}</label>
+        <label class="layui-form-label"><span style="color: red; ">* </span>{:__('字典名称')}</label>
         <div class="layui-input-block">
             <input name="name" placeholder="{:__('请输入字典名称')}" type="text" class="layui-input"  lay-verify="required" />
         </div>
@@ -160,12 +143,12 @@
 
     <div class="layui-footer layui-form-item layui-center">
         <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog" >{:__('取消')}</button>
-        <button class="layui-btn" lay-add="{:url('/system/Dictionary/add')}" lay-edit="{:url('/system/Dictionary/edit')}" lay-filter="submitPage"
-        lay-submit>{:__('提交')}</button>
+        <button class="layui-btn" lay-add="{:url('/system/Dictionary/add')}" lay-edit="{:url('/system/Dictionary/edit')}"
+                lay-filter="submitPage" lay-submit>{:__('提交')}</button>
     </div>
     </form>
 </div>
-</script>
+</section>
 
 <!-- // 列表编辑框 -->
 <script type="text/html" id="tableBar"> 
@@ -178,15 +161,31 @@
 <script>
     layui.use(['admin','jquery','table','form'], function () {
 
-        var admin = layui.admin;
-        var jquery = layui.jquery;
-        var table = layui.table;    
-        var form = layui.form;
+        let admin = layui.admin;
+        let $ = layui.jquery;
+        let table = layui.table;
+        let form = layui.form;
 
         // 定义表格URL
-        var tableURL = "{:url('/system/Dictionary/index')}";
+        let tableURL = "{:url('/system/Dictionary/index')}";
+
+        // 字典类表格
+        let isClass = table.render({
+            elem: "#lay-tableGroup"
+            , url: tableURL + "?pid=0"
+            , toolbar: '#toolbar'
+            , defaultToolbar: []
+            , page: true
+            , limit: 18
+            , cols: [[
+                {type: 'radio', align: 'left', title: '{:__("ID")}'},
+                {field: 'name', align: 'center', title: '{:__("字典类型")}'},
+                {field: 'value', align: 'center', title: '{:__("字典值")}'},
+            ]]
+        })
+
         // 基础表格
-        var isTable = table.render({
+        let isTable = table.render({
             elem: "#lay-tableList"
             ,url: tableURL
             ,page: true
@@ -197,72 +196,69 @@
                 {field: 'name', align: 'center', title: '{:__("字典项名称")}'},
                 {field: 'value', align: 'center', title: '{:__("字典值")}'},
                 {field: 'sort', align: 'center',  width: 135, title: '{:__("排序号")}'},
-                {field: 'create_time', align: 'center', width: 160,title: '{:__("创建时间")}'},
+                {field: 'create_time', align: 'center', width: 180,title: '{:__("创建时间")}'},
                 {align: 'center', toolbar: '#tableBar',width: 250, title: '{:__("操作")}'},
             ]]
         })
 
-        table.on('radio(lay-tree)', function(obj){
-            var data = table.checkStatus('lay-tree').data;
-            var ids = [];
+        table.on('radio(lay-tableGroup)', function(obj){
+            let data = table.checkStatus('lay-tableGroup').data;
+            let ids = [];
             if (data.length) {
                 for (const key in data) {
                    ids.push(data[key].id);
                 }
 
-                var url = tableURL + '?pid=' + ids.join(',');
+                let url = tableURL + '?pid=' + ids.join(',');
                 table.reloadData('lay-tableList', {
                     url: url
                 });
 
                 // 获取最后点击
                 if (obj.checked === true) {
-                    setLastPID(obj.data.id);
+                    window.tableElem = obj;
+                    $('#editforms').find('.pid').attr('value',obj.data.id);
                 }
             }
         });
 
-
         // 全局回调函数
         admin.callback.edit = function(clickthis,colletction,config) {
 
-            var status = true;
-            var data = table.checkStatus('lay-tree').data;
-            if (clickthis.attr('lay-open') === 'edit') {
+            let status = true;
+            let action = clickthis.attr('lay-open');
+            let data = table.checkStatus('lay-tableGroup').data;
+            if (action === 'edit') {
                 status = false;
                 form.val('editforms',data[0]);
             }
-            
-            form.on("submit(submitPage)",function(post){
 
-                var pageThat = jquery(this),
+            form.on("submit(submitPage)",function(post){
+                let pageThat = $(this),
                 _pageUrl = !status ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
                 post.field.pid = 0;
                 // 开始POST提交数据
-                pageThat.attr("disabled",true);
-                jquery.post(_pageUrl,
+                $.post(_pageUrl,
                     post.field, function(res){
                         if (res.code === 200) {
-                            layer.msg(res.msg);
-
+                            if (typeof window.tableElem !== 'undefined') {
+                                window.tableElem.update(JSON.parse(JSON.stringify(post.field)))
+                            } else {
+                                table.reloadData('lay-tableGroup');
+                            }
                             // 关闭当前窗口
-                            table.reload('lay-tree');
+                            layer.msg(res.msg);
                             layer.close(colletction.index);
+                            pageThat.attr("disabled",true);
                         }
                         else {
                             layer.error(res.msg);
                         }
 
                 }, 'json');
-                pageThat.attr("disabled",false);
+
                 return false;
             })
-        }
-
-        function setLastPID(pid) {
-            var html = jquery(jquery('#editforms').html());
-            html.find('.pid').attr('value',pid);
-            jquery('#editforms').html(html);
         }
     });
 </script>

@@ -392,7 +392,7 @@ class Index extends AdminController
                 $parse['CACHE_DRIVER'] = $post['cache_type'];
                 $parse['CACHE_HOSTNAME'] = $post['cache_host'];
                 $parse['CACHE_HOSTPORT'] = $post['cache_port'];
-                $parse['CACHE_SELECT'] = min($post['cache_select'], 1);
+                $parse['CACHE_SELECT'] = $post['cache_select'];
                 $parse['CACHE_USERNAME'] = $post['cache_user'];
                 $parse['CACHE_PASSWORD'] = $post['cache_pass'];
                 write_file($env, parse_array_ini($parse));

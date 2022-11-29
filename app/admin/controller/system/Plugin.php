@@ -44,7 +44,7 @@ class Plugin extends AdminController
      * 错误信息
      * @var mixed
      */
-    static mixed $errData;
+    static mixed $ServerBody = '';
 
     /**
      * 获取本地插件列表
@@ -93,7 +93,7 @@ class Plugin extends AdminController
                 self::enabled($name);
             } catch (\Throwable $th) {
                 recursive_delete($pluginPath);
-                return $this->error($th->getMessage(), null, self::$errData, $th->getCode());
+                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
             }
 
             return $this->success('插件安装成功', null, get_plugin_config($name, true));
@@ -187,7 +187,7 @@ class Plugin extends AdminController
                 self::executeSql($name);
                 self::enabled($name);
             } catch (\Throwable $th) {
-                return $this->error($th->getMessage(), null, self::$errData, $th->getCode());
+                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
             }
 
             return $this->success('插件更新成功', null, $data);
@@ -339,7 +339,7 @@ class Plugin extends AdminController
                 $filePath = plugin_path() . $name . '.zip';
                 write_file($filePath, $content);
             } else {
-                self::$errData = $body['data'];
+                self::$ServerBody = $body['data'];
                 throw new \Exception($body['msg'], $body['code']);
             }
 

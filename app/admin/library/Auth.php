@@ -103,9 +103,9 @@ class Auth
      * @param string $mode 执行check的模式
      * @param string $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
      * @return bool                        通过验证返回true;失败返回false
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function check($name, int $admin_id = 0, int $type = 1, string $mode = 'url', string $relation = 'or'): bool
     {
@@ -203,9 +203,9 @@ class Auth
      * 获取权限菜单
      * @access  public
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getRulesMenu()
     {
@@ -231,9 +231,9 @@ class Auth
      * @param  $admin_id
      * @param array $nodes
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getAuthList($admin_id, array $nodes = []): array
     {
@@ -342,11 +342,11 @@ class Auth
 
     /**
      * 超级管理员
-     * @access      public
-     * @return      bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @access public
+     * @return bool
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function superAdmin(): bool
     {
@@ -363,9 +363,9 @@ class Auth
      * 管理组分级鉴权
      * @param array $groupIDs
      * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function checkRulesForGroup(array $groupIDs = []): bool
     {
@@ -395,23 +395,22 @@ class Auth
      * 获取用户信息
      * @param $admin_id
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function getAdminData($admin_id): array
+    public function getAdminInfo($admin_id): array
     {
-
-        $admin_id = $admin_id ?? session('AdminLogin.id');
-        static $AdminData = [];
+        $admin_id = $admin_id ?? get_admin_id();
+        static $AdminArray = [];
         $user = Db::name('admin');
         // 获取用户表主键
         $_pk = is_string($user->getPk()) ? $user->getPk() : 'id';
-        if (!isset($AdminData[$admin_id])) {
-            $AdminData[$admin_id] = $user->where($_pk, $admin_id)->find();
+        if (!isset($AdminArray[$admin_id])) {
+            $AdminArray[$admin_id] = $user->where($_pk, $admin_id)->find();
         }
 
-        return $AdminData[$admin_id];
+        return $AdminArray[$admin_id];
     }
 
     /**

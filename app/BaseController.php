@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+declare (strict_types=1);
 // +----------------------------------------------------------------------
 // | swiftAdmin 极速开发框架 [基于WebMan开发]
 // +----------------------------------------------------------------------
@@ -19,13 +19,6 @@ use Gregwar\Captcha\CaptchaBuilder;
 
 class BaseController
 {
-
-    /**
-     * 应用实例
-     * @var mixed $app
-     */
-    protected mixed $app;
-
     /**
      * 数据库实例
      * @var object
@@ -33,11 +26,10 @@ class BaseController
     public object $model;
 
     /**
-     * 是否批量验证
+     * 是否验证
      * @var bool
      */
-    protected bool $batchValidate = false;
-
+    public bool $isValidate = true;
 
     /**
      * 验证场景
@@ -46,40 +38,10 @@ class BaseController
     public string $scene = '';
 
     /**
-     * 操作状态
-     * @var mixed
-     */
-    public mixed $status;
-
-    /**
-     * 接口权限
-     * @var object
-     */
-    public object $auth;
-
-    /**
-     * 控制器登录鉴权
+     * 是否批量验证
      * @var bool
      */
-    public bool $needLogin = false;
-
-    /**
-     * 禁止登录重复
-     * @var array
-     */
-    public array $repeatLogin = [];
-
-    /**
-     * 非鉴权方法
-     * @var array
-     */
-    public array $noNeedAuth = ['index', 'login', 'logout'];
-
-    /**
-     * 验证错误消息
-     * @var string
-     */
-    protected string $errorText;
+    protected bool $batchValidate = false;
 
     /**
      * 获取访问来源
@@ -96,10 +58,10 @@ class BaseController
      * 验证数据
      * @access protected
      * @param array $data 数据
-     * @param string|array $validate 验证器名或者验证规则数组
+     * @param $validate
      * @param array $message 提示信息
      * @param bool $batch 是否批量验证
-     * @return bool|true
+     * @return bool
      */
     protected function validate(array $data, $validate, array $message = [], bool $batch = false): bool
     {
@@ -111,8 +73,8 @@ class BaseController
                 // 支持场景
                 [$validate, $scene] = explode('.', $validate);
             }
-            $class = false !== strpos($validate, '\\') ? $validate : $this->parseClass('validate', $validate);
-            $v     = new $class();
+            $class = str_contains($validate, '\\') ? $validate : $this->parseClass('validate', $validate);
+            $v = new $class();
             if (!empty($scene)) {
                 $v->scene($scene);
             }
@@ -132,23 +94,23 @@ class BaseController
      * 解析应用类的类名
      * @access public
      * @param string $layer 层名 controller model ...
-     * @param string $name  类名
+     * @param string $name 类名
      * @return string
      */
     protected function parseClass(string $layer, string $name): string
     {
-        $name  = str_replace(['/', '.'], '\\', $name);
+        $name = str_replace(['/', '.'], '\\', $name);
         $array = explode('\\', $name);
         $class = Str::studly(array_pop($array));
-        $path  = $array ? implode('\\', $array) . '\\' : '';
-        return 'app'. '\\' . $layer . '\\' . $path . $class;
+        $path = $array ? implode('\\', $array) . '\\' : '';
+        return 'app' . '\\' . $layer . '\\' . $path . $class;
     }
 
     /**
      * 操作成功跳转的快捷方法
      * @access protected
      * @param mixed $msg 提示信息
-     * @param string|null $url 跳转的URL地址
+     * @param null $url 跳转的URL地址
      * @param mixed $data 返回的数据
      * @param int $count
      * @param int $code
@@ -156,7 +118,7 @@ class BaseController
      * @param array $header 发送的Header信息
      * @return Response
      */
-    protected function success($msg = '', string $url = null, $data = '', int $count = 0, int $code = 200, int $wait = 3, array $header = []): Response
+    protected function success(mixed $msg = '', $url = null, mixed $data = '', int $count = 0, int $code = 200, int $wait = 3, array $header = []): Response
     {
         if (is_null($url) && isset($_SERVER["HTTP_REFERER"])) {
             $url = $_SERVER["HTTP_REFERER"];
@@ -191,7 +153,7 @@ class BaseController
      * @param array $header 发送的Header信息
      * @return Response
      */
-    protected function error($msg = '', $url = null, $data = '', int $code = 101, int $wait = 3, array $header = []): Response
+    protected function error(mixed $msg = '', $url = null, mixed $data = '', int $code = 101, int $wait = 3, array $header = []): Response
     {
         if (is_null($url)) {
             $url = request()->isAjax() ? '' : 'javascript:history.back(-1);';
@@ -254,9 +216,7 @@ class BaseController
 
     /**
      * 获取模型字段集
-     * @access protected
-     * @param  $model
-     * @return mixed
+     * @param null $model
      */
     protected function getTableFields($model = null)
     {
@@ -301,6 +261,7 @@ class BaseController
         if (strtolower($captcha) !== \request()->session()->get('captcha')) {
             return false;
         }
+
         return true;
     }
 }

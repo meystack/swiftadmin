@@ -34,30 +34,6 @@ class HomeController extends BaseController
     public object $model;
 
     /**
-     * 是否验证
-     * @var bool
-     */
-    public bool $isValidate = true;
-
-    /**
-     * 验证场景
-     * @var string
-     */
-    public string $scene = '';
-
-    /**
-     * 控制器/类名
-     * @var string
-     */
-    public string $controller;
-
-    /**
-     * 控制器方法
-     * @var string
-     */
-    public string $action;
-
-    /**
      * 操作状态
      * @var mixed
      */
@@ -98,6 +74,7 @@ class HomeController extends BaseController
      * @var string
      */
     public string $JumpUrl = '/user/index';
+
     /**
      * 初始化函数
      */

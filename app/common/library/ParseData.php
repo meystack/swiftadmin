@@ -118,7 +118,7 @@ class ParseData
     }
 
     /**
-     * 自动补全图片
+     * cdn前缀
      * @access  public
      * @param string $image
      * @param $data

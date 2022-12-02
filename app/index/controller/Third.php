@@ -99,40 +99,37 @@ class Third extends HomeController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
-        $userData = $this->oauth->getUserInfo();
-        if (!empty($userData) && !$this->auth->isLogin()) {
-            return $this->register($userData, $this->type);
+        $user = $this->oauth->getUserInfo();
+        if (!empty($user) && !$this->auth->isLogin()) {
+            return $this->register($user, $this->type);
         } else if ($this->auth->isLogin()) { // 绑定用户
-            return $this->doBind($userData, $this->type);
+            return $this->doBind($user, $this->type);
         }
     }
 
     /**
      * 用户注册操作
-     * @param array $userDatas
+     * @param array $info
      * @param string|null $type
      * @return Response
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    protected function register(array $userDatas = [], string $type = null)
+    protected function register(array $info = [], string $type = null)
     {
-        $openid = $userDatas['openid'] ?? $userDatas['id'];
-        $nickname = $userDatas['userData']['name'] ?? $userDatas['userData']['nickname'];
-        $userData = UserThird::alias('th')
-                             ->view('user', '*', 'user.id=th.user_id')
-                             ->where(['openid' => $openid, 'type' => $type])
-                             ->find();
+        $openid = $info['openid'] ?? $info['id'];
+        $nickname = $info['userData']['name'] ?? $info['userData']['nickname'];
+        $userInfo = UserThird::alias('th')->view('user', '*', 'user.id=th.user_id')->where(['openid' => $openid, 'type' => $type])->find();
 
-        if (!empty($userData)) {
-            $array['id'] = $userData['id'];
+        if (!empty($userInfo)) {
+            $array['id'] = $userInfo['id'];
             $array['login_time'] = time();
             $array['login_ip'] = request()->getRealIp();
-            $array['login_count'] = $userData['login_count'] + 1;
+            $array['login_count'] = $userInfo['login_count'] + 1;
 
             if (User::update($array)) {
-                $response = $this->auth->responseToken($userData);
+                $response = $this->auth->responseToken($userInfo);
                 $response->withBody(json_encode(ResultCode::LOGINSUCCESS))->redirect(request()->cookie('redirectUrl', '/'));
             }
 
@@ -140,7 +137,7 @@ class Third extends HomeController
 
             // 注册本地用户
             $data['nickname'] = $nickname;
-            $data['avatar'] = $userDatas['userData']['avatar'];
+            $data['avatar'] = $info['userData']['avatar'];
             if (User::getByNickname($nickname)) {
                 $data['nickname'] .= Random::alpha(3);
             }
@@ -155,11 +152,11 @@ class Third extends HomeController
                     'user_id'       => $result['id'],
                     'openid'        => $openid,
                     'nickname'      => $nickname,
-                    'access_token'  => $userDatas['access_token'],
-                    'refresh_token' => $userDatas['refresh_token'],
-                    'expires_in'    => $userDatas['expires_in'],
+                    'access_token'  => $info['access_token'],
+                    'refresh_token' => $info['refresh_token'],
+                    'expires_in'    => $info['expires_in'],
                     'login_time'    => time(),
-                    'expiretime'    => time() + $userDatas['expires_in'],
+                    'expiretime'    => time() + $info['expires_in'],
                 ];
             }
 
@@ -207,7 +204,7 @@ class Third extends HomeController
         }
         if ($this->auth->isLogin()) {
 
-            $result = $this->auth->userData;
+            $result = $this->auth->userInfo;
             if (!empty($result)) {
 
                 if (empty($result['email']) || empty($result['pwd'])) {
@@ -227,18 +224,18 @@ class Third extends HomeController
 
     /**
      * 用户绑定操作实例
-     * @param array $userDatas
+     * @param array $info
      * @param string|null $type
      * @return Response|null
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    protected function doBind(array $userDatas = [], string $type = null)
+    protected function doBind(array $info = [], string $type = null)
     {
 
-        $openid = $userDatas['openid'] ?? $userDatas['id'];
-        $nickname = $userDatas['userData']['name'] ?? $userDatas['userData']['nickname'];
+        $openid = $info['openid'] ?? $info['id'];
+        $nickname = $info['userData']['name'] ?? $info['userData']['nickname'];
 
         // 查询是否被注册
         $where['openid'] = $openid;
@@ -251,11 +248,11 @@ class Third extends HomeController
                 'user_id'       => request()->cookie('uid'),
                 'openid'        => $openid,
                 'nickname'      => $nickname,
-                'access_token'  => $userDatas['access_token'],
-                'refresh_token' => $userDatas['refresh_token'],
-                'expires_in'    => $userDatas['expires_in'],
+                'access_token'  => $info['access_token'],
+                'refresh_token' => $info['refresh_token'],
+                'expires_in'    => $info['expires_in'],
                 'login_time'    => time(),
-                'expiretime'    => time() + $userDatas['expires_in'],
+                'expiretime'    => time() + $info['expires_in'],
             ];
 
             if (UserThird::create($third)) {
@@ -283,6 +280,4 @@ class Third extends HomeController
         request()->cookie('redirectUrl', null,1);
         return $this->redirect($referer);
     }
-
-
 }

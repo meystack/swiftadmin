@@ -1,5 +1,6 @@
 <?php
 declare (strict_types=1);
+
 // +----------------------------------------------------------------------
 // | swiftAdmin 极速开发框架 [基于WebMan开发]
 // +----------------------------------------------------------------------
@@ -11,8 +12,7 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\admin\controller\system;
-
-
+set_time_limit(600);
 use GuzzleHttp\Exception\TransferException;
 use support\Response;
 use system\File;
@@ -276,6 +276,9 @@ class Plugin extends AdminController
     public function config(): Response
     {
         $name = input('name');
+        if (!empty($name)) {
+            $name = strtolower(trim($name));
+        }
         if (preg_replace('/[^a-zA-Z0-9]/i', '', $name) !== $name) {
             return $this->error('插件名称只能是字母和数字');
         }

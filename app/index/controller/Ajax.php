@@ -62,10 +62,10 @@ class Ajax extends HomeController
                 return $this->error(__('发送频繁'));
             }
 
-            $userData = User::getByMobile($mobile);
-            if (in_array($event, ['register', 'changer']) && $userData) {
+            $user = User::getByMobile($mobile);
+            if (in_array($event, ['register', 'changer']) && $user) {
                 return $this->error('当前手机号已被占用');
-            } else if ($event == 'forgot' && !$userData) {
+            } else if ($event == 'forgot' && !$user) {
                 return $this->error('当前手机号未注册');
             }
 
@@ -103,10 +103,10 @@ class Ajax extends HomeController
                 return $this->error(__('发送频繁'));
             }
 
-            $userData = User::getByEmail($email);
-            if (in_array($event, ['register', 'changer']) && $userData) {
+            $user = User::getByEmail($email);
+            if (in_array($event, ['register', 'changer']) && $user) {
                 return $this->error('当前邮箱已被注册');
-            } else if ($event == 'forgot' && !$userData) {
+            } else if ($event == 'forgot' && !$user) {
                 return $this->error('当前邮箱不存在');
             }
 

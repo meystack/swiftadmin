@@ -325,7 +325,7 @@ class Admin extends AdminController
             $page = input('page', 1);
             $limit = input('limit', 3);
             // 计算最大页码
-            $data = AdminNotice::with(['admin'])->where(['type' => $type, 'admin_id' => \request()->admin_id])
+            $data = AdminNotice::with(['admin'])->where(['type' => $type, 'admin_id' => get_admin_id()])
                 ->order('id', 'desc')->paginate(['list_rows' => $limit, 'page' => $page])->toArray();
             return $this->success('获取成功', '', $data);
         }
@@ -333,7 +333,7 @@ class Admin extends AdminController
         foreach ($array as $item) {
             $where = [
                 ['type', '=', $item],
-                ['admin_id', '=', request()->admin_id]
+                ['admin_id', '=', get_admin_id()]
             ];
             $count[$item] = AdminNotice::where($where)->where('status', 0)->count();
             $list[$item] = AdminNotice::with(['admin'])->withoutField('content')->where($where)->limit(3)->order('id desc')->select()->toArray();
@@ -358,7 +358,7 @@ class Admin extends AdminController
         $type = input('type', 'notice');
 
         if (!empty($id)) {
-            $detail = AdminNotice::with(['admin'])->where(['id' => $id, 'admin_id' => \request()->admin_id])->find();
+            $detail = AdminNotice::with(['admin'])->where(['id' => $id, 'admin_id' => get_admin_id()])->find();
             if (empty($detail)) {
                 return $this->error('404 Not Found');
             }
@@ -383,7 +383,7 @@ class Admin extends AdminController
     {
         if (\request()->post()) {
             $post = request()->post();
-            $post['send_id'] = request()->admin_id;
+            $post['send_id'] = get_admin_id();
             $post['type'] = 'message';
             $post['send_ip'] = request()->getRealIp();
             $post['create_time'] = time();
@@ -404,7 +404,7 @@ class Admin extends AdminController
                 if (empty($id)) {
                     throw new Exception('参数错误');
                 }
-                AdminNotice::where(['id' => $id, 'admin_id' => request()->admin_id])->update(['status' => $status]);
+                AdminNotice::where(['id' => $id, 'admin_id' => get_admin_id()])->update(['status' => $status]);
             } catch (Exception $e) {
                 return $this->error('更新失败');
             }
@@ -424,7 +424,7 @@ class Admin extends AdminController
             $where = [
                 ['type', '=', $type],
                 ['status', '=', 1],
-                ['admin_id', '=', request()->admin_id]
+                ['admin_id', '=', get_admin_id()]
             ];
             try {
                 AdminNotice::where($where)->delete();
@@ -446,7 +446,7 @@ class Admin extends AdminController
             $type = input('type', 'notice');
             $where = [
                 ['type', '=', $type],
-                ['admin_id', '=', request()->admin_id]
+                ['admin_id', '=', get_admin_id()]
             ];
             try {
                 AdminNotice::where($where)->update(['status' => 1]);
@@ -468,10 +468,9 @@ class Admin extends AdminController
      */
     public function center(Request $request): \support\Response
     {
-
         if (request()->isPost()) {
             $post = request()->post();
-            $post['id'] = $request->admin_id;
+            $post['id'] = get_admin_id();
             if ($this->model->update($post)) {
                 return $this->success();
             }
@@ -480,7 +479,7 @@ class Admin extends AdminController
         }
 
         $title = [];
-        $data = $this->model->find($request->admin_id);
+        $data = $this->model->find(get_admin_id());
         if (!empty($data['group_id'])) {
             $group = AdminGroupModel::field('title')
                 ->whereIn('id', $data['group_id'])
@@ -505,7 +504,7 @@ class Admin extends AdminController
     {
         if (request()->isAjax()) {
             $post = request()->post();
-            $id = $request->admin_id;
+            $id = get_admin_id();
             try {
                 //code...
                 switch ($post['field']) {
@@ -571,7 +570,7 @@ class Admin extends AdminController
             }
 
             // 查找数据
-            $where[] = ['id', '=', request()->admin_id];
+            $where[] = ['id', '=', get_admin_id()];
             $where[] = ['pwd', '=', encryptPwd($pwd)];
             $result = $this->model->where($where)->find();
 

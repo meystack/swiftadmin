@@ -11,9 +11,17 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\queue\redis;
 
-use app\AdminController;
+use support\Log;
+use Webman\RedisQueue\Redis;
+use Webman\RedisQueue\Client;
 
-class Push extends AdminController
+/**
+ * 队列任务
+ * @package app\queue\redis
+ * @author meystack
+ * @date 2022-11-20
+ */
+class Push
 {
     /**
      * api推送
@@ -22,19 +30,41 @@ class Push extends AdminController
     protected mixed $api;
 
     /**
-     * 构造函数
+     * 同步推送
+     * @param $name
+     * @param $data
+     * @param int $delay
+     * @return bool
      */
-    public function __construct()
+    public static function queue($name, $data, int $delay = 0): bool
     {
-        parent::__construct();
+        try {
+            // 投递消息
+            Redis::send($name, $data, $delay);
+        } catch (\Throwable $th) {
+            Log::info('redis push error:' . $th->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
-    /*
-     * 消息推送首页
-     * @return mixed
+    /**
+     * 异步推送
+     * @param $name
+     * @param $data
+     * @param int $delay
+     * @return bool
      */
-    public function index()
+    public static function client($name, $data, int $delay = 0): bool
     {
-        return response('success');
+        try {
+            // 投递消息
+            Client::send($name, $data, $delay);
+        } catch (\Throwable $th) {
+            Log::info('redis Client async error:' . $th->getMessage());
+            return false;
+        }
+        return true;
     }
 }

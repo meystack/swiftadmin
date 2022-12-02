@@ -1,9 +1,10 @@
-/**
- * 前端CommonJS
- * 默认提供一些基础的页面交互操作
- * 注：插件开发请勿直接将JS代码写入此文件
+/*!
+ * CommonJS For Home - v1.0.0 - 2022-10-10
+ * https://github.com/meystack/swiftadmin
+ * Copyright (c) meystack
+ * Licensed Apache2.0
  */
-layui.use(['jquery','form','upload','table','dropdown'], function(){
+layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
 
     let $ = layui.$;
     let form = layui.form;
@@ -17,7 +18,7 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
      * @param count
      */
     window.bellMessage = function (count) {
-        let msg = dropdown.render({
+        dropdown.render({
             elem: '#notice'
             , trigger: 'hover'
             , align: 'center'
@@ -25,7 +26,8 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                 title: !count ? '暂无消息' : '您有<b class="msg">' + count + '</b>条未读消息'
             }], ready: function (elemPanel, elem) {
             }
-            , click: function (data, othis) {
+            , click: function (data, index) {
+                console.log(data, index);
                 let elem = $('.layui-nav-tree li [lay-href="/user/message"]');
                 $(elem).parents('.layui-nav-item').addClass('layui-nav-itemed');
                 $(elem).trigger('click');
@@ -33,46 +35,52 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         });
     }
 
-    // 注册为全局对象
+    /**
+     * 前端全局对象
+     * @access object
+     * screen: 屏幕宽度
+     * event: 事件对象
+     * Cookie: Cookie操作对象
+     * */
     window.Home = {
-        screen: function(){
-            let width =$(window).width()
-            if(width > 1200){
+        screen: function () {
+            let width = $(window).width()
+            if (width > 1200) {
                 return 3; //大屏幕
-            } else if(width > 992){
+            } else if (width > 992) {
                 return 2; //中屏幕
-            } else if(width > 768){
+            } else if (width > 768) {
                 return 1; //小屏幕
             } else {
                 return 0; //超小屏幕
             }
         },
         event: {
-            closeDialog:function(that) {
+            closeDialog: function (that) {
                 that = that || this;
                 let _type = $(that).parents(".layui-layer").attr("type");
                 if (typeof _type === "undefined") {
                     parent.layer.close(parent.layer.getFrameIndex(window.name));
-                }else {
+                } else {
                     let layerId = $(that).parents(".layui-layer").attr("id").substring(11);
                     layer.close(layerId);
                 }
             }
         },
         // cookie
-        Cookie : { // 获取cookies
+        Cookie: { // 获取cookies
             'Set': function (name, value, days) {
                 let exp = new Date();
                 exp.setTime(exp.getTime() + days * 24 * 60 * 60 * 1000);
-                let arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+                document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
                 document.cookie = name + "=" + escape(value) + ";path=/;expires=" + exp.toUTCString();
             },
             'Get': function (name) {
                 let arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
                 if (arr != null) {
                     return unescape(arr[2]);
-                    return null;
                 }
+                return null;
             },
             'Del': function (name) {
                 let exp = new Date();
@@ -85,16 +93,23 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         }
     }
 
-    // 监听全局form表单
-    form.on('submit(submitIframe)', function(data){
+    /**
+     * 监听全局form表单提交
+     * @param data
+     * @param callback
+     * @type  button lay-filter="submitIframe"
+     */
+    form.on('submit(submitIframe)', function (data) {
         let that = $(this), _form = that.parents('form'),
             _url = _form.attr("action") || false,
             _close = that.data("close") || undefined,
             _reload = that.data('reload');
-        $.post(_url,
-            data.field,function(res){
-                if(res.code === 200){
 
+        // 开启节流
+        that.attr("disabled", true);
+        $.post(_url,
+            data.field, function (res) {
+                if (res.code === 200) {
                     top.layer.msg(res.msg);
                     switch (_reload) {
                         case 'top':
@@ -117,9 +132,8 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                     if (_close === undefined) {
                         Home.event.closeDialog(that);
                     }
-                }
-                else{
-                    top.layui.layer.msg(res.msg,'error');
+                } else {
+                    top.layui.layer.msg(res.msg, 'error');
                 }
 
                 try {
@@ -130,8 +144,9 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                     if (typeof res.data.__token__ !== 'undefined') {
                         $('input#__token__').val(res.data.__token__);
                     }
-                } catch (e) {}
-
+                } catch (e) {
+                }
+                that.attr("disabled", false);
             }, 'json');
 
         return false;
@@ -139,10 +154,11 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
 
     /**
      * 监听form表单搜索
+     * 默认表格ID: lay-tableList
      */
     form.on('submit(formSearch)', function (data) {
 
-        var field = data.field;
+        let field = data.field;
         for (const key in field) {
             if (!field[key]) {
                 delete field[key];
@@ -162,35 +178,33 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         obj && obj.call(this, $(this));
     });
 
-    var uploadURL = '/index/user/upload';
+    let uploadURL = '/index/user/upload';
     layui.each($('*[lay-upload]'), function (index, elem) {
 
-        var that = $(this),
+        let that = $(this),
             name = $(elem).attr('lay-upload') || undefined,
             type = $(elem).data('type') || 'normal',
             size = $(elem).data('size') || 51200, // 限制最大5M
-            accept = $(elem).data('accept') || 'images',
-            multiple = $(elem).data('multiple') || false,
-            callback = $(elem).attr('callback') || undefined;
+            accept = $(elem).data('accept') || 'file';
 
-        // 文件上传函数
-        var uploadFiles = {
+        // 文件上传回调
+        let uploadFiles = {
             normal: function (res, name) {
                 $('input.' + name).prop('value', res.url);
                 $('img.' + name).prop('src', res.url);
             },
             images: function (res, name) {
-                var o = $('img.' + name);
+                let o = $('img.' + name);
                 o.prop('src', res.url);
                 o.parent('div').removeClass('layui-hide');
                 $('input.' + name).val(res.url);
                 $(elem).find('p,i,hr').addClass('layui-hide');
             },
             multiple: function (res, name) {
-                var index = $('.layui-imagesbox .layui-input-inline');
+                let index = $('.layui-imagesbox .layui-input-inline');
                 index = index.length ? index.length - 1 : 0;
-                var html = '<div class="layui-input-inline">';
-                html += '<img src="' + res.url + '" >';
+                let html = '<div class="layui-input-inline">';
+                html += '<img src="' + res.url + '" alt="alt" >';
                 html += '<input type="text" name="' + name + '[' + index + '][src]" class="layui-hide" value="' + res.url + '">';
                 html += '<input type="text" name="' + name + '[' + index + '][title]" class="layui-input" placeholder="图片简介">';
                 html += '<span class="layui-badge layui-badge-red" onclick="layui.$(this).parent().remove();">删除</span></div>';
@@ -204,17 +218,13 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
             , url: uploadURL
             , method: 'post'
             , size: size
-            , accept: 'file'
+            , accept: accept
             , before: function (res) {
                 // 关闭按钮点击
                 that.prop("disabled", true);
             }, done: function (res, index, file) {
-
-                that.prop("disabled", false);
-
                 if (res.code === 200 && res.url !== '') {
-
-                    if (typeof res.chunkId != 'undefined' ) {
+                    if (typeof res.chunkId != 'undefined') {
                         layer.close(window[res.chunkId]);
                     }
 
@@ -223,26 +233,24 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                 } else {
                     // 错误消息
                     layer.error(res.msg);
-                    that.prop("disabled", false);
                 }
+                that.prop("disabled", false);
             }
         })
-
     })
 
-
     // 全局监听打开窗口
-    $(document).on('click',"*[lay-open]",function(){
-        let clickthis = $(this),
+    $(document).on('click', "*[lay-open]", function () {
+        let clickThis = $(this),
             config = {
-                url: clickthis.data('url') || undefined,
-                object: clickthis.data('object') || 'self',
-                type: clickthis.data('type') || 2,
-                area: clickthis.data('area') || "auto",
-                offset: clickthis.data('offset') || "25%",
-                title: clickthis.data('title') || false,
-                maxmin: clickthis.data('maxmin') || false,
-                auto: clickthis.data('auto') || "undefined",
+                url: clickThis.data('url') || undefined,
+                object: clickThis.data('object') || 'self',
+                type: clickThis.data('type') || 2,
+                area: clickThis.data('area') || "auto",
+                offset: clickThis.data('offset') || "25%",
+                title: clickThis.data('title') || false,
+                maxmin: clickThis.data('maxmin') || false,
+                auto: clickThis.data('auto') || "undefined",
                 iframeAuto: false
             }
 
@@ -264,15 +272,17 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
             }
         }
 
-        var layObject = self;
+        /**
+         * 获取窗口索引
+         * @type {Window | (WorkerGlobalScope & Window)}
+         */
+        let hierarchy = self;
         if (config.object === 'top') {
-            layObject = top;
+            hierarchy = top;
         } else if (config.object === 'parent') {
-            layObject = parent;
+            hierarchy = parent;
         }
-
-        // 打开窗口
-        layObject.layer.open({
+        hierarchy.layer.open({
             type: config.type,
             area: config.area,
             title: config.title,
@@ -280,30 +290,32 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
             maxmin: config.maxmin,
             shadeClose: true,
             scrollbar: true,
-            content:  config.url,
-            success:function(layero,index){
+            content: config.url,
+            success: function (layero, index) {
 
-               config.iframeAuto && layer.iframeAuto(index);
+                config.iframeAuto && layer.iframeAuto(index);
 
                 // 页面层才渲染
                 if (config.type === 1) {
                     layui.form.render();
-                    layui.form.on("submit(submitPage)",function(post){
-                        let that = $(this), _pageUrl = that.parents('form').attr('action');
-                        // 开始POST提交数据
-                        $.post(_pageUrl,
-                            post.field, function(res){
-                                if (res.code === 200) {
-                                    Home.event.closeDialog(that);
-                                    if ($(that).data('reload')) {
-                                        location.reload();
-                                    }
-                                    layer.msg(res.msg);
-                                } else {
-                                    layer.msg(res.msg,'error');
-                                }
+                    layui.form.on("submit(submitPage)", function (post) {
+                        let that = $(this),
+                            url = that.parents('form').attr('action');
 
-                            }, 'json');
+                        // 开始POST提交数据
+                        that.attr('disabled', true);
+                        $.post(url, post.field, function (res) {
+                            if (res.code === 200) {
+                                Home.event.closeDialog(that);
+                                if ($(that).data('reload')) {
+                                    location.reload();
+                                }
+                                layer.msg(res.msg);
+                            } else {
+                                layer.msg(res.msg, 'error');
+                            }
+                            that.attr('disabled', false);
+                        }, 'json');
 
                         return false;
                     })
@@ -312,13 +324,17 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         })
     })
 
+    /**
+     * 表格批量操作
+     * @param obj
+     */
     $(document).on("click", "*[lay-batch]", function (obj) {
-        var othis = $(this)
-            , tableId = othis.data("table") || null
-            , fields = othis.data("field") || undefined
+        let that = $(this)
+            , tableId = that.data("table") || null
+            , fields = that.data("field") || undefined
             , list = table.checkStatus(tableId);
 
-        var field = ['id'];
+        let field = ['id'];
         if (typeof fields !== 'undefined') {
             field = field.concat(fields.split(','));
         }
@@ -328,11 +344,11 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
             return false;
         }
 
-        var data = {};
-        for (var n in field) {
-            var e = field[n];
+        let data = {};
+        for (let n in field) {
+            let e = field[n];
             field[e] = [];
-            for (var i in list.data) {
+            for (let i in list.data) {
                 field[e].push(list.data[i][e]);
             }
             data[e] = field[e];
@@ -341,7 +357,7 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         layer.confirm('确定执行批量操作', function (index) {
 
             $.ajax({
-                url: othis.data("url"),
+                url: that.data("url"),
                 type: 'post',
                 data: data,
                 dataType: 'json',
@@ -358,32 +374,35 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
         })
     })
 
-    // 监听ajax操作
-    $(document).on("click","*[lay-ajax]",function(obj) {
+    /**
+     * 监听ajax操作
+     * @param obj
+     */
+    $(document).on("click", "*[lay-ajax]", function (obj) {
 
-        let clickthis = $(this),config = {
-            url : clickthis.attr('data-url')|| "undefined",
-            type :  clickthis.data('type') || 'post',
-            dataType :  clickthis.data('dataType') || 'json',
-            timeout :  clickthis.data('timeout') || '6000',
-            tableId :  clickthis.data('table') || clickthis.data('batch'),
-            reload :  clickthis.data('reload'),
-            jump :  clickthis.data('jump') || false,
-            confirm :  clickthis.data('confirm'),
+        let clickThis = $(this), config = {
+            url: clickThis.attr('data-url') || "undefined",
+            type: clickThis.data('type') || 'post',
+            dataType: clickThis.data('dataType') || 'json',
+            timeout: clickThis.data('timeout') || '6000',
+            tableId: clickThis.data('table') || clickThis.data('batch'),
+            reload: clickThis.data('reload'),
+            jump: clickThis.data('jump') || false,
+            confirm: clickThis.data('confirm'),
         }, defer = $.Deferred();
 
         // 定义初始化对象
         let data = {}
             // 获取拼接参数
-            , packet = clickthis.attr("data-data") || null
-            , object = clickthis.attr("data-object") || undefined;
+            , packet = clickThis.attr("data-data") || null
+            , object = clickThis.attr("data-object") || undefined;
 
         if (config.confirm !== undefined) {
             config.confirm = config.confirm || '确定执行此操作吗?';
-            layer.confirm(config.confirm, function(index){
-                runAjax(config);
+            layer.confirm(config.confirm, function (index) {
+                runningAjax(config);
                 layer.close(index);
-            },function(index){
+            }, function (index) {
                 layer.close(index);
                 return false;
             })
@@ -394,25 +413,24 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
             object = object.split(',');
             for (let i = 0; i < object.length; i++) {
                 let ele = object[i].split(":");
-                let val = $('.'+ele[1]).val();
-                data[ele[0]] = val;
+                data[ele[0]] = $('.' + ele[1]).val();
             }
         }
 
         // 传递对象数据
         if (packet !== 'null') {
-            packet = new Function("return "+packet)();
-            data = $.extend({},data,packet);
+            packet = new Function("return " + packet)();
+            data = $.extend({}, data, packet);
         }
 
         // 传递input表单数据
-        let input = clickthis.data('input') || undefined;
+        let input = clickThis.data('input') || undefined;
         if (typeof input !== undefined) {
-            let attribute = layui.$('.'+input).val();
+            let attribute = layui.$('.' + input).val();
         }
 
         // 回调函数
-        let runAjax = function(config) {
+        let runningAjax = function (config) {
             // 执行AJAX操作
             $.ajax({
                 url: config.url,
@@ -420,17 +438,16 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                 dataType: config.dataType,
                 timeout: config.timeout,
                 data: data,
-                // 需要支持跨域访问
                 xhrFields: {
                     withCredentials: true
                 },
                 crossDomain: true,
-                success: function(res) {
+                success: function (res) {
                     if (res.code === 200) {
                         layer.msg(res.msg);
 
                         if (typeof res.data.text !== 'undefined') {
-                            $(clickthis).text(res.data.text);
+                            $(clickThis).text(res.data.text);
                         }
 
                         switch (config.reload) {
@@ -451,17 +468,17 @@ layui.use(['jquery','form','upload','table','dropdown'], function(){
                         }
 
                     } else {
-                        layer.msg(res.msg,'error');
+                        layer.msg(res.msg, 'error');
                     }
                 },
-                error: function(res) {
-                    layer.msg('Access methods failure','error');
+                error: function (res) {
+                    layer.msg('Access methods failure', 'error');
                 }
             })
         }
 
         if (!config.confirm) {
-            runAjax(config);
+            runningAjax(config);
         }
     })
 })

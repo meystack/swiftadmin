@@ -24,29 +24,6 @@ use system\Random;
 class Request extends \Webman\Http\Request
 {
     /**
-     * 用户ID
-     * @var int
-     */
-    public mixed $user_id = 0;
-
-    /**
-     * 用户信息
-     */
-    public mixed $userData = [];
-
-    /**
-     * 管理员ID
-     * @var int
-     */
-    public mixed $admin_id = 0;
-
-    /**
-     * 管理员信息
-     * @return string
-     */
-    public mixed $adminData = [];
-
-    /**
      * 生成请求令牌
      * @access public
      * @param string $name 令牌名称
@@ -68,7 +45,6 @@ class Request extends \Webman\Http\Request
      * @param string $token 令牌名称
      * @param array $data 表单数据
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function checkToken(string $token = '__token__', array $data = []): bool
     {

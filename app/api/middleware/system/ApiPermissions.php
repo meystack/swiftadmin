@@ -1,4 +1,4 @@
-<?php /** @noinspection ALL */
+<?php
 
 namespace app\api\middleware\system;
 
@@ -39,28 +39,25 @@ class ApiPermissions implements MiddlewareInterface
      * @param Request $request
      * @param callable $handler
      * @return Response
+     * @throws \ReflectionException
      */
     public function process(Request $request, callable $handler): Response
     {
-        $app = request()->getApp();
+        $app        = request()->getApp();
         $controller = request()->getController();
-        $action = request()->getAction();
-        $method = $controller . '/' . $action;
-        $className = '\app' . $app . '\\controller\\' . $controller;
-        $className = str_replace('/', '\\', $className);
-        if (class_exists($className)) {
-            $refClass = new \ReflectionClass($className);
-            $property = $refClass->getDefaultProperties();
-            $this->needLogin = $property['needLogin'] ?? false;
-            $this->noNeedAuth = $property['noNeedAuth'] ?? [];
-        }
+        $action     = request()->getAction();
+        $method     = $controller . '/' . $action;
+
+        $refClass = new \ReflectionClass($request->controller);
+        $property = $refClass->getDefaultProperties();
+        $this->needLogin = $property['needLogin'] ?? $this->needLogin;
+        $this->noNeedAuth = $property['noNeedAuth'] ?? $this->noNeedAuth;
 
         $auth = Auth::instance();
         if ($auth->isLogin()) {
-            $request->user_id = $auth->userData['id'];
-            $request->userData = $auth->userData;
+            // 验证权限
             if ($this->authWorkflow && Event::hasListener('apiAuth')) {
-                $result = Event::emit('apiAuth', ['method' => $method, 'user_id' => $request->user_id], true);
+                $result = Event::emit('apiAuth', ['method' => $method, 'user_id' => $auth->user_id], true);
                 if (isset($result['code']) && $result['code'] != 200) {
                     return json($result);
                 }

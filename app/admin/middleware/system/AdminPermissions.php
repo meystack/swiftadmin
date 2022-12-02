@@ -41,24 +41,28 @@ class AdminPermissions implements MiddlewareInterface
      * @throws DataNotFoundException
      * @throws DbException
      * @throws InvalidArgumentException
-     * @throws ModelNotFoundException
+     * @throws ModelNotFoundException|\ReflectionException
      */
     public function process(Request $request, callable $handler): Response
     {
-        $app        = request()->getApp();
+        $app = request()->getApp();
         $controller = request()->getController();
-        $action     = request()->getAction();
+        $action = request()->getAction();
         $AdminLogin = request()->session()->get(AdminSession);
         if (!isset($AdminLogin['id']) && strtolower($controller) !== 'login') {
             return redirect(url('/login/index'));
         }
 
-        // 判断是否需要鉴权
-        $request->admin_id  = $AdminLogin['id'] ?? 0;
-        $request->adminData = $AdminLogin ?? [];
-        $method = '/' . $controller. '/' .$action;
-        if (!in_array($method, $this->noNeedAuth) && !in_array('*', $this->noNeedAuth)) {
-            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, $request->admin_id)) {
+        // 获取权限列表
+        $class = new \ReflectionClass($request->controller);
+        $properties = $class->getDefaultProperties();
+        $this->noNeedAuth = $properties['noNeedAuth'] ?? $this->noNeedAuth;
+
+        // 控制器鉴权
+        $method = '/' . $controller . '/' . $action;
+        if (!in_array('*', $this->noNeedAuth)
+            && !in_array(strtolower($method), array_map('strtolower', $this->noNeedAuth))) {
+            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, get_admin_id())) {
                 if (request()->isAjax()) {
                     return json(['code' => 101, 'msg' => '没有权限']);
                 } else {
@@ -67,9 +71,14 @@ class AdminPermissions implements MiddlewareInterface
             }
         }
 
-        // 控制器中间件分发
-        $id = input('id');
+        /**
+         * Admin应用
+         * 控制器权限分发
+         */
         if (\request()->isPost()) {
+
+            $id = input('id');
+
             if ($controller == 'system/Admin') {
                 if ($data = AdminModel::getById($id)) {
                     $group_id = input('group_id');
@@ -79,7 +88,9 @@ class AdminPermissions implements MiddlewareInterface
                         return json(ResultCode::AUTH_ERROR);
                     }
                 }
-            } else if ($controller == 'system/AdminGroup') {
+            }
+
+            if ($controller == 'system/AdminGroup') {
                 if (!empty($id) && $id >= 1) {
                     if (!Auth::instance()->checkRulesForGroup((array)$id)) {
                         return json(ResultCode::AUTH_ERROR);
@@ -88,11 +99,12 @@ class AdminPermissions implements MiddlewareInterface
             }
         }
 
+        // 分配当前管理员信息
         View::assign('app', $app);
         View::assign('controller', $controller);
         View::assign('action', $action);
         View::assign('AdminLogin', $AdminLogin);
-        $this->writeAdminRequestLogs();
+        self::writeAdminRequestLogs();
         return $handler($request);
     }
 
@@ -103,7 +115,7 @@ class AdminPermissions implements MiddlewareInterface
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public function writeAdminRequestLogs()
+    public static function writeAdminRequestLogs()
     {
         if (saenv('system_logs')) {
 

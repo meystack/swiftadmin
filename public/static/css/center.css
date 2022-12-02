@@ -1,3 +1,9 @@
+/*!
+ * center.css 用户中心样式表 - 2022-10-10
+ * https://github.com/meystack/swiftadmin
+ * Copyright (c) meystack
+ * Licensed Apache2.0
+ */
 body {
 	background-color: #eee;
 }
@@ -110,7 +116,7 @@ b.msg {
 	box-shadow: 0 0px 2px 0 rgb(0 0 0 / 15%);
 }
 
-.logo-text, layui-logo {
+.logo-text, .layui-logo {
 	color: #959890!important;
 }
 

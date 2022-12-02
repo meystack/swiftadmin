@@ -11,22 +11,22 @@
 layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'slider', 'upload', 'laydate', 'dropdown', 'colorpicker', 'cascader', 'content', 'tags'], function (exports) {
 
     "use strict";
-    var $ = layui.jquery;
-    var i18n = layui.i18n;
-    var layer = layui.layer;
-    var form = layui.form;
-    var rate = layui.rate;
-    var table = layui.table;
-    var slider = layui.slider;
-    var element = layui.element;
-    var laydate = layui.laydate;
-    var cascader = layui.cascader;
-    var upload = layui.upload;
-    var content = layui.content;
-    var colorpicker = layui.colorpicker;
+    let $ = layui.jquery;
+    let i18n = layui.i18n;
+    let layer = layui.layer;
+    let form = layui.form;
+    let rate = layui.rate;
+    let table = layui.table;
+    let slider = layui.slider;
+    let element = layui.element;
+    let laydate = layui.laydate;
+    let cascader = layui.cascader;
+    let upload = layui.upload;
+    let content = layui.content;
+    let colorpicker = layui.colorpicker;
 
     // 系统常量
-    var TABFILTER = 'swiftadmin-tabs', BODY = '.layui-body', LAYOUTBODY = ".layui-layout-body",
+    let TABFILTER = 'swiftadmin-tabs', BODY = '.layui-body', LAYOUTBODY = ".layui-layout-body",
         LAYOUTADMIN = ".layui-layout-admin"
         , TABS = BODY + ">.layui-tab", FLEXIBLEID = "flexible", MENUFILTER = "lay-side-menu",
         LAYTOPMENU = "lay-top-menu", LAYSIDESHRINK = "layadmin-side-shrink"
@@ -36,10 +36,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         BODYSHADECLASS = ".layadmin-body-shade", LAYERCONTENT = ".layui-layer-content";
 
     // 对象初始化
-    var admin = {
+    let admin = {
         options: {
             tplName: 'swiftadmin',      // 数据标识
-            version: '1.2.0',           // 版本
+            version: '1.x',             // 版本
             moreLabel: true,            // 是否开启多标签
             cacheTab: true,             // 缓存多标签
             maxTabNum: 20,              // 最大打开标签
@@ -229,12 +229,11 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             iframe = $(TABS + " .layui-tab-item").find("iframe");
             for (let i = 0; i < iframe.length; i++) {
                 var layid = $(iframe[i]).attr('lay-id');
-                if (layid == id) {
+                if (layid === id) {
                     iframe[i].contentWindow.location.reload(true);
                     $(iframe[i]).next("#loading").css({'overflow': 'hidden', 'display': "block"});
                 }
             }
-
         }
         , globalStyleCss: function () {
             var css = '<style id="style-light">';
@@ -256,8 +255,6 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             css += '.layadmin-side-shrink .layui-side-menu .layui-nav>.layui-nav-itemed>a{background: #f2f2f2;}';
             css += '.layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a, .layui-nav-tree .layui-this,';
             css += '.layui-nav-tree .layui-this>a {background-color: #e6f7ff!important;border-right: 1px solid #1890ff!important;color: #1890ff!important;}';
-
-
             css += '</style>';
             return css;
         }
@@ -394,9 +391,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         refresh: function () {
             admin.refresh(admin.getConfig("activeTab"));
         },
-        back: function () {
-
-        },
+        back: function () {},
         theme: function () {
             var n = $(this).data("url");
             admin.event.popupRight({
@@ -481,15 +476,15 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 if ($(window).width() < 768) {
                     n.offset = "15px"
                 } else {
-                    if (window == top) {
+                    if (window === top) {
                         n.offset = "25%"
                     } else {
                         n.offset = "20%"
                     }
                 }
             }
-            n.resize = n.resize != undefined ? n.resize : false;
-            n.shade = n.shade != undefined ? n.shade : 0.1;
+            n.resize = n.resize !== undefined ? n.resize : false;
+            n.shade = n.shade !== undefined ? n.shade : 0.1;
             return layer.open(n)
         }
         , pupupTop: function (n) {
@@ -518,7 +513,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             n.area || (n.area = "336px");
             n.skin || (n.skin = "layui-anim layui-anim-rl layui-layer-adminRight");
             n.move = false;
-            if (n.fixed == undefined) {
+            if (n.fixed === undefined) {
                 n.fixed = true
             }
 
@@ -728,6 +723,8 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                 postUrl = _global_.app + '/' + _global_.controller + '/' + action;
                             }
 
+                            othat.attr("disabled", true);
+
                             $.ajax({
                                 url: postUrl,
                                 type: 'post',
@@ -741,6 +738,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                             delete post.field[elem];
                                         }
                                     }
+
 
                                     if (res.code === 200) {
 
@@ -765,6 +763,8 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                     } else {
                                         layer.error(res.msg)
                                     }
+
+                                    othat.attr("disabled", false);
                                 },
                                 error: function (res) {
                                     layer.msg(i18n.prop('访问方法失败'), 'error');
@@ -960,7 +960,6 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                     if (router.supersAdmin === false
                         && curl.indexOf('://') === -1 && !recursive(router.authorities)) {
                         layer.msg(i18n.prop('无权操作'), 'error');
-                        throw '没有权限';
                     }
                 }
             } catch (e) {
@@ -1543,15 +1542,15 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
      */
     form.on('submit(submitIframe)', function (data) {
 
-        var that = $(this), _form = that.parents('form'),
+        let that = $(this), _form = that.parents('form'),
             _close = that.data("close") || undefined,
             _url = _form.attr("action") || false;
 
         if (_url === false || _url === '') {
             try {
-                var app = _global_.app;
-                var action = _global_.action;
-                var controller = _global_.controller;
+                let app = _global_.app;
+                let action = _global_.action;
+                let controller = _global_.controller;
                 _url = app + '/' + controller + '/' + action;
             } catch (error) {
                 console.warn(error);
@@ -1563,13 +1562,13 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             return false;
         }
 
-        var _parent = that.data('reload') || false;
+        let _parent = that.data('reload') || false;
 
+        that.attr("disabled", true);
         $.post(_url, data.field, function (res) {
 
             if (res.code === 200) {
                 top.layer.msg(res.msg);
-                that.attr("disabled", true);
                 if (_close === undefined) {
                     admin.event.closeDialog(that);
                 }
@@ -1588,17 +1587,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 if (typeof res.data.__token__ !== 'undefined') {
                     $('input#__token__').val(res.data.__token__);
                 }
-            } catch (e) {
-                // 默认不处理异常
-            }
-
-        }, 'json');
-
-        // 延迟释放按钮
-        setTimeout(function (e) {
+            } catch (e) {}
             that.attr("disabled", false);
-        }, 2000);
-
+        }, 'json');
         return false;
     });
 
@@ -1607,7 +1598,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
      */
     form.on('submit(formSearch)', function (data) {
 
-        var field = data.field;
+        let field = data.field;
         for (const key in field) {
             if (!field[key]) {
                 delete field[key];
@@ -1624,7 +1615,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
      */
     table.on("tool(lay-tableList)", function (obj) {
 
-        var data = obj.data
+        let data = obj.data
             , reqData = {}
             , selector = $(this).parents('table').find('tbody tr')
             , callback = {
@@ -1788,7 +1779,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             return false;
         }
 
-        var data = {};
+        data = {};
         for (var n in field) {
             var e = field[n];
             field[e] = [];

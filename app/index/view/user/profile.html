@@ -56,21 +56,22 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
+
+                        <label class="layui-form-label"><span class="red">*</span> 手机号码</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input layui-disabled" disabled value="{$user.mobile|default='未绑定'}">
+                        </div>
                         <label class="layui-form-label"><span class="red">*</span> 性别</label>
                         <div class="layui-input-inline">
                             <input name="gender" type="radio" value="1" title="男" <eq name="$user['gender']" value="1">checked</eq>>
                             <input name="gender" type="radio" value="0" title="女" <eq name="$user['gender']" value="0">checked</eq>>
                         </div>
-                        <label class="layui-form-label"><span class="red">*</span> 身份证号码</label>
-                        <div class="layui-input-inline">
-                            <input name="idcard" placeholder="请输入身份证号" class="layui-input" value="{$user.idcard}">
-                        </div>
                     </div>
 
                     <div class="layui-form-item">
-                        <label class="layui-form-label"><span class="red">*</span> 手机号码</label>
+                        <label class="layui-form-label"><span class="red">*</span> 身份证号码</label>
                         <div class="layui-input-inline">
-                            <input class="layui-input layui-disabled" disabled value="{$user.mobile|default='未绑定'}">
+                            <input name="idcard" placeholder="请输入身份证号" class="layui-input" value="{$user.idcard}">
                         </div>
                         <label class="layui-form-label"><span class="red">*</span> 邮箱地址</label>
                         <div class="layui-input-inline">
@@ -99,8 +100,8 @@
                     <div class="layui-form-item" style="margin-top: 22px;text-align: center">
                         <label class="layui-form-label"></label>
                         <div class="layui-input-inline">
-                            <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="submit">立即提交</button>
                             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="submit">立即提交</button>
                         </div>
                     </div>
 

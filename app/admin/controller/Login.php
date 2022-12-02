@@ -37,57 +37,45 @@ class Login extends AdminController
     public function index(): \support\Response
     {
         // 禁止重复访问
-        if (isset(request()->adminData['id'])) {
+        $session = get_admin_info();
+        if (isset($session['id'])) {
             return $this->redirect('/admin/index');
         }
 
         if (request()->isPost()) {
-
             $user = request()->post('name');
             $pwd = request()->post('pwd');
             $captcha = request()->post('captcha');
-            if ((isset(request()->adminData['count'])
-                    && request()->adminData['count'] >= 5)
-                && (isset(request()->adminData['time'])
-                    && request()->adminData['time'] >= strtotime('- 5 minutes'))
-            ) {
-                $error = '错误次数过多，请稍后再试！';
-                $this->writeLoginLogs($error);
-                return $this->error($error);
+            if ((isset($session['count']) && $session['count'] >= 5)
+                && (isset($session['time']) && $session['time'] >= strtotime('- 5 minutes'))) {
+                return $this->displayResponse('错误次数过多，请稍后再试！');
             }
 
             // 验证码
-            if (isset(request()->adminData['isCaptcha'])) {
+            if (isset($session['isCaptcha'])) {
                 if (!$captcha || !$this->captchaCheck($captcha)) {
-                    $error = '验证码错误！';
-                    $this->writeLoginLogs($error);
-                    return $this->error($error);
+                    return $this->displayResponse('验证码错误！');
                 }
             }
 
             // 验证表单令牌
-            if (!request()->checkToken('__token__', \request()->all())) {
-                $error = '表单令牌错误！';
-                $this->writeLoginLogs($error);
-                return $this->error($error, '', ['token' => token()]);
+            if (!request()->checkToken('__token__', request()->all())) {
+                return $this->displayResponse('表单令牌错误！', ['token' => token()]);
             } else {
 
                 $result = Admin::checkLogin($user, $pwd);
                 if (empty($result)) {
-                    request()->adminData['time'] = time();
-                    request()->adminData['isCaptcha'] = true;
-                    request()->adminData['count'] = isset(request()->adminData['count']) ? request()->adminData['count'] + 1 : 1;
-                    request()->session()->set(AdminSession, request()->adminData);
-                    $error = '用户名或密码错误！';
-                    $this->writeLoginLogs($error);
-                    Event::emit('adminLoginError', \request()->all());
-                    return $this->error($error, '', ['token' => token()]);
+                    $session['time'] = time();
+                    $session['isCaptcha'] = true;
+                    $session['count'] = isset($session['count']) ? $session['count'] + 1 : 1;
+                    request()->session()->set(AdminSession, $session);
+                    // 执行登录失败事件
+                    Event::emit('adminLoginError', request()->all());
+                    return $this->displayResponse('用户名或密码错误！', ['token' => token()]);
                 }
 
                 if ($result['status'] !== 1) {
-                    $error = '账号已被禁用！';
-                    $this->writeLoginLogs($error);
-                    return $this->error($error);
+                    return $this->displayResponse('账号已被禁用！');
                 }
 
                 $result->login_ip = request()->getRealIp();
@@ -97,22 +85,33 @@ class Login extends AdminController
                 try {
 
                     $result->save();
-                    $session = array_merge(request()->adminData, $result->toArray());
+                    $session = array_merge($session, $result->toArray());
                     request()->session()->set(AdminSession, $session);
                 } catch (\Throwable $th) {
                     return $this->error($th->getMessage());
                 }
 
-                $success = '登录成功！';
-                $this->writeLoginLogs($success, true);
                 Event::emit('adminLoginSuccess', $result->toArray());
-                return $this->success($success, $this->JumpUrl);
+                return $this->displayResponse('登录成功！', [] , $this->JumpUrl);
             }
         }
 
         return view('login/index', [
-            'captcha' => request()->adminData['isCaptcha'] ?? false,
+            'captcha' => $session['isCaptcha'] ?? false,
         ]);
+    }
+
+    /**
+     * 退出登录
+     * @param string $msg
+     * @param array $data
+     * @param string $url
+     * @return Response
+     */
+    private function displayResponse(string $msg = 'error', array $data = [], string $url = ''): Response
+    {
+        $this->adminLoginLog($msg, $url ? 1 : 0);
+        return empty($url) ? $this->error($msg, $url, $data) : $this->success($msg, $url);
     }
 
     /**
@@ -120,7 +119,7 @@ class Login extends AdminController
      * @param string $error
      * @param int $status
      */
-    private function writeLoginLogs(string $error, int $status = 0)
+    private function adminLoginLog(string $error, int $status = 0)
     {
         $name = \request()->input('name');
         $userAgent = \request()->header('user-agent');
@@ -131,7 +130,7 @@ class Login extends AdminController
             $user_os = '未知';
         }
 
-        $user_browser = preg_replace('/[^(]+\((.*?)[^)]+\) .*?/','$1',$userAgent);
+        $user_browser = preg_replace('/[^(]+\((.*?)[^)]+\) .*?/', '$1', $userAgent);
 
         $data = [
             'user_ip'      => request()->getRealIp(),

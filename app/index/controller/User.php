@@ -62,7 +62,7 @@ class User extends HomeController
     public function index(): Response
     {
         // 未读短消息
-        $unread = UserNotice::where('user_id', \request()->user_id)->where('status', 0)->count();
+        $unread = UserNotice::where('user_id', get_user_id())->where('status', 0)->count();
         return view('/user/index', [
             'unread' => $unread,
         ]);
@@ -165,16 +165,15 @@ class User extends HomeController
             }
 
             $where = $email ? ['email' => $email] : ['mobile' => $mobile];
-            $userData = $this->model->where($where)->find();
-            if (!$userData) {
+            $user = $this->model->where($where)->find();
+            if (!$user) {
                 return $this->error('用户不存在');
             }
 
             try {
                 $salt = Random::alpha();
                 $pwd = encryptPwd($pwd, $salt);
-                $this->model->update(['id' => $userData['id'], 'pwd' => $pwd, 'salt' => $salt]);
-
+                $this->model->update(['id' => $user['id'], 'pwd' => $pwd, 'salt' => $salt]);
             } catch (\Exception $e) {
                 return $this->error('修改密码失败，请联系管理员');
             }
@@ -207,7 +206,7 @@ class User extends HomeController
                 return $this->error('当前昵称已被占用，请更换！');
             }
 
-            if ($this->model->update(['id' => $request->user_id, 'nickname' => $nickname])) {
+            if ($this->model->update(['id' => get_user_id(), 'nickname' => $nickname])) {
                 return $this->success('修改昵称成功！', (string)url('/user/index'));
             }
 
@@ -231,7 +230,7 @@ class User extends HomeController
         return view('/user/center', [
             'newsHtml'     => $result ?? '服务器错误',
             'userList'     => $this->model->order('login_count', 'desc')->limit(12)->select()->toArray(),
-            'invite_count' => $this->model->where('invite_id', $request->user_id)->count(),
+            'invite_count' => $this->model->where('invite_id', get_user_id())->count(),
         ]);
     }
 
@@ -254,7 +253,7 @@ class User extends HomeController
                 $where[] = ['status', '=', $status];
             }
 
-            $where[] = ['user_id', '=', \request()->user_id];
+            $where[] = ['user_id', '=', get_user_id()];
             $count = UserNotice::where($where)->count();
             $page = ($count <= $limit) ? 1 : $page;
             $list = UserNotice::where($where)->order('id', 'desc')->limit((int)$limit)->page((int)$page)->select()->toArray();
@@ -279,7 +278,7 @@ class User extends HomeController
             return $this->error('消息不存在');
         }
 
-        if ($info['user_id'] != \request()->user_id) {
+        if ($info['user_id'] != get_user_id()) {
             return $this->error('非法操作');
         }
 
@@ -293,7 +292,7 @@ class User extends HomeController
         }
 
         // 更新未读
-        $unread = UserNotice::where(['user_id' => \request()->user_id, 'status' => 0])->count();
+        $unread = UserNotice::where(['user_id' => get_user_id(), 'status' => 0])->count();
         return view('/user/viewMessage', [
             'info'   => $info,
             'unread' => $unread,
@@ -311,7 +310,7 @@ class User extends HomeController
             $ids = input('id');
             $type = input('type', 'del');
             $where[] = ['id', 'in', implode(',', $ids)];
-            $where[] = ['user_id', '=', \request()->user_id];
+            $where[] = ['user_id', '=', get_user_id()];
             if ($type === 'del') {
                 if (UserNotice::where($where)->delete()) {
                     return $this->success('删除成功');
@@ -346,14 +345,14 @@ class User extends HomeController
                 return $this->error($post);
             }
 
-            if ($nickname != \request()->userData['nickname']
+            if ($nickname != get_user_info()['nickname']
                 &&$this->model->where('nickname', $nickname)->find()) {
                 return $this->error('当前昵称已被占用，请更换！');
             }
 
             unset($post['money']);
             unset($post['score']);
-            $user = $this->model->find(\request()->user_id);
+            $user = $this->model->find(get_user_id());
             if ($user->save($post)) {
                 return $this->success('更新资料成功');
             }
@@ -361,9 +360,7 @@ class User extends HomeController
             return $this->error();
         }
 
-        return view('/user/profile',[
-            'user' => \request()->userData,
-        ]);
+        return view('/user/profile');
     }
 
     /**
@@ -372,14 +369,14 @@ class User extends HomeController
      */
     public function certification(): Response
     {
-
+        $userInfo = get_user_info();
         if (request()->isPost()) {
             $name = input('name');
             $mobile = input('mobile');
             $idCard = input('idCard');
             $captcha = input('captcha');
 
-            if (!empty(\request()->userData['prove'])) {
+            if (!empty($userInfo['prove'])) {
                 return $this->error('您已经实名认证过了！');
             }
 
@@ -405,7 +402,7 @@ class User extends HomeController
                 }
 
                 // 更新系统认证信息
-                $this->model->where('id', \request()->user_id)->update([
+                $this->model->where('id', get_user_id())->update([
                     'prove'      => 1,
                     'name'       => $name,
                     'idCard'     => $idCard,
@@ -420,7 +417,7 @@ class User extends HomeController
             return $this->success('实名认证成功！');
         }
 
-        return view('/user/certification',['prove' => \request()->userData['prove']]);
+        return view('/user/certification',['prove' => $userInfo['prove']]);
     }
 
     /**
@@ -437,7 +434,7 @@ class User extends HomeController
             // 获取数据
             $page = input('page', 1);
             $limit = input('limit', 1);
-            $where[] = ['login_id', '=', \request()->user_id];
+            $where[] = ['login_id', '=', get_user_id()];
             $count = UserLog::where($where)->count();
             $page = ($count <= $limit) ? 1 : $page;
             $list = UserLog::where($where)->order('id', 'desc')->limit((int)$limit)->page((int)$page)->select()->toArray();
@@ -460,15 +457,16 @@ class User extends HomeController
             // 获取参数
             $pwd = input('pwd');
             $oldPwd = input('oldpwd');
-            $yPwd = encryptPwd($oldPwd, $request->userData->salt);
+            $userInfo = get_user_info();
+            $yPwd = encryptPwd($oldPwd, $userInfo['salt']);
 
-            if ($yPwd != $request->userData->pwd) {
+            if ($yPwd != $userInfo['pwd']) {
                 return $this->error('原密码输入错误！');
             }
 
             $salt = Random::alpha();
             $pwd = encryptPwd($pwd, $salt);
-            $result = $this->model->update(['id' => $request->user_id, 'pwd' => $pwd, 'salt' => $salt]);
+            $result = $this->model->update(['id' => get_user_id(), 'pwd' => $pwd, 'salt' => $salt]);
             if (!empty($result)) {
                 return $this->success('修改密码成功！');
             }
@@ -487,8 +485,8 @@ class User extends HomeController
     {
         if (request()->isPost()) {
             $data = array();
-            $data['id'] = $request->user_id;
-            $data['app_id'] = 10000 + $request->user_id;
+            $data['id'] = get_user_id();
+            $data['app_id'] = 10000 + get_user_id();
             $data['app_secret'] = Random::alpha(22);
             if ($this->model->update($data)) {
                 return $this->success();
@@ -527,7 +525,7 @@ class User extends HomeController
             if (!empty($email) && !empty($captcha)) {
 
                 if ($Ems->check($email, $captcha, $event)) {
-                    $this->model->update(['id' => $request->user_id, 'email' => $email]);
+                    $this->model->update(['id' => get_user_id(), 'email' => $email]);
                     return $this->success('修改邮箱成功！');
                 }
 
@@ -578,7 +576,7 @@ class User extends HomeController
             if (!empty($mobile) && !empty($captcha)) {
 
                 if ($Sms->check($mobile, $captcha, $event)) {
-                    $this->model->update(['id' => $request->user_id, 'mobile' => (int)$mobile]);
+                    $this->model->update(['id' => get_user_id(), 'mobile' => (int)$mobile]);
                     return $this->success('修改手机号成功！');
                 }
 
@@ -627,9 +625,10 @@ class User extends HomeController
             }
 
             try {
-                $request->userData->question = $question;
-                $request->userData->answer = $answer;
-                $request->userData->save();
+                $userInfo = get_user_info();
+                $userInfo->question = $question;
+                $userInfo->answer = $answer;
+                $userInfo->save();
             } catch (\Throwable $th) {
                 return $this->error();
             }
@@ -651,20 +650,21 @@ class User extends HomeController
     {
         $maxProgress = 5;
         $thisProgress = 1;
+        $userInfo = get_user_info();
 
-        if ($request->userData->email) {
+        if ($userInfo->email) {
             $thisProgress++;
         }
 
-        if ($request->userData->mobile) {
+        if ($userInfo->mobile) {
             $thisProgress++;
         }
 
-        if ($request->userData->answer) {
+        if ($userInfo->answer) {
             $thisProgress++;
         }
 
-        if ($request->userData->wechat) {
+        if ($userInfo->wechat) {
             $thisProgress++;
         }
 
@@ -691,8 +691,9 @@ class User extends HomeController
             if (!$response) {
                 return $this->error(Upload::instance()->getError());
             }
-            $request->userData->avatar = $response['url'] . '?' . Random::alpha(12);
-            if ($request->userData->save()) {
+            $userInfo = get_user_info();
+            $userInfo->avatar = $response['url'] . '?' . Random::alpha(12);
+            if ($userInfo->save()) {
                 return json($response);
             }
         }

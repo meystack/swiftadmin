@@ -48,7 +48,8 @@
     "php-di/php-di": "^6.4",
     "yansongda/pay": "~3.1.0",
     "overtrue/wechat": "~5.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-zip": "*"
   },
   "suggest": {
     "ext-event": "For better performance. "

@@ -23,7 +23,8 @@ return [
             'monitor_dir'        => [
                 app_path(),
                 config_path(),
-                base_path() . '/plugin',
+                // 插件开发者请开启此项
+//                base_path() . '/plugin',
                 base_path() . '/process',
                 base_path() . '/support',
                 base_path() . '/resource',

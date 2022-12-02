@@ -3,6 +3,7 @@
  * 全局公共函数库
  */
 
+use app\common\library\Auth;
 use app\common\model\system\UserThird;
 use think\facade\Cache;
 use app\common\model\system\Config;
@@ -120,6 +121,51 @@ if (!function_exists('token_field')) {
     {
         $token = \request()->buildToken($name, $type);
         return '<input type="hidden" name="' . $name . '" value="' . $token . '" />';
+    }
+}
+
+if (!function_exists('get_user_id')) {
+    /**
+     * 获取会员ID
+     */
+    function get_user_id()
+    {
+        return get_user_info('id');
+    }
+}
+
+if (!function_exists('get_user_info')) {
+    /**
+     * 获取会员信息
+     */
+    function get_user_info($field = '')
+    {
+        $data = Auth::instance()->getUserInfo();
+        if ($field && isset($data[$field])) {
+            return $data[$field];
+        }
+
+        return $data;
+    }
+}
+
+if (!function_exists('get_admin_id')) {
+    /**
+     * 获取管理员ID
+     */
+    function get_admin_id(string $name = 'AdminLogin')
+    {
+        return get_admin_info($name . '.id');
+    }
+}
+
+if (!function_exists('get_admin_info')) {
+    /**
+     * 获取管理员信息
+     */
+    function get_admin_info(string $name = 'AdminLogin')
+    {
+        return session($name);
     }
 }
 

@@ -490,6 +490,7 @@ class Admin extends AdminController
             }
         }
 
+        $data['jobs'] = Jobs::where('id', $data['jobs_id'])->value('title');
         $data['group'] = implode('－', $title);
         $data['tags'] = empty($data['tags']) ? $data['tags'] : unserialize($data['tags']);
         return view('/system/admin/center', [

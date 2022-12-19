@@ -36,22 +36,22 @@ class Upload
     /**
      * 文件类型
      */
-    protected mixed $fileClass;
+    protected mixed $fileClass = '';
 
     /**
      * 文件名称
      */
-    protected mixed $filename;
+    protected mixed $filename = '';
 
     /**
      * 文件保存路径
      */
-    protected mixed $filepath;
+    protected mixed $filepath = '';
 
     /**
      * 文件全路径名称
      */
-    protected mixed $resource;
+    protected mixed $resource = '';
 
     /**
      * 附件信息
@@ -61,7 +61,7 @@ class Upload
     /**
      * 图形对象实例
      */
-    protected mixed $Images;
+    protected mixed $Images = '';
 
     /**
      * 错误信息

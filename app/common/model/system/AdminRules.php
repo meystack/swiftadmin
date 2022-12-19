@@ -146,7 +146,7 @@ class AdminRules extends Model
      */
     public static function export(string $name): array
     {
-        $list = self::field('id,pid,title,router,icon,auth,type')->where('note', $name)->select()->toArray();
+        $list = self::field('id,pid,title,router,icon,auth,type')->where('note', $name)->order('sort asc')->select()->toArray();
         return self::parseMenuChildren(list_to_tree($list));
     }
 

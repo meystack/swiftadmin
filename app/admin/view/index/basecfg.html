@@ -59,6 +59,16 @@
             margin-right: 5px;
         }
     }
+
+    @media screen and (max-width: 1024px) {
+        .layui-form-mid {
+            display: none;
+        }
+
+        .layui-form-item .layui-input-inline {
+            max-width: 180px;
+        }
+    }
 </style>
 <div class="layui-fluid">
     <div class="layui-row">
@@ -996,7 +1006,7 @@
                                                         </i>
                                                     </div>
                                                 </div>
-                                                <div class="layui-form-mid layui-word-aux">*
+                                                <div class="layui-word-aux">*
                                                     {:__('发送邮件依赖的函数，如不可用请开启函数扩展')}！</div>
                                             </div>
 
@@ -1004,11 +1014,11 @@
                                             <div class="layui-form-item ">
                                                 <label class="layui-form-label">{:__('信息模板')}</label>
                                                 <div class="layui-input-inline">
-                                                    <div class="layui-form-mid layui-word-aux">
+                                                    <div class="layui-word-aux">
                                                         <a href="javascript:void(0)" class="layui-color-blue"
                                                             lay-open="" data-url="{:url('/Tpl/showTpl')}"
-                                                            data-title="邮件模板{:__('')}" data-area="500px,260px"
-                                                            data-offset="30%">[{:__('点击编辑')}]</a>
+                                                            data-title="{:__('邮件模板')}" data-area="500px,260px"
+                                                            data-offset="20px">[{:__('点击编辑')}]</a>
                                                     </div>
                                                 </div>
                                             </div>

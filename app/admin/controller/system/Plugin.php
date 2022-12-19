@@ -12,8 +12,8 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\admin\controller\system;
-set_time_limit(600);
 use GuzzleHttp\Exception\TransferException;
+use process\Monitor;
 use support\Response;
 use system\File;
 use system\Http;
@@ -46,6 +46,11 @@ class Plugin extends AdminController
      */
     static mixed $ServerBody = '';
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * 获取本地插件列表
      * @return Response
@@ -72,8 +77,7 @@ class Plugin extends AdminController
 
             $name = input('name');
             $pluginPath = plugin_path($name);
-
-            if (is_dir($pluginPath)) {
+            if (is_file($pluginPath . 'config.json')) {
                 return $this->error('请勿重复安装插件');
             }
 
@@ -206,6 +210,7 @@ class Plugin extends AdminController
             throw new \Exception(__('插件数据不存在'), -117);
         }
 
+        Monitor::pause();
         $pluginDir = plugin_path($name);
         foreach (File::getCopyDirs($name) as $copyDir) {
             copydirs($copyDir, root_path() . str_replace($pluginDir, '', $copyDir));

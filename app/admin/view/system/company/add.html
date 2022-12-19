@@ -61,11 +61,11 @@
     <div class="layui-form-item">
         <label class="layui-form-label">{:__('地图经度')}</label>
         <div class="layui-input-inline">
-            <input name="longitude" placeholder="{:__('请输入地图经度')}" value="{$data.longitude}" class="layui-input"  />
+            <input name="longitude" placeholder="{:__('请输入地图经度')}" value="{$data.longitude|default=''}" class="layui-input"  />
         </div>
         <label class="layui-form-label">{:__('地图纬度')}</label>
         <div class="layui-input-inline">
-            <input name="latitude" placeholder="{:__('请输入地图纬度')}" value="{$data.latitude}"  class="layui-input"   />
+            <input name="latitude" placeholder="{:__('请输入地图纬度')}" value="{$data.latitude|default=''}"  class="layui-input"   />
         </div>
     </div> 
 

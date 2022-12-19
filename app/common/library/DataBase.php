@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app\common\library;
 
+use support\Log;
 use think\facade\Db;
 
 /**
@@ -13,6 +14,7 @@ class DataBase {
     /**
      * 导入目录下Install.sql文件
      * @param string $sqlPath
+     * @throws \Exception
      */
     public static function importSql(string $sqlPath)
     {
@@ -27,7 +29,9 @@ class DataBase {
                 }
                 try {
                     Db::getPdo()->exec($line);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) {
+                    Log::info($th->getMessage());
+                }
             }
         }
     }

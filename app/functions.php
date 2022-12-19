@@ -465,6 +465,9 @@ if (!function_exists('cdn_Prefix')) {
      * 获取远程图片前缀
      * @return string
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     function cdn_Prefix()
     {
@@ -696,14 +699,17 @@ if (!function_exists('system_reload')) {
      */
     function system_reload(): bool
     {
+        \process\Monitor::resume();
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             return false;
         }
+
         if (function_exists('posix_kill')
             && function_exists('posix_getppid')) {
             posix_kill(posix_getppid(), 10);
             return true;
         }
+
         return false;
     }
 }
@@ -984,13 +990,17 @@ if (!function_exists('is_today')) {
 if (!function_exists('published_date')) {
     /**
      * 格式化时间
-     *
      * @param [type] $time
+     * @param bool $unix
      * @return string
      */
-    function published_date($time): string
+    function published_date($time, bool $unix = true): string
     {
-        $time = preg_replace('/\D/', '', $time);
+        if (!$unix) {
+            $time = strtotime($time);
+
+        }
+
         $currentTime = time() - $time;
         $published = array(
             '86400' => '天',
@@ -998,6 +1008,7 @@ if (!function_exists('published_date')) {
             '60'    => '分钟',
             '1'     => '秒'
         );
+
         if ($currentTime == 0) {
             return '1秒前';
         } else if ($currentTime >= 604800 || $currentTime < 0) {

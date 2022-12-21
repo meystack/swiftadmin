@@ -177,11 +177,11 @@
                     tree.render({
                         id: 'authTree'
                         ,elem: '#authTree'
+                        ,checkids: checkKeys
                         ,data: data
                         ,showCheckbox: true
                         ,oncheck: function(obj){}
                     });
-                    tree.setChecked('authTree', checkKeys);
 
                     // 监听提交
                     form.on("submit(submitPage)",function(post){
@@ -250,12 +250,11 @@
                     tree.render({
                         id: 'cateTree'
                         ,elem: '#cateTree'
+                        ,checkids: checkKeys
                         ,data: data
                         ,showCheckbox: true
                         ,oncheck: function(obj){}
                     });
-
-                    tree.setChecked('cateTree', checkKeys);
 
                     // 监听提交
                     form.on("submit(submitPage)",function(post){

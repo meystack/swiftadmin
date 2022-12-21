@@ -366,11 +366,12 @@
                     tree.render({
                         id: 'authTree',
                         elem: '#authTree',
+                        checkids: tableThis.data[event].length ? tableThis.data[event].map(Number): [],
                         data: data,
                         showCheckbox: true,
                     })
 
-                    tree.setChecked('authTree', tableThis.data[event].length ? tableThis.data[event].map(Number):  []);
+                    // tree.setChecked('authTree', tableThis.data[event].length ? tableThis.data[event].map(Number): []);
 
                     // 监听权限提交
                     form.on("submit(submitPage)", function (post) {

@@ -277,6 +277,8 @@ class Upload
 
         try {
             $this->getFileSavePath($file);
+            // 分片上传使用ID作为文件名
+            $this->resource = $this->filepath . DS . sha1($params['chunkId']) . '.' . $fileExt;
             $file->move($this->resource);
         } catch (\Exception $e) {
             Event::emit('uploadExceptionDelete', [
@@ -352,16 +354,17 @@ class Upload
 
     /**
      * 附件数据库保存
-     * @param $file
+     * @param $filePath
      * @param string $source
      * @param string|null $mimeType
      * @return false|void
      */
-    public function attachment($file, string $source, string $mimeType = null)
+    public function attachment($filePath, string $source, string $mimeType = null)
     {
         try {
-            $file = new \Webman\Http\UploadFile($file, $source, $mimeType, 200);
-            $filePath = str_replace('\\', '/', $this->filepath . DS . $this->filename);
+            $file = new \Webman\Http\UploadFile($filePath, $source, $mimeType, 200);
+            $filePath = str_replace(public_path(), '', $filePath);
+            $filePath = str_replace('\\', '/', $filePath);
             $this->fileInfo = [
                 'type'      => $this->fileClass,
                 'filename'  => $file->getUploadName(),
@@ -372,6 +375,7 @@ class Upload
                 'user_id'   => request()->cookie('uid') ?? 0,
                 'sha1'      => md5_file($file->getPathname()),
             ];
+
             Attachment::create($this->fileInfo);
         } catch (\Exception $e) {
             $this->setError($e->getMessage());

@@ -1445,7 +1445,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         var html = '<tr>';
         html += '<td><input type="text" class="layui-input" name="' + $(this).data('name') + '[key][]"></td>';
         html += '<td><input type="text" class="layui-input" name="' + $(this).data('name') + '[value][]"></td>';
-        html += '<td><i class="layui-icon fa-times" onclick="layui.admin.removeJson(this);" ></i></td>';
+        html += '<td><i class="layui-icon fa-times" onclick="layui.admin.resetInput(this);" ></i></td>';
         html += '</tr>';
         $(this).parents('form').find('input#' + $(this).data('name') + '_clear').remove();
         $(this).prev('table').find('tbody').append(html);

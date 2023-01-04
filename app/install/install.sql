@@ -68,7 +68,6 @@ CREATE TABLE `__PREFIX__admin_access`  (
   `group_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '管理员分组',
   `rules` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '自定义权限',
   `cates` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '栏目权限',
-  PRIMARY KEY (`admin_id`) USING BTREE,
   INDEX `uid`(`admin_id`) USING BTREE,
   INDEX `group_id`(`group_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '组规则表' ROW_FORMAT = DYNAMIC;
@@ -78,7 +77,6 @@ CREATE TABLE `__PREFIX__admin_access`  (
 -- ----------------------------
 INSERT INTO `__PREFIX__admin_access` VALUES (1, '1', NULL, NULL);
 INSERT INTO `__PREFIX__admin_access` VALUES (2, '2', '5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,115,116,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,85,86,87,88,89,90,91,92,93,100,101,102,103,104,105,106,107,108,109,110,111,112', '8');
-INSERT INTO `__PREFIX__admin_access` VALUES (3, '1', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_group

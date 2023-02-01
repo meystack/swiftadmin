@@ -35,7 +35,7 @@ class Auth
     /**
      * 用户ID
      */
-    public int $user_id = 0;
+    public mixed $user_id = 0;
 
     /**
      * 用户数据

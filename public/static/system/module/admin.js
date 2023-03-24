@@ -1481,7 +1481,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
     form.on('radio(radioStatus)', function (data) {
         var display = $(this).data('display');
         if (display != null && display !== 'undefined') {
-            (data.value === 1) ? $('.' + display).show() : $('.' + display).hide();
+            (data.value == 1) ? $('.' + display).show() : $('.' + display).hide();
         }
     })
 

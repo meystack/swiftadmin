@@ -278,7 +278,7 @@ class Upload
         try {
             $this->getFileSavePath($file);
             // 分片上传使用ID作为文件名
-            $this->resource = $this->filepath . DS . sha1($params['chunkId']) . '.' . $fileExt;
+            $this->resource = public_path().$this->filepath . DS . sha1($params['chunkId']) . '.' . $fileExt;
             $file->move($this->resource);
         } catch (\Exception $e) {
             Event::emit('uploadExceptionDelete', [

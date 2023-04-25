@@ -56,17 +56,17 @@ class AppPluginCreateCommand extends Command
     {
         $base_path = base_path();
         $this->mkdir("$base_path/plugin/$name/app/controller", 0777, true);
-        $this->mkdir("$base_path/plugin/$name/app/exception", 0777, true);
         $this->mkdir("$base_path/plugin/$name/app/model", 0777, true);
         $this->mkdir("$base_path/plugin/$name/app/middleware", 0777, true);
         $this->mkdir("$base_path/plugin/$name/app/view/index", 0777, true);
         $this->mkdir("$base_path/plugin/$name/config", 0777, true);
         $this->mkdir("$base_path/plugin/$name/public", 0777, true);
+        $this->mkdir("$base_path/plugin/$name/api", 0777, true);
         $this->createFunctionsFile("$base_path/plugin/$name/app/functions.php");
         $this->createControllerFile("$base_path/plugin/$name/app/controller/IndexController.php", $name);
         $this->createViewFile("$base_path/plugin/$name/app/view/index/index.html");
-        $this->createExceptionFile("$base_path/plugin/$name/app/exception/Handler.php", $name);
         $this->createConfigFiles("$base_path/plugin/$name/config", $name);
+        $this->createApiFiles("$base_path/plugin/$name/api", $name);
     }
 
     /**
@@ -139,44 +139,6 @@ EOF;
 
     }
 
-    /**
-     * @param $path
-     * @return void
-     */
-    protected function createExceptionFile($path, $name)
-    {
-        $content = <<<EOF
-<?php
-namespace plugin\\$name\\app\\exception;
-
-use Throwable;
-use Webman\\Http\\Request;
-use Webman\\Http\\Response;
-
-/**
- * Class Handler
- * @package Support\Exception
- */
-class Handler extends \\support\\exception\\Handler
-{
-    public function render(Request \$request, Throwable \$exception): Response
-    {
-        \$code = \$exception->getCode();
-        if (\$request->expectsJson()) {
-            \$json = ['code' => \$code ? \$code : 500, 'message' => \$this->_debug ? \$exception->getMessage() : 'Server internal error', 'type' => 'failed'];
-            \$this->_debug && \$json['traces'] = (string)\$exception;
-            return new Response(200, ['Content-Type' => 'application/json'],
-                \json_encode(\$json, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        }
-        \$error = \$this->_debug ? \\nl2br((string)\$exception) : 'Server internal error';
-        return new Response(500, [], \$error);
-    }
-}
-
-EOF;
-        file_put_contents($path, $content);
-
-    }
 
     /**
      * @param $file
@@ -201,6 +163,119 @@ EOF;
      * @param $name
      * @return void
      */
+    protected function createApiFiles($base, $name)
+    {
+        $content = <<<EOF
+<?php
+
+namespace plugin\\$name\api;
+
+use plugin\admin\api\Menu;
+
+class Install
+{
+    /**
+     * 安装
+     *
+     * @param \$version
+     * @return void
+     */
+    public static function install(\$version)
+    {
+        // 导入菜单
+        if(\$menus = static::getMenus()) {
+            Menu::import(\$menus);
+        }
+    }
+
+    /**
+     * 卸载
+     *
+     * @param \$version
+     * @return void
+     */
+    public static function uninstall(\$version)
+    {
+        // 删除菜单
+        foreach (static::getMenus() as \$menu) {
+            Menu::delete(\$menu['key']);
+        }
+    }
+
+    /**
+     * 更新
+     *
+     * @param \$from_version
+     * @param \$to_version
+     * @param \$context
+     * @return void
+     */
+    public static function update(\$from_version, \$to_version, \$context = null)
+    {
+        // 删除不用的菜单
+        if (isset(\$context['previous_menus'])) {
+            static::removeUnnecessaryMenus(\$context['previous_menus']);
+        }
+        // 导入新菜单
+        if (\$menus = static::getMenus()) {
+            Menu::import(\$menus);
+        }
+    }
+
+    /**
+     * 更新前数据收集等
+     *
+     * @param \$from_version
+     * @param \$to_version
+     * @return array|array[]
+     */
+    public static function beforeUpdate(\$from_version, \$to_version)
+    {
+        // 在更新之前获得老菜单，通过context传递给 update
+        return ['previous_menus' => static::getMenus()];
+    }
+
+    /**
+     * 获取菜单
+     *
+     * @return array|mixed
+     */
+    public static function getMenus()
+    {
+        clearstatcache();
+        if (is_file(\$menu_file = __DIR__ . '/../config/menu.php')) {
+            \$menus = include \$menu_file;
+            return \$menus ?: [];
+        }
+        return [];
+    }
+
+    /**
+     * 删除不需要的菜单
+     *
+     * @param \$previous_menus
+     * @return void
+     */
+    public static function removeUnnecessaryMenus(\$previous_menus)
+    {
+        \$menus_to_remove = array_diff(Menu::column(\$previous_menus, 'name'), Menu::column(static::getMenus(), 'name'));
+        foreach (\$menus_to_remove as \$name) {
+            Menu::delete(\$name);
+        }
+    }
+
+}
+EOF;
+
+        file_put_contents("$base/Install.php", $content);
+
+    }
+
+    /**
+     * @param $base
+     * @param $name
+     * @return void
+     */
     protected function createConfigFiles($base, $name)
     {
         // app.php
@@ -212,11 +287,21 @@ use support\\Request;
 return [
     'debug' => true,
     'controller_suffix' => 'Controller',
-    'controller_reuse' => true,
+    'controller_reuse' => false,
+    'version' => '1.0.0'
 ];
 
 EOF;
         file_put_contents("$base/app.php", $content);
+
+        // menu.php
+        $content = <<<EOF
+<?php
+
+return [];
+
+EOF;
+        file_put_contents("$base/menu.php", $content);
 
         // autoload.php
         $content = <<<EOF
@@ -251,7 +336,7 @@ EOF;
 <?php
 
 return [
-    '' => \\plugin\\$name\\app\\exception\\Handler::class,
+    '' => support\\exception\\Handler::class,
 ];
 
 EOF;
@@ -351,7 +436,7 @@ return [
     // Fallback language
     'fallback_locale' => ['zh_CN', 'en'],
     // Folder where language files are stored
-    'path' => "$base/resource/translations",
+    'path' => base_path() . "/plugin/$name/resource/translations",
 ];
 
 EOF;

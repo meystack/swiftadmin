@@ -50,7 +50,7 @@
                         <i class="layui-icon layui-icon-edit"></i>{:__('修改')}
                     </button>
                     <!-- // 删除所有 -->
-                    <button class="layui-btn icon-btn layui-btn-danger" lay-batch="" data-table="lay-tree" data-url="{:url('/system/Dictionary/del')}" >
+                    <button class="layui-btn icon-btn layui-btn-danger" lay-batch="" data-table="lay-tableGroup" data-url="{:url('/system/Dictionary/del')}" >
                       <i class="layui-icon layui-icon-delete"></i>{:__('删除')}
                     </button>
                 </div>
@@ -216,7 +216,6 @@
 
                 // 获取最后点击
                 if (obj.checked === true) {
-                    window.tableElem = obj;
                     $('#editforms').find('.pid').attr('value',obj.data.id);
                 }
             }
@@ -241,18 +240,15 @@
                 $.post(_pageUrl,
                     post.field, function(res){
                         if (res.code === 200) {
-                            if (typeof window.tableElem !== 'undefined') {
-                                window.tableElem.update(JSON.parse(JSON.stringify(post.field)))
-                            } else {
-                                table.reloadData('lay-tableGroup');
-                            }
+                            table.reloadData('lay-tableGroup');
+                            table.reloadData('lay-tableList');
                             // 关闭当前窗口
                             layer.msg(res.msg);
                             layer.close(colletction.index);
                             pageThat.attr("disabled",true);
                         }
                         else {
-                            layer.error(res.msg);
+                            layer.error(res.msg,'error');
                         }
 
                 }, 'json');

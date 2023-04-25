@@ -11,7 +11,7 @@
  Target Server Version : 50738
  File Encoding         : 65001
 
- Date: 19/12/2022 19:20:36
+ Date: 25/04/2023 20:00:37
 */
 
 SET NAMES utf8mb4;
@@ -51,13 +51,13 @@ CREATE TABLE `__PREFIX__admin`  (
   INDEX `id`(`id`) USING BTREE,
   INDEX `name`(`name`) USING BTREE,
   INDEX `pwd`(`pwd`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '后台管理员表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '后台管理员表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of __PREFIX__admin
 -- ----------------------------
-INSERT INTO `__PREFIX__admin` VALUES (1, '1', '2', '3', 'admin', 'meystack', '13682bec405cf4b9002e6e8306312ce6', 1, 'a:3:{i:0;s:12:\"测试效果\";i:1;s:15:\"隔壁帅小伙\";i:2;s:9:\"技术宅\";}', '/upload/avatars/f8e34ec67a2a0233_100x100.jpg', '海阔天空，有容乃大', 'admin@swiftadmin.net', '0310', '15188888888', '高级管理人员', 371, '河北省邯郸市', '127.0.0.1', 1671360587, '3232254977', 1, NULL, 1596682835, 1671360587, NULL);
-INSERT INTO `__PREFIX__admin` VALUES (2, '2', '4', '5,6', 'ceshi', '测试用户', '13682bec405cf4b9002e6e8306312ce6', 1, 'a:3:{i:0;s:6:\"呵呵\";i:1;s:5:\"Think\";i:2;s:12:\"铁血柔肠\";}', '/upload/avatars/a0b923820dcc509a_100x100.png', 'PHP是全世界最好的语言', 'baimei@your.com', '0310', '15188888888', '我原本以为吕布已经天下无敌了，没想到还有比吕布勇猛的，这谁的部将？', 56, '河北省邯郸市廉颇大道110号指挥中心', '127.0.0.1', 1669816238, '3232254977', 1, '违规', 1609836672, 1669816238, NULL);
+INSERT INTO `__PREFIX__admin` VALUES (1, '1', '2', '3', 'admin', '超级管理员', '13682bec405cf4b9002e6e8306312ce6', 1, 'a:3:{i:0;s:12:\"测试效果\";i:1;s:15:\"隔壁帅小伙\";i:2;s:9:\"技术宅\";}', '/upload/avatars/f8e34ec67a2a0233_100x100.jpg', '海阔天空，有容乃大', 'admin@swiftadmin.net', '0310', '15188888888', '高级管理人员', 391, '河北省邯郸市', '127.0.0.1', 1682411837, '3232254977', 1, NULL, 1596682835, 1682411837, NULL);
+INSERT INTO `__PREFIX__admin` VALUES (2, '2', '4', '5,6', 'ceshi', '测试用户', '13682bec405cf4b9002e6e8306312ce6', 1, 'a:3:{i:0;s:6:\"呵呵\";i:1;s:5:\"Think\";i:2;s:12:\"铁血柔肠\";}', '/upload/avatars/a0b923820dcc509a_100x100.png', 'PHP是全世界最好的语言', 'baimei@your.com', '0310', '15188888888', '我原本以为吕布已经天下无敌了，没想到还有比吕布勇猛的，这谁的部将？', 57, '河北省邯郸市廉颇大道110号指挥中心', '127.0.0.1', 1682221728, '3232254977', 1, '违规', 1609836672, 1682221728, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_access
@@ -75,8 +75,9 @@ CREATE TABLE `__PREFIX__admin_access`  (
 -- ----------------------------
 -- Records of __PREFIX__admin_access
 -- ----------------------------
-INSERT INTO `__PREFIX__admin_access` VALUES (1, '1', NULL, NULL);
-INSERT INTO `__PREFIX__admin_access` VALUES (2, '2', '5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,115,116,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,85,86,87,88,89,90,91,92,93,100,101,102,103,104,105,106,107,108,109,110,111,112', '8');
+INSERT INTO `__PREFIX__admin_access` VALUES (1, '1', '5,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,115,116', NULL);
+INSERT INTO `__PREFIX__admin_access` VALUES (2, '2', '5,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,115,116', '8');
+INSERT INTO `__PREFIX__admin_access` VALUES (3, '1', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_group
@@ -102,8 +103,8 @@ CREATE TABLE `__PREFIX__admin_group`  (
 -- ----------------------------
 -- Records of __PREFIX__admin_group
 -- ----------------------------
-INSERT INTO `__PREFIX__admin_group` VALUES (1, 0, 1, '超级管理员', 'admin', 1, 1, '网站超级管理员组的', NULL, NULL, 'layui-bg-blue', 1607832158, NULL);
-INSERT INTO `__PREFIX__admin_group` VALUES (2, 1, 2, '网站编辑', 'editor', 1, 1, '负责公司软文的编写', '55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84', '5', 'layui-bg-cyan', 1607832158, NULL);
+INSERT INTO `__PREFIX__admin_group` VALUES (1, 0, 1, '超级管理员', 'admin', 1, 1, '网站超级管理员组的', '100,107,108,109,110,111,112', NULL, 'layui-bg-blue', 1607832158, NULL);
+INSERT INTO `__PREFIX__admin_group` VALUES (2, 1, 2, '网站编辑', 'editor', 1, 1, '负责公司软文的编写', '', '5', 'layui-bg-cyan', 1607832158, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_log
@@ -181,7 +182,7 @@ CREATE TABLE `__PREFIX__admin_rules`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `id`(`id`) USING BTREE,
   INDEX `sort`(`sort`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1682 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 123 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of __PREFIX__admin_rules
@@ -399,7 +400,7 @@ INSERT INTO `__PREFIX__config` VALUES (22, 'cache_type', 0, 'cache', 'string', '
 INSERT INTO `__PREFIX__config` VALUES (23, 'cache_time', 0, 'cache', 'string', '6000', '缓存时间');
 INSERT INTO `__PREFIX__config` VALUES (24, 'cache_host', 0, 'cache', 'string', '127.0.0.1', '服务器IP');
 INSERT INTO `__PREFIX__config` VALUES (25, 'cache_port', 0, 'cache', 'string', '6379', '端口');
-INSERT INTO `__PREFIX__config` VALUES (26, 'cache_select', 0, 'cache', 'string', '1', '缓存数据库');
+INSERT INTO `__PREFIX__config` VALUES (26, 'cache_select', 0, 'cache', 'string', '2', '缓存数据库');
 INSERT INTO `__PREFIX__config` VALUES (27, 'cache_user', 0, 'cache', 'string', '', '用户名');
 INSERT INTO `__PREFIX__config` VALUES (28, 'cache_pass', 0, 'cache', 'string', '', '密码');
 INSERT INTO `__PREFIX__config` VALUES (29, 'upload_path', 0, 'upload', 'string', 'upload', '上传路径');
@@ -426,8 +427,8 @@ INSERT INTO `__PREFIX__config` VALUES (49, 'upload_water_img', 0, 'upload', 'str
 INSERT INTO `__PREFIX__config` VALUES (50, 'upload_water_pos', 0, 'upload', 'string', '9', '水印位置');
 INSERT INTO `__PREFIX__config` VALUES (51, 'play', 0, NULL, 'array', '{\"play_width\":\"960\",\"play_height\":\"450\",\"play_show\":\"0\",\"play_second\":\"10\",\"play_area\":\"大陆,香港,中国台湾,美国,韩国,日本,泰国,印度,英国,法国,俄罗斯,新加坡,其它\",\"play_year\":\"2022,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,2002,2001,2000,1999\",\"play_version\":\"高清版,剧场版,抢先版,OVA,TV,影院版\",\"play_language\":\"国语,英语,粤语,韩语,日语,法语,德语,泰语,俄语,其它\",\"play_week\":\"周一,周二,周三,周四,周五,周六,周日\",\"play_playad\":\"http:\\/\\/www.swiftadmin.net\\/api\\/show.html\",\"play_down\":\"http:\\/\\/www.swiftadmin.net\\/api\\/show.html\",\"play_downgorup\":\"http:\\/\\/down.swiftadmin.net\\/\"}', '播放器数据');
 INSERT INTO `__PREFIX__config` VALUES (52, 'cloud_status', 0, NULL, 'string', '0', '是否开启OSS上传');
-INSERT INTO `__PREFIX__config` VALUES (53, 'cloud_type', 0, NULL, 'string', 'aliyun_oss', 'OSS上传类型');
-INSERT INTO `__PREFIX__config` VALUES (54, 'aliyun_oss', 0, NULL, 'array', '{\"accessId\":\"LTAI5tR*****nVMe1vC\",\"accessSecret\":\"knwIiD8rINV********3ysvbU0pk\",\"bucket\":\"bucket\",\"endpoint\":\"oss-cn-beijing.aliyuncs.com\",\"url\":\"http:\\/\\/oss-cn-beijing.aliyuncs.com\"}', '阿里云OSS');
+INSERT INTO `__PREFIX__config` VALUES (53, 'cloud_type', 0, NULL, 'string', 'qcloud_oss', 'OSS上传类型');
+INSERT INTO `__PREFIX__config` VALUES (54, 'aliyun_oss', 0, NULL, 'array', '{\"accessId\":\"LTAI5tD8a1uQrge6836nfdtH\",\"accessSecret\":\"DUQNpLVvzyY\",\"bucket\":\"bucket\",\"endpoint\":\"oss-cn-beijing.aliyuncs.com\",\"url\":\"http:\\/\\/oss-cn-beijing.aliyuncs.com\"}', '阿里云OSS');
 INSERT INTO `__PREFIX__config` VALUES (55, 'qcloud_oss', 0, NULL, 'array', '{\"app_id\":\"1252296528\",\"secret_id\":\"LTAI5333k*****NnVMe1vC\",\"secret_key\":\"kFStrm******aJdocxsSScjRt9A\",\"bucket\":\"testpack\",\"region\":\"ap-beijing\",\"url\":\"\"}', '腾讯云OSS');
 INSERT INTO `__PREFIX__config` VALUES (56, 'email', 0, NULL, 'array', '{\"smtp_debug\":\"0\",\"smtp_host\":\"smtp.163.com\",\"smtp_port\":\"587\",\"smtp_name\":\"管理员\",\"smtp_user\":\"domain@163.com\",\"smtp_pass\":\"KNWSGPUYBMFATCIZ\",\"smtp_test\":\"youremail@foxmail.com\"}', '邮箱配置');
 INSERT INTO `__PREFIX__config` VALUES (57, 'qq', 0, NULL, 'array', '{\"app_id\":\"\",\"app_key\":\"\",\"callback\":\"\"}', 'QQ登录');
@@ -441,7 +442,7 @@ INSERT INTO `__PREFIX__config` VALUES (64, 'alisms', 0, NULL, 'array', '{\"app_i
 INSERT INTO `__PREFIX__config` VALUES (65, 'tensms', 0, NULL, 'array', '{\"app_id\":\"150****8888\",\"app_sign\":\"河北*****有限公司\",\"secret_id\":\"kFStrmkXjHjw9sankaJdoIXXSScjRt9A\",\"secret_key\":\"kFStrmkXjHjw9sankaJdoIXXSScjRt9A\"}', '腾讯云短信');
 INSERT INTO `__PREFIX__config` VALUES (66, 'mpwechat', 0, NULL, 'array', '{\"app_id\":\"wx********\",\"secret\":\"3d9****2\",\"token\":\"M1qhe****utsreGp6PS\",\"aes_key\":\"wxd****4\"}', '微信公众号');
 INSERT INTO `__PREFIX__config` VALUES (67, 'user_status', 0, 'user', 'string', '1', '注册状态');
-INSERT INTO `__PREFIX__config` VALUES (68, 'user_register', 0, 'user', 'string', 'mobile', '注册方式');
+INSERT INTO `__PREFIX__config` VALUES (68, 'user_register', 0, 'user', 'string', 'normal', '注册方式');
 INSERT INTO `__PREFIX__config` VALUES (69, 'user_document', 0, 'user', 'string', '1', '用户投稿');
 INSERT INTO `__PREFIX__config` VALUES (70, 'user_sensitive', 0, 'user', 'string', '1', '开启违禁词检测');
 INSERT INTO `__PREFIX__config` VALUES (71, 'user_document_integra', 0, 'user', 'string', '1', '投稿获得积分');
@@ -462,7 +463,7 @@ INSERT INTO `__PREFIX__config` VALUES (85, 'rewrite', 0, NULL, 'string', '', 'UR
 INSERT INTO `__PREFIX__config` VALUES (86, 'database', 0, NULL, 'string', '', '数据库维护');
 INSERT INTO `__PREFIX__config` VALUES (87, 'variable', 0, NULL, 'array', '{\"test\":\"我是值2\",\"ceshi\":\"我是测试变量的值\"}', '自定义变量');
 INSERT INTO `__PREFIX__config` VALUES (88, 'param', 0, NULL, 'string', '', '测试代码');
-INSERT INTO `__PREFIX__config` VALUES (89, 'full_status', 0, NULL, 'string', '1', '全文检索');
+INSERT INTO `__PREFIX__config` VALUES (89, 'full_status', 0, NULL, 'string', '0', '全文检索');
 INSERT INTO `__PREFIX__config` VALUES (90, 'editor', 0, NULL, 'string', 'lay-editor', '编辑器选项');
 INSERT INTO `__PREFIX__config` VALUES (91, 'minify_page', 0, NULL, 'string', '0', '模板mini压缩');
 
@@ -520,14 +521,14 @@ CREATE TABLE `__PREFIX__dictionary`  (
 -- ----------------------------
 -- Records of __PREFIX__dictionary
 -- ----------------------------
-INSERT INTO `__PREFIX__dictionary` VALUES (1, 0, '内容属2性', 'content', 1, '', 1, 1669805492, 1637738903, NULL);
+INSERT INTO `__PREFIX__dictionary` VALUES (1, 0, '内容属性', 'content', 1, '', 1, 1682217587, 1637738903, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (2, 1, '头条', '1', 2, '', 1, 1669690446, 1638093403, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (3, 1, '推荐', '2', 3, '', 1, 1669690444, 1638093425, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (4, 1, '幻灯', '3', 4, '', 1, 1669690440, 1638093430, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (5, 1, '滚动', '4', 5, '', 1, 1669690442, 1638093435, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (6, 1, '图文', '5', 6, '', 1, 1638093456, 1638093456, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (7, 1, '跳转', '6', 7, '', 1, 1638093435, 1638093435, NULL);
-INSERT INTO `__PREFIX__dictionary` VALUES (8, 0, '友链2类型', 'friendlink', 8, '', 1, 1669805499, 1638093456, NULL);
+INSERT INTO `__PREFIX__dictionary` VALUES (8, 0, '友链类型', 'friendlink', 8, '', 1, 1682217595, 1638093456, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (9, 8, '资源', '1', 9, '', 1, 1638093430, 1638093430, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (10, 8, '社区', '2', 10, '', 1, 1638093435, 1638093435, NULL);
 INSERT INTO `__PREFIX__dictionary` VALUES (11, 8, '合作伙伴', '3', 11, '', 1, 1659450310, 1638093456, NULL);
@@ -645,13 +646,12 @@ CREATE TABLE `__PREFIX__user`  (
   INDEX `create_time`(`create_time`) USING BTREE,
   INDEX `login_time`(`login_time`) USING BTREE,
   INDEX `invite_id`(`invite_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会员管理' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会员管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of __PREFIX__user
 -- ----------------------------
-INSERT INTO `__PREFIX__user` VALUES (1, 1, 'aa', '513bd12b00b512d0b879962b777b5560', 'wdONQC', NULL, NULL, '/upload/avatars/a0b923820dcc509a_100x100.png', '这个人很懒，什么都没有留下～ ', 'test@swiftadmin.net', NULL, '林自图', 0, '2022-11-04 20:04:55', '15253325632533', '河北省邯郸市中华区人民东路023号', '', 0, 100, 1983.56, '你的幸运数字是？', 'aa', 1, 1, 10001, 'xDqmQGyBNUlwRXtkKPVCiM', NULL, NULL, NULL, NULL, NULL, NULL, 1, '127.0.0.1', 1670750078, 160, NULL, '1861775580', 1657332918, NULL);
-INSERT INTO `__PREFIX__user` VALUES (2, 1, 'faker', '513bd12b00b512d0b879962b777b5560', 'wdONQC', NULL, NULL, '/upload/avatars/a0b923820dcc509a_100x100.png', '这个人很懒，什么都没有留下～ ', 'test@swiftadmin.net', NULL, NULL, 0, NULL, NULL, '河北省邯郸市中华区人民东路023号', NULL, 0, 100, NULL, '你家的宠物叫啥？', '23', 1, 1, 10001, 'lLtSvJGyFQCVuTdjRIhqza', NULL, NULL, NULL, NULL, NULL, NULL, 1, '23.21.25.23', 1662098397, 131, NULL, '1861775580', 1657332918, NULL);
+INSERT INTO `__PREFIX__user` VALUES (1, 1, '创始人', '513bd12b00b512d0b879962b777b5560', 'wdONQC', NULL, NULL, '/upload/avatars/a0b923820dcc509a_100x100.png', '这个人很懒，什么都没有留下～ ', 'test@swiftadmin.net', NULL, '林自图', 0, '2022-11-04 20:04:55', '15253325632533', '河北省邯郸市中华区人民东路023号', '', 0, 100, 1983.56, '你的幸运数字是？', 'aa', 1, 1, 10001, 'myKDalrGjpEVxWPQcXzwFu', NULL, NULL, NULL, NULL, NULL, NULL, 1, '127.0.0.1', 1682390408, 162, NULL, '1861775580', 1657332918, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__user_group
@@ -698,7 +698,7 @@ CREATE TABLE `__PREFIX__user_log`  (
   `create_time` int(11) NULL DEFAULT NULL COMMENT '登录时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_ip`(`login_ip`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户登录记录表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of __PREFIX__user_log

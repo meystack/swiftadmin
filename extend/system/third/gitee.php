@@ -52,7 +52,7 @@ class gitee
     {
         $state = hash('sha256',uniqid((string)mt_rand()));
         session('state', $state);
-        $queryarr = array(
+        $queryArr = array(
             "response_type" => "code",
             "client_id"     => $this->config['app_id'],
             "redirect_uri"  => $this->config['callback'],
@@ -60,9 +60,8 @@ class gitee
             "state"         => $state,
         );
 
-        request()->isMobile() && $queryarr['display'] = 'mobile';
-        $url = self::GET_AUTH_CODE_URL . '?' . http_build_query($queryarr);
-        return $url;        
+        request()->isMobile() && $queryArr['display'] = 'mobile';
+        return self::GET_AUTH_CODE_URL . '?' . http_build_query($queryArr);
     }
 
     /**
@@ -79,9 +78,9 @@ class gitee
             // 获取access_token
             $data = isset($params['code']) ? $this->getAccessToken($params['code']) : $params;
             
-            $access_token = isset($data['access_token']) ? $data['access_token'] : '';
-            $refresh_token = isset($data['refresh_token']) ? $data['refresh_token'] : '';
-            $expires_in = isset($data['expires_in']) ? $data['expires_in'] : 0;
+            $access_token = $data['access_token'] ?? '';
+            $refresh_token = $data['refresh_token'] ?? '';
+            $expires_in = $data['expires_in'] ?? 0;
             if ($access_token) {
 
                 // 获取用户信息

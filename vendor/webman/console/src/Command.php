@@ -4,6 +4,7 @@ namespace Webman\Console;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as Commands;
+use support\Container;
 
 class Command extends Application
 {
@@ -24,13 +25,17 @@ class Command extends Application
             if ($file->getExtension() !== 'php') {
                 continue;
             }
+            // abc\def.php
             $relativePath = str_replace(str_replace('/', '\\', $path . '\\'), '', str_replace('/', '\\', $file->getRealPath()));
-            $realNamespace = trim($namspace . '\\' . trim(dirname($relativePath), '.'), '\\');
+            // app\command\abc
+            $realNamespace = trim($namspace . '\\' . trim(dirname(str_replace('\\', DIRECTORY_SEPARATOR, $relativePath)), '.'), '\\');
+            $realNamespace =  str_replace('/', '\\', $realNamespace);
+            // app\command\doc\def
             $class_name = trim($realNamespace . '\\' . $file->getBasename('.php'), '\\');
-            if (!is_a($class_name, Commands::class, true)) {
+            if (!class_exists($class_name) || !is_a($class_name, Commands::class, true)) {
                 continue;
             }
-            $this->add(new $class_name);
+            $this->add(Container::get($class_name));
         }
     }
 }

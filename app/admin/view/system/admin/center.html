@@ -138,7 +138,7 @@
             <div class="layui-card">
                 <div class="layui-card-body" style="padding: 25px;">
                     <div class="text-center layui-text">
-                        <div class="user-info-head" id="imgHead" lay-upload="imgHead" data-url="{:url('/ajax/upload/')}?action=avatar" callback="imgHead">
+                        <div class="user-info-head" id="imgHead" lay-upload="imgHead" data-size="1024" data-url="{:url('/Ajax/upload/')}" callback="imgHead">
                             <img src="{$data.face}" class="imgHead" />
                         </div>
                         <h2 style="padding-top: 20px;">{$data.nickname|default='没有昵称'}</h2>
@@ -281,94 +281,96 @@
 
 <script>
     layui.use(['admin'],function() {
-        var admin = layui.admin;
-        var jquery = layui.jquery;
-        
-        admin.callback.imgHead = function(clickthis, colletction) {
+        let $ = layui.jquery;
+        let admin = layui.admin;
+
+        admin.callback.imgHead = function (clickthis, colletction) {
 
             var res = colletction.res;
             if (res.code === 200) { // 查找元素
-                jquery('.imgHead').attr('src',res.url);
-                // // 执行后端投递工作
-                // jquery.post('{:url("/system/admin/modify")}',{
-                //     field: 'face'
-                //     ,face: res.url
-                // },function(res) {
-                //     layer.msg("{:__('上传成功')}");
-                // })
-            }
-            else {
+                $('.imgHead').attr('src', res.url);
+                // 执行后端投递工作
+                $.post('{:url("/system/admin/modify")}', {
+                    field: 'face'
+                    , face: res.url
+                }, function (res) {
+                    layer.msg("{:__('上传成功')}");
+                })
+            } else {
                 layer.error(res.msg);
             }
         }
 
         // 编辑签名
-        jquery('.userMood').dblclick(function() {
-            var that = jquery(this),
-                html = that.text(); that.hide();
-                jquery(that).parent().append('<input class="editMood layui-input" type="text" maxlength="12" value="' + html +'">');
+        $('.userMood').dblclick(function () {
+            var that = $(this),
+                html = that.text();
+            that.hide();
+            $(that).parent().append('<input class="editMood layui-input" type="text" maxlength="12" value="' + html + '">');
         })
 
-        jquery('.layui-card-body').on('blur','.editMood',function() {
-             var that = jquery(this),
-                html = that.val(); that.remove();
-                jquery('.userMood').text(html);
-                jquery('.userMood').show();
-                jquery.post('{:url("/system/admin/modify")}',{
-                    field: 'mood'
-                    ,mood: html
-                },function(res) {
-                })
+        $('.layui-card-body').on('blur', '.editMood', function () {
+            var that = $(this),
+                html = that.val();
+            that.remove();
+            $('.userMood').text(html);
+            $('.userMood').show();
+            $.post('{:url("/system/admin/modify")}', {
+                field: 'mood'
+                , mood: html
+            }, function (res) {
+            })
         })
 
-        jquery('.layui-inputags').click(function(){
-            if (jquery('.editTags').length <= 0) {
-                jquery(this).parent().append('<input class="editTags layui-input" type="text" maxlength="10">');
+        $('.layui-inputags').click(function () {
+            if ($('.editTags').length <= 0) {
+                $(this).parent().append('<input class="editTags layui-input" type="text" maxlength="10">');
             }
         })
 
         // 添加标签
-        jquery('.layui-card-body').on('blur','.editTags',function() {
-             var that = jquery(this),
-                 html = that.val(); that.remove();
-                 if (html == '') {
-                    return;
-                 }    
-            jquery.post('{:url("/system/admin/modify")}',{
+        $('.layui-card-body').on('blur', '.editTags', function () {
+            var that = $(this),
+                html = that.val();
+            that.remove();
+            if (html === '') {
+                return;
+            }
+            $.post('{:url("/system/admin/modify")}', {
                 field: 'tags'
-                ,tags: html
-            },function(res) {
-                if (res.code == 200) {
+                , tags: html
+            }, function (res) {
+                if (res.code === 200) {
                     var elem = '\n';
                     elem += '<span class="layui-badge layui-bg-gray">';
                     elem += '<i class="layui-icon layui-icon-close"></i>';
                     elem += html;
                     elem += '</span>';
-                    jquery('.layui-badge-list').append(elem);
-                }else {
+                    $('.layui-badge-list').append(elem);
+                } else {
                     layer.error(res.msg);
                 }
-            })                       
+            })
         })
 
         // 删除标签
-        jquery('.layui-card-body').on('click','.layui-badge-list i',function() {
-            var that = jquery(this),
-             html = that.parent('span').text();
-            jquery.post('{:url("/system/admin/modify")}',{
+        $('.layui-card-body').on('click', '.layui-badge-list i', function () {
+            var that = $(this),
+                html = that.parent('span').text();
+            $.post('{:url("/system/admin/modify")}', {
                 field: 'tags'
-                ,del: 1
-                ,tags: html
-            },function(res) {
-                if (res.code == 200) {
+                , del: 1
+                , tags: html
+            }, function (res) {
+                if (res.code === 200) {
                     that.parent('span').remove();
-                }else {
+                } else {
                     layer.error(res.msg);
                 }
-            })             
+            })
         })
 
-        layer.tips('双击心情可以编辑','.userMood',{
+        layer.tips('双击心情可以编辑', '.userMood', {
             tips: [1, '#000']
         })
 

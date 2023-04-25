@@ -81,7 +81,7 @@ class Plugin extends AdminController
                 return $this->error('请勿重复安装插件');
             }
 
-            try {
+//            try {
 
                 $pluginZip = self::downLoad($name, ['name' => $name, 'token' => input('token')]);
                 ZipArchives::unzip($pluginZip, plugin_path(), '', true);
@@ -95,10 +95,10 @@ class Plugin extends AdminController
                 self::pluginMenu($name);
                 self::executeSql($name);
                 self::enabled($name);
-            } catch (\Throwable $th) {
-                recursive_delete($pluginPath);
-                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
-            }
+//            } catch (\Throwable $th) {
+//                recursive_delete($pluginPath);
+//                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
+//            }
 
             return $this->success('插件安装成功', null, get_plugin_config($name, true));
         }
@@ -125,7 +125,7 @@ class Plugin extends AdminController
                 $pluginPath = plugin_path($name);
                 $pluginClass = get_plugin_instance($name);
                 $pluginClass->uninstall();
-                if (getenv('APP_DEBUG') && Auth::instance()->SuperAdmin()) {
+                if (get_env('APP_DEBUG') && Auth::instance()->SuperAdmin()) {
                     self::executeSql($name, 'uninstall');
                 }
 

@@ -13,17 +13,17 @@
  */
 
 return [
-    'type'                  => getenv('CACHE_DRIVER') ?: 'file',    // or redis or redis_cluster
-    'handler'               => getenv('CACHE_DRIVER') == 'redis' ? Webman\Session\RedisSessionHandler::class : Webman\Session\FileSessionHandler::class,
+    'type'                  => get_env('CACHE_DRIVER') ?: 'file',    // or redis or redis_cluster
+    'handler'               => get_env('CACHE_DRIVER') == 'redis' ? Webman\Session\RedisSessionHandler::class : Webman\Session\FileSessionHandler::class,
     'config'                => [
         'file'          => [
             'save_path' => runtime_path() . '/sessions',
         ],
         'redis'         => [
-            'host'     => getenv('CACHE_HOSTNAME') ?: '127.0.0.1',
-            'port'     => getenv('CACHE_HOSTPORT') ?: 6379,
-            'database' => getenv('CACHE_SELECT') ?: 0,
-            'auth'     => getenv('CACHE_PASSWORD') ?: '',
+            'host'     => get_env('CACHE_HOSTNAME') ?: '127.0.0.1',
+            'port'     => get_env('CACHE_HOSTPORT') ?: 6379,
+            'database' => get_env('CACHE_SELECT') ?: 0,
+            'auth'     => get_env('CACHE_PASSWORD') ?: '',
             'prefix'   => '', // session key prefix
         ],
         'redis_cluster' => [

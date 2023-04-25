@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of workerman.
  *
@@ -38,7 +39,7 @@ class Gateway extends Worker
      *
      * @var string
      */
-    const VERSION = '3.0.22';
+    const VERSION = '3.0.28';
 
     /**
      * 本机 IP
@@ -48,6 +49,21 @@ class Gateway extends Worker
      */
     public $lanIp = '127.0.0.1';
 
+    /**
+     * 如果宿主机为192.168.1.2 , gatewayworker in  docker container (172.25.0.2)
+     * 此时 lanIp=192.68.1.2 GatewayClientSDK 能连上，但是$this->_innerTcpWorker stream_socket_server(): Unable to connect to tcp://192.168.1.2:2901 (Address not available) in
+     * 此时 lanIp=172.25.0.2 GatewayClientSDK stream_socket_server(): Unable to connect to tcp://172.25.0.2:2901 (Address not available) ， $this->_innerTcpWorker 正常监听
+     *
+     * solution:
+     * $gateway->lanIp=192.168.1.2 ;
+     * $gateway->innerTcpWorkerListen=172.25.0.2; // || 0.0.0.0
+     *
+     * GatewayClientSDK connect  192.168.1.2:lanPort
+     * $this->_innerTcpWorker listen  $gateway->innerTcpWorkerListen:lanPort
+     *
+     */
+    public $innerTcpWorkerListen='';
+	
     /**
      * 本机端口
      *
@@ -107,7 +123,7 @@ class Gateway extends Worker
     /**
      * 路由函数
      *
-     * @var callback
+     * @var callable|null
      */
     public $router = null;
 
@@ -136,14 +152,14 @@ class Gateway extends Worker
     /**
      * BusinessWorker 连接成功之后触发
      *
-     * @var callback|null
+     * @var callable|null
      */
     public $onBusinessWorkerConnected = null;
 
     /**
      * BusinessWorker 关闭时触发
      *
-     * @var callback|null
+     * @var callable|null
      */
     public $onBusinessWorkerClose = null;
 
@@ -183,35 +199,35 @@ class Gateway extends Worker
     /**
      * 当 worker 启动时
      *
-     * @var callback
+     * @var callable|null
      */
     protected $_onWorkerStart = null;
 
     /**
      * 当有客户端连接时
      *
-     * @var callback
+     * @var callable|null
      */
     protected $_onConnect = null;
 
     /**
      * 当客户端发来消息时
      *
-     * @var callback
+     * @var callable|null
      */
     protected $_onMessage = null;
 
     /**
      * 当客户端连接关闭时
      *
-     * @var callback
+     * @var callable|null
      */
     protected $_onClose = null;
 
     /**
      * 当 worker 停止时
      *
-     * @var callback
+     * @var callable|null
      */
     protected $_onWorkerStop = null;
 
@@ -348,15 +364,35 @@ class Gateway extends Worker
      * websocket握手时触发
      *
      * @param $connection
-     * @param $http_buffer
+     * @param $request
      */
-    public function onWebsocketConnect($connection, $http_buffer)
+    public function onWebsocketConnect($connection, $request)
     {
         if (isset($connection->_onWebSocketConnect)) {
-            call_user_func($connection->_onWebSocketConnect, $connection, $http_buffer);
+            call_user_func($connection->_onWebSocketConnect, $connection, $request);
             unset($connection->_onWebSocketConnect);
         }
-        $this->sendToWorker(GatewayProtocol::CMD_ON_WEBSOCKET_CONNECT, $connection, array('get' => $_GET, 'server' => $_SERVER, 'cookie' => $_COOKIE));
+        if (is_object($request)) {
+            $server = [
+                'QUERY_STRING' => $request->queryString(),
+                'REQUEST_METHOD' => $request->method(),
+                'REQUEST_URI' => $request->uri(),
+                'SERVER_PROTOCOL' => "HTTP/" . $request->protocolVersion(),
+                'SERVER_NAME' => $request->host(false),
+                'CONTENT_TYPE' => $request->header('content-type'),
+                'REMOTE_ADDR' => $connection->getRemoteIp(),
+                'REMOTE_PORT' => $connection->getRemotePort(),
+                'SERVER_PORT' => $connection->getLocalPort(),
+            ];
+            foreach ($request->header() as $key => $header) {
+                $key = str_replace('-', '_', strtoupper($key));
+                $server["HTTP_$key"] = $header;
+            }
+            $data = array('get' => $request->get(), 'server' => $server, 'cookie' => $request->cookie());
+        } else {
+            $data = array('get' => $_GET, 'server' => $_SERVER, 'cookie' => $_COOKIE);
+        }
+        $this->sendToWorker(GatewayProtocol::CMD_ON_WEBSOCKET_CONNECT, $connection, $data);
     }
     
     /**
@@ -506,13 +542,19 @@ class Gateway extends Worker
 
          //如为公网IP监听，直接换成0.0.0.0 ，否则用内网IP
         $listen_ip=filter_var($this->lanIp,FILTER_VALIDATE_IP,FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)?'0.0.0.0':$this->lanIp;
+	    
+	    //Use scenario to see line 64
+        if($this->innerTcpWorkerListen != '') {
+            $listen_ip = $this->innerTcpWorkerListen;
+        }
+
         // 初始化 gateway 内部的监听，用于监听 worker 的连接已经连接上发来的数据
         $this->_innerTcpWorker = new Worker("GatewayProtocol://{$listen_ip}:{$this->lanPort}");
         $this->_innerTcpWorker->reusePort = false;
         $this->_innerTcpWorker->listen();
         $this->_innerTcpWorker->name = 'GatewayInnerWorker';
 
-        if ($this->_autoloadRootPath) {
+        if ($this->_autoloadRootPath && class_exists(Autoloader::class)) {
             Autoloader::setRootPath($this->_autoloadRootPath);
         }
 

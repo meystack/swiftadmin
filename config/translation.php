@@ -17,7 +17,7 @@
  */
 return [
     // Default language
-    'locale' => getenv('LANG_DEFAULT_LANG') ?? 'zh-CN',
+    'locale' => get_env('LANG_DEFAULT_LANG') ?? 'zh-CN',
     // Fallback language
     'fallback_locale' => ['zh-CN', 'en-US'],
     // Folder where language files are stored

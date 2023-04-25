@@ -5,7 +5,7 @@
  * @author  chenxin<chenxin619315@gmail.com>
  * @date    2015-10-29
 */
-declare (strict_types = 1);
+
 namespace app\common\library;
 use Exception;
 defined('INDEX_BLOCK_LENGTH')   or define('INDEX_BLOCK_LENGTH',  12);

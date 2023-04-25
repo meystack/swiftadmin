@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+
 // +----------------------------------------------------------------------
 // | swiftAdmin 极速开发框架 [基于WebMan开发]
 // +----------------------------------------------------------------------
@@ -17,7 +17,6 @@ use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use Webman\Http\Request;
 
 /**
  * 字典管理

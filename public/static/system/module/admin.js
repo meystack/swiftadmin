@@ -739,7 +739,6 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                         }
                                     }
 
-
                                     if (res.code === 200) {
 
                                         switch (reload) {
@@ -754,10 +753,17 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                                 break;
                                             default:
                                         }
-
-                                        tableThis ?
-                                            tableThis.update(JSON.parse(JSON.stringify(post.field))) :
-                                            table.reloadData("lay-tableList");
+                                         try {
+                                             tableThis ?
+                                                 tableThis.update(JSON.parse(JSON.stringify(post.field))) :
+                                                 table.reloadData("lay-tableList");
+                                         } catch (error) {
+                                             /**
+                                              * 如果使用第三方组件在table显示或元素为DIY数据结构
+                                              * 则在这里可能会出现错误，这里不做处理，如果有需求可自行在页面实现数据回显到table行的逻辑
+                                              */
+                                            layer.info(error);
+                                         }
                                         layer.msg(res.msg);
                                         admin.event.closeDialog(othat);
                                     } else {
@@ -1135,7 +1141,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                     callback = $(elem).attr('callback') || undefined,
                     blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
 
-                var uploadFiles = {
+                let uploadFiles = {
                     normal: function (res, name) {
                         $('input.' + name).prop('value', res.url);
                         $('img.' + name).prop('src', res.url);
@@ -1148,7 +1154,6 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                         $(elem).find('p,i,hr').addClass('layui-hide');
                     },
                     multiple: function (res, name) {
-
                         let boxList = $(that).parents('.layui-imagesbox').find('.layui-input-inline');
                         let length = boxList.length;
                         $(this).parents('form').find('input#' + name + '_clear').remove();
@@ -1162,7 +1167,6 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                         html += '<input type="text" name="' + name + '[' + (length - 1) + '][title]" class="layui-input" placeholder="图片简介">';
                         html += '<span class="layui-badge layui-badge-red" onclick="layui.$(this).parent().remove();">删除</span></div>';
                         $(elem).parent().before(html);
-
                     }
                 }
 
@@ -1250,16 +1254,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                         that.prop("disabled", true);
                     }, done: function (res, indexObj, fileObj) {
 
-                        that.prop("disabled", false);
-                        if (typeof callback != 'undefined') {
-                            return admin.callbackfunc(this.item, {res: res, index: indexObj, file: fileObj});
-                        }
-
                         /**
                          * 处理分片回调
                          */
-                        if (typeof res.index != 'undefined'
-                            && typeof res.chunkId != 'undefined') {
+                        if (typeof res.index != 'undefined' && typeof res.chunkId != 'undefined') {
 
                             if (res.code !== 200) {
                                 layer.closeAll();
@@ -1318,12 +1316,18 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                             return false;
                         }
 
-                        if (res.code === 200 && res.url) {
-                            if (typeof res.chunkId !== 'undefined') {
-                                layer.close(window[res.chunkId]);
-                            }
+                        that.prop("disabled", false);
+                        // 关闭分片上传进度条
+                        if (typeof res.chunkId !== 'undefined') {
+                            layer.close(window[res.chunkId]);
+                        }
 
+                        // 执行自定义回调
+                        if (typeof callback != 'undefined') {
+                            return admin.callbackfunc(this.item, {res: res, index: indexObj, file: fileObj});
+                        } else if (res.code === 200) {
                             layer.msg(res.msg);
+                            // 执行默认上传成功回调
                             uploadFiles[type](res, name);
                         } else {
                             layer.error(res.msg);
@@ -1481,7 +1485,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
     form.on('radio(radioStatus)', function (data) {
         var display = $(this).data('display');
         if (display != null && display !== 'undefined') {
-            (data.value === 1) ? $('.' + display).show() : $('.' + display).hide();
+            (data.value == 1) ? $('.' + display).show() : $('.' + display).hide();
         }
     })
 

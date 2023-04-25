@@ -2,6 +2,7 @@
 
 namespace Webman\Console\Commands;
 
+use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,6 +22,7 @@ class MakeModelCommand extends Command
     protected function configure()
     {
         $this->addArgument('name', InputArgument::REQUIRED, 'Model name');
+        $this->addArgument('type', InputArgument::OPTIONAL, 'Type');
     }
 
     /**
@@ -32,6 +34,7 @@ class MakeModelCommand extends Command
     {
         $name = $input->getArgument('name');
         $name = Util::nameToClass($name);
+        $type = $input->getArgument('type');
         $output->writeln("Make model $name");
         if (!($pos = strrpos($name, '/'))) {
             $name = ucfirst($name);
@@ -58,15 +61,18 @@ class MakeModelCommand extends Command
             $file = app_path() . "/$path/$name.php";
             $namespace = str_replace('/', '\\', ($upper ? 'App/' : 'app/') . $path);
         }
-        $database = config('database');
-        if (isset($database['default']) && strpos($database['default'], 'plugin.') === 0) {
-            $database = false;
+        if (!$type) {
+            $database = config('database');
+            if (isset($database['default']) && strpos($database['default'], 'plugin.') === 0) {
+                $database = false;
+            }
+            $thinkorm = config('thinkorm');
+            if (isset($thinkorm['default']) && strpos($thinkorm['default'], 'plugin.') === 0) {
+                $thinkorm = false;
+            }
+            $type = !$database && $thinkorm ? 'tp' : 'laravel';
         }
-        $thinkorm = config('thinkorm');
-        if (isset($thinkorm['default']) && strpos($thinkorm['default'], 'plugin.') === 0) {
-            $thinkorm = false;
-        }
-        if (!$database && $thinkorm) {
+        if ($type == 'tp') {
             $this->createTpModel($name, $namespace, $file);
         } else {
             $this->createModel($name, $namespace, $file);
@@ -94,8 +100,10 @@ class MakeModelCommand extends Command
         try {
             $prefix = config('database.connections.mysql.prefix') ?? '';
             $database = config('database.connections.mysql.database');
-            if (\support\Db::select("show tables like '{$prefix}{$table}s'")) {
-                $table = "{$prefix}{$table}s";
+            $inflector = InflectorFactory::create()->build();
+            $table_plura = $inflector->pluralize($inflector->tableize($class));
+            if (\support\Db::select("show tables like '{$prefix}{$table_plura}'")) {
+                $table = "{$prefix}{$table_plura}";
             } else if (\support\Db::select("show tables like '{$prefix}{$table}'")) {
                 $table_val = "'$table'";
                 $table = "{$prefix}{$table}";

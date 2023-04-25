@@ -12,8 +12,6 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
-use Psr\SimpleCache\InvalidArgumentException;
-
 /**
  * 全局模型数据处理类
  * 1、自动设置字段属性
@@ -21,7 +19,6 @@ use Psr\SimpleCache\InvalidArgumentException;
  */
 class ParseData
 {
-
     /**
      * 获取标题拼音
      * @access      public
@@ -55,7 +52,6 @@ class ParseData
         return $letter;
     }
 
-
     /**
      * 自动获取描述
      * @access      public
@@ -77,7 +73,7 @@ class ParseData
      * @access  public
      * @param string $content
      * @return  string
-     * @throws InvalidArgumentException
+
      */
     public static function setContentAttr(string $content): string
     {
@@ -91,11 +87,11 @@ class ParseData
     /**
      * 获取内容数据
      * @access  public
-     * @param string $content
+     * @param $content
      * @return  string
-     * @throws InvalidArgumentException
+
      */
-    public static function getContentAttr(string $content): string
+    public static function getContentAttr($content): string
     {
         if (!empty($content)) {
 
@@ -114,7 +110,7 @@ class ParseData
             }
         }
 
-        return $content;
+        return $content ?? '';
     }
 
     /**
@@ -124,7 +120,7 @@ class ParseData
      * @param $data
      * @param bool $ready
      * @return  string
-     * @throws InvalidArgumentException
+
      */
     public static function setImageAttr(string $image, $data, bool $ready = false): string
     {
@@ -144,7 +140,7 @@ class ParseData
      * @access  public
      * @param string $image
      * @return string
-     * @throws InvalidArgumentException
+
      */
     public static function getImageAttr(string $image): string
     {
@@ -165,7 +161,6 @@ class ParseData
      * @param string $image 图片地址
      * @param bool $bool 链接OR替换
      * @return  string
-     * @throws InvalidArgumentException
      */
     protected static function changeImages(string $image, bool $bool = true): string
     {

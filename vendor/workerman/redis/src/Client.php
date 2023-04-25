@@ -13,7 +13,9 @@
  */
 namespace Workerman\Redis;
 
+use Revolt\EventLoop;
 use Workerman\Connection\AsyncTcpConnection;
+use Workerman\Redis\Protocols\Redis;
 use Workerman\Timer;
 
 /**
@@ -48,12 +50,11 @@ use Workerman\Timer;
  * @method static bool expireAt($key, $timestamp, $cb = null)
  * @method static bool pexpireAt($key, $timestamp, $cb = null)
  * @method static array keys($pattern, $cb = null)
- * @method static bool|array scan($it, $cb = null)
  * @method static void migrate($host, $port, $keys, $dbIndex, $timeout, $copy = false, $replace = false, $cb = null)
  * @method static bool move($key, $dbIndex, $cb = null)
  * @method static string|int|bool object($information, $key, $cb = null)
  * @method static bool persist($key, $cb = null)
- * @method static string randomKey(, $cb = null)
+ * @method static string randomKey($cb = null)
  * @method static bool rename($srcKey, $dstKey, $cb = null)
  * @method static bool renameNx($srcKey, $dstKey, $cb = null)
  * @method static string type($key, $cb = null)
@@ -71,7 +72,6 @@ use Workerman\Timer;
  * @method static bool hExists($key, $hashKey, $cb = null)
  * @method static int hIncrBy($key, $hashKey, $value, $cb = null)
  * @method static float hIncrByFloat($key, $hashKey, $value, $cb = null)
- * @method static array hScan($key, $iterator, $pattern = '', $count = 0, $cb = null)
  * @method static int hStrLen($key, $hashKey, $cb = null)
  * Lists methods
  * @method static array blPop($keys, $timeout, $cb = null)
@@ -106,7 +106,6 @@ use Workerman\Timer;
  * @method static int sRem($key, ...$members, $cb = null)
  * @method static array sUnion(...$keys, $cb = null)
  * @method static false|int sUnionStore($dst, ...$keys, $cb = null)
- * @method static false|array sScan($key, $iterator, $pattern = '', $count = 0, $cb = null)
  * Sorted sets methods
  * @method static array bzPopMin($keys, $timeout, $cb = null)
  * @method static array bzPopMax($keys, $timeout, $cb = null)
@@ -129,7 +128,6 @@ use Workerman\Timer;
  * @method static array zRevRange($key, $start, $end, $withScores = false, $cb = null)
  * @method static double zScore($key, $member, $cb = null)
  * @method static int zunionstore($keyOutput, $arrayZSetKeys, $arrayWeights = [], $aggregateFunction = '', $cb = null)
- * @method static false|array zScan($key, $iterator, $pattern = '', $count = 0, $cb = null)
  * HyperLogLogs methods
  * @method static int pfAdd($key, $values, $cb = null)
  * @method static int pfCount($keys, $cb = null)
@@ -161,7 +159,7 @@ use Workerman\Timer;
  * Generic methods
  * @method static mixed rawCommand(...$commandAndArgs, $cb = null)
  * Transactions methods
- * @method static \Redis multi($cb = null)
+ * @method static multi($cb = null)
  * @method static mixed exec($cb = null)
  * @method static mixed discard($cb = null)
  * @method static mixed watch($keys, $cb = null)
@@ -186,6 +184,7 @@ use Workerman\Timer;
  * @method static mixed getPersistentID($cb = null)
  * @method static mixed getAuth($cb = null)
  */
+#[\AllowDynamicProperties]
 class Client
 {
     /**
@@ -325,6 +324,10 @@ class Client
         $timeout = isset($this->_options['connect_timeout']) ? $this->_options['connect_timeout'] : 5;
         $context = isset($this->_options['context']) ? $this->_options['context'] : [];
         $this->_connection = new AsyncTcpConnection($this->_address, $context);
+        $this->_connection->protocol = Redis::class;
+        if(!empty($this->_options['ssl'])){
+            $this->_connection->transport = 'ssl';
+        }
 
         $this->_connection->onConnect = function () {
             $this->_waiting = false;
@@ -394,12 +397,8 @@ class Client
             }
             if (empty($this->_queue)) {
                 $this->_queue = [];
-                gc_collect_cycles();
-                if (function_exists('gc_mem_caches')) {
-                    gc_mem_caches();
-                }
             }
-            $success = $type === '-' || $type === '!' ? false : true;
+            $success = !($type === '-' || $type === '!');
             $exception = false;
             $result = false;
             if ($success) {
@@ -530,6 +529,7 @@ class Client
      *
      * @param $db
      * @param null $cb
+     * @return mixed
      */
     public function select($db, $cb = null)
     {
@@ -537,9 +537,16 @@ class Client
             $this->_db = $db;
             return $result;
         };
-        $cb = $cb ? $cb : function(){};
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [['SELECT', $db], time(), $cb, $format];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -547,6 +554,7 @@ class Client
      *
      * @param string|array $auth
      * @param null $cb
+     * @return mixed
      */
     public function auth($auth, $cb = null)
     {
@@ -554,9 +562,16 @@ class Client
             $this->_auth = $auth;
             return $result;
         };
-        $cb = $cb ? $cb : function(){};
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [['AUTH', $auth], time(), $cb, $format];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -565,7 +580,7 @@ class Client
      * @param $key
      * @param $value
      * @param null $cb
-     * @return null
+     * @return mixed
      */
     public function set($key, $value, $cb = null)
     {
@@ -576,12 +591,27 @@ class Client
             if (\count($args) > 3) {
                 $cb = $args[3];
             }
+            $need_suspend = !$cb && class_exists(EventLoop::class, false);
+            if ($need_suspend) {
+                [$suspension, $cb] = $this->suspenstion();
+            }
             $this->_queue[] = [['SETEX', $key, $timeout, $value], time(), $cb];
             $this->process();
+            if ($need_suspend) {
+                return $suspension->suspend();
+            }
             return null;
+        }
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
         }
         $this->_queue[] = [['SET', $key, $value], time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -589,7 +619,7 @@ class Client
      *
      * @param $key
      * @param null $cb
-     * @return null
+     * @return mixed
      */
     public function incr($key, $cb = null)
     {
@@ -600,12 +630,27 @@ class Client
             if (\count($args) > 2) {
                 $cb = $args[2];
             }
+            $need_suspend = !$cb && class_exists(EventLoop::class, false);
+            if ($need_suspend) {
+                [$suspension, $cb] = $this->suspenstion();
+            }
             $this->_queue[] = [['INCRBY', $key, $num], time(), $cb];
             $this->process();
+            if ($need_suspend) {
+                return $suspension->suspend();
+            }
             return null;
+        }
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
         }
         $this->_queue[] = [['INCR', $key], time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
 
@@ -614,7 +659,7 @@ class Client
      *
      * @param $key
      * @param null $cb
-     * @return null
+     * @return mixed
      */
     public function decr($key, $cb = null)
     {
@@ -625,12 +670,27 @@ class Client
             if (\count($args) > 2) {
                 $cb = $args[2];
             }
+            $need_suspend = !$cb && class_exists(EventLoop::class, false);
+            if ($need_suspend) {
+                [$suspension, $cb] = $this->suspenstion();
+            }
             $this->_queue[] = [['DECRBY', $key, $num], time(), $cb];
             $this->process();
+            if ($need_suspend) {
+                return $suspension->suspend();
+            }
             return null;
+        }
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
         }
         $this->_queue[] = [['DECR', $key], time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -639,6 +699,7 @@ class Client
      * @param $key
      * @param $options
      * @param null $cb
+     * @return mixed
      */
     function sort($key, $options, $cb = null)
     {
@@ -659,8 +720,16 @@ class Client
             }
         }
         \array_unshift($args, 'SORT', $key);
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [$args, time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -671,7 +740,7 @@ class Client
      */
     public function mSet(array $array, $cb = null)
     {
-        $this->mapCb('MSET', $array, $cb);
+        return $this->mapCb('MSET', $array, $cb);
     }
 
     /**
@@ -682,7 +751,7 @@ class Client
      */
     public function mSetNx(array $array, $cb = null)
     {
-        $this->mapCb('MSETNX', $array, $cb);
+        return $this->mapCb('MSETNX', $array, $cb);
     }
 
     /**
@@ -691,6 +760,7 @@ class Client
      * @param $command
      * @param array $array
      * @param $cb
+     * @return mixed
      */
     protected function mapCb($command, array $array, $cb)
     {
@@ -699,8 +769,16 @@ class Client
             $args[] = $key;
             $args[] = $value;
         }
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [$args, time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -709,10 +787,11 @@ class Client
      * @param $key
      * @param array $array
      * @param null $cb
+     * @return mixed
      */
     public function hMSet($key, array $array, $cb = null)
     {
-        $this->keyMapCb('HMSET', $key, $array, $cb);
+        return $this->keyMapCb('HMSET', $key, $array, $cb);
     }
 
     /**
@@ -721,6 +800,7 @@ class Client
      * @param $key
      * @param array $array
      * @param null $cb
+     * @return mixed
      */
     public function hMGet($key, array $array, $cb = null)
     {
@@ -730,8 +810,16 @@ class Client
             }
             return \array_combine($array, $result);
         };
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [['HMGET', $key, $array], time(), $cb, $format];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -739,6 +827,7 @@ class Client
      *
      * @param $key
      * @param null $cb
+     * @return mixed
      */
     public function hGetAll($key, $cb = null)
     {
@@ -757,8 +846,16 @@ class Client
             }
             return $return;
         };
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [['HGETALL', $key], time(), $cb, $format];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -768,6 +865,7 @@ class Client
      * @param $key
      * @param array $array
      * @param $cb
+     * @return mixed
      */
     protected function keyMapCb($command, $key, array $array, $cb)
     {
@@ -776,8 +874,16 @@ class Client
             $args[] = $key;
             $args[] = $value;
         }
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [$args, time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
     }
 
     /**
@@ -785,6 +891,7 @@ class Client
      *
      * @param $method
      * @param $args
+     * @return mixed
      */
     public function __call($method, $args)
     {
@@ -794,8 +901,28 @@ class Client
         }
 
         \array_unshift($args, \strtoupper($method));
+        $need_suspend = !$cb && class_exists(EventLoop::class, false);
+        if ($need_suspend) {
+            [$suspension, $cb] = $this->suspenstion();
+        }
         $this->_queue[] = [$args, time(), $cb];
         $this->process();
+        if ($need_suspend) {
+            return $suspension->suspend();
+        }
+        return null;
+    }
+
+    /**
+     * @return array
+     */
+    protected function suspenstion()
+    {
+        $suspension = EventLoop::getSuspension();
+        $cb = function ($result) use ($suspension) {
+            $suspension->resume($result);
+        };
+        return [$suspension, $cb];
     }
 
     /**
@@ -808,7 +935,7 @@ class Client
         }
         $this->_subscribe = false;
         $this->_connection->onConnect = $this->_connection->onError = $this->_connection->onClose =
-        $this->_connection->onMessge = null;
+        $this->_connection->onMessage = null;
         $this->_connection->close();
         $this->_connection = null;
         if ($this->_connectTimeoutTimer) {

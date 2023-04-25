@@ -4,6 +4,7 @@
 use Webman\Config;
 use Webman\Console\Command;
 use Webman\Console\Util;
+use support\Container;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -25,6 +26,7 @@ if (is_dir($command_path = Util::guessPath(app_path(), '/command', true))) {
 }
 
 foreach (config('plugin', []) as $firm => $projects) {
+    var_dump($projects);
     if (isset($projects['app'])) {
         if ($command_str = Util::guessPath(base_path() . "/plugin/$firm", 'command')) {
             $command_path = base_path() . "/plugin/$firm/$command_str";
@@ -36,7 +38,7 @@ foreach (config('plugin', []) as $firm => $projects) {
             continue;
         }
         foreach ($project['command'] ?? [] as $command) {
-            $cli->add(new $command);
+            $cli->add(Container::get($command));
         }
     }
 }

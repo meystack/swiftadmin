@@ -43,18 +43,6 @@ if (!function_exists('hook')) {
     }
 }
 
-if (!function_exists('halt')) {
-    /**
-     * 调试变量并且中断输出
-     * @param mixed $vars 调试变量或者信息
-     * @throws Exception
-     */
-    function halt(...$vars)
-    {
-        throw new \Exception(...$vars);
-    }
-}
-
 /**
  * @param $config
  * @return string
@@ -103,7 +91,8 @@ if (!function_exists('token')) {
     {
         try {
             return \request()->buildToken($name, $type);
-        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {}
+        } catch (\Psr\SimpleCache\InvalidArgumentException $e) {
+        }
 
         return '';
     }
@@ -319,7 +308,6 @@ if (!function_exists('var_exports')) {
     }
 }
 
-
 if (!function_exists('recursive_delete')) {
     /**
      * 递归删除目录
@@ -370,6 +358,61 @@ if (!function_exists('traverse_scanDir')) {
         }
 
         return $array;
+    }
+}
+
+if (!function_exists('copydirs')) {
+    /**
+     * 复制文件夹
+     * @param string $source 源文件夹
+     * @param string $dest 目标文件夹
+     */
+    function copydirs(string $source, string $dest)
+    {
+
+        if (!is_dir($dest)) {
+            mkdir($dest, 0755, true);
+        }
+
+        $handle = opendir($source);
+        while (($file = readdir($handle)) !== false) {
+            if ($file != "." && $file != "..") {
+                if (is_dir($source . "/" . $file)) {
+                    copydirs($source . "/" . $file, $dest . "/" . $file);
+                } else {
+                    copy($source . "/" . $file, $dest . "/" . $file);
+                }
+            }
+        }
+
+        closedir($handle);
+    }
+}
+
+if (!function_exists('remove_empty_dir')) {
+    /**
+     * 删除空目录
+     * @param string $dir 目录
+     */
+    function remove_empty_dir(string $dir)
+    {
+        try {
+            if (is_dir($dir)) {
+                $handle = opendir($dir);
+                while (($file = readdir($handle)) !== false) {
+                    if ($file != "." && $file != "..") {
+                        remove_empty_dir($dir . "/" . $file);
+                    }
+                }
+
+                if (!readdir($handle)) {
+                    @rmdir($dir);
+                }
+
+                closedir($handle);
+            }
+        } catch (\Exception $e) {
+        }
     }
 }
 
@@ -487,13 +530,7 @@ if (!function_exists('pinyin')) {
     function pinyin($chinese, bool $onlyFirst = false, string $delimiter = '', bool $ucFirst = false): string
     {
         $pinyin = new Overtrue\Pinyin\Pinyin();
-
-        if ($onlyFirst) {
-            $result = $pinyin->abbr($chinese, $delimiter);
-        } else {
-            $result = $pinyin->permalink($chinese, $delimiter);
-        }
-
+        $result = $onlyFirst ? $pinyin->abbr($chinese, $delimiter) : $pinyin->permalink($chinese, $delimiter);
         if ($ucFirst) {
             $pinyinArr = explode($delimiter, $result);
             $result = implode($delimiter, array_map('ucfirst', $pinyinArr));
@@ -631,9 +668,10 @@ if (!function_exists('saenv')) {
     {
         $redis = 'config_' . $name;
         $config = Cache::get($redis);
+
         try {
             $configList = Cache::get('config_list') ?? [];
-            if (empty($config)) {
+            if (is_array($config) ? empty($config) : is_empty($config)) {
                 $config = Config::all($name, $group);
                 if (!empty($config)) {
                     // 是否开启分组查询
@@ -645,7 +683,9 @@ if (!function_exists('saenv')) {
                     Cache::set('config_list', $configList);
                 }
             }
-        } catch (\Exception $e) {}
+
+        } catch (\Exception $e) {
+        }
         return $config;
     }
 }
@@ -654,24 +694,21 @@ if (!function_exists('system_cache')) {
     /**
      * 全局缓存控制函数
      * @param string $name
+     * @param mixed $value
      * @param null $options
      * @param null $tag
      * @return mixed
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    function system_cache(string $name = '', $value = '', $options = null, $tag = null)
+    function system_cache(string $name = '', mixed $value = '', $options = null, $tag = null)
     {
-        // 调试模式关闭缓存
-        if (getenv('APP_DEBUG') || !saenv('cache_status')) {
-            return false;
-        }
-
         if (is_null($name)) {
             return [];
         }
 
         if ('' === $value) {
             // 获取缓存
-            return 0 === strpos($name, '?') ? Cache::has(substr($name, 1)) : Cache::get($name);
+            return str_starts_with($name, '?') ? Cache::has(substr($name, 1)) : Cache::get($name);
         } elseif (is_null($value)) {
             // 删除缓存
             return Cache::delete($name);
@@ -760,7 +797,7 @@ if (!function_exists('list_search')) {
     /**
      * 从数组查找数据返回
      * @param array $list 原始数据
-     * @param array $condition 规则['id'=>'??']
+     * @param mixed $condition 规则['id'=>'??']
      * @return mixed
      */
     function list_search(array $list, array $condition)
@@ -803,7 +840,7 @@ if (!function_exists('list_to_tree')) {
      * @param int $level
      * @return mixed
      */
-    function list_to_tree($list, string $id = 'id', string $pid = 'pid', string $child = 'children', int $level = 0) : array
+    function list_to_tree($list, string $id = 'id', string $pid = 'pid', string $child = 'children', int $level = 0)
     {
         // 创建Tree
         $tree = $refer = array();
@@ -934,13 +971,13 @@ if (!function_exists('encryptPwd')) {
 // +----------------------------------------------------------------------
 // | 时间相关函数开始
 // +----------------------------------------------------------------------
-if (!function_exists('linux_extime')) {
+if (!function_exists('linux_time')) {
     /**
      * 获取某天前时间戳
      * @param  $day
      * @return int
      */
-    function linux_extime($day): int
+    function linux_time($day): int
     {
         $day = intval($day);
         return mktime(23, 59, 59, intval(date("m")), intval(date("d")) - $day, intval(date("y")));
@@ -998,7 +1035,6 @@ if (!function_exists('published_date')) {
     {
         if (!$unix) {
             $time = strtotime($time);
-
         }
 
         $currentTime = time() - $time;
@@ -1031,9 +1067,9 @@ if (!function_exists('published_date')) {
 if (!function_exists('request_validate_rules')) {
     /**
      * 自动请求验证规则
-     * @param array $data               POST数据
-     * @param string $validateClass     验证类名
-     * @param string $validateScene     验证场景
+     * @param array $data POST数据
+     * @param string $validateClass 验证类名
+     * @param string $validateScene 验证场景
      * @return mixed
      */
     function request_validate_rules(array $data = [], string $validateClass = '', string $validateScene = '')
@@ -1081,6 +1117,25 @@ if (!function_exists('check_user_third')) {
     }
 }
 
+if (!function_exists('check_admin_auth')) {
+    /**
+     * 检查admin权限
+     * @param $method
+     * @return bool
+     */
+    function check_admin_auth($method): bool
+    {
+        if (\app\admin\library\Auth::instance()->SuperAdmin()) {
+            return true;
+        }
+
+        $app = '/' . request()->app;
+        $pattern = '#^' . $app . '#';
+        $method = preg_replace($pattern, '', $method, 1);
+        return \app\admin\library\Auth::instance()->check($method, get_admin_id());
+    }
+}
+
 if (!function_exists('supplement_id')) {
     /**用户ID风格
      * @param string $id
@@ -1098,17 +1153,22 @@ if (!function_exists('createOrderId')) {
     /**
      * 生成订单号
      * @param string $letter
+     * @param int $length
      * @return string
      */
-    function createOrderId(string $letter = ''): string
+    function createOrderId(string $letter = '', int $length = 3): string
     {
         $gradual = 0;
         $orderId = date('YmdHis') . mt_rand(10000000, 99999999);
-        $length = strlen($orderId);
+        $lengths = strlen($orderId);
 
         // 循环处理随机数
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $lengths; $i++) {
             $gradual += (int)(substr($orderId, $i, 1));
+        }
+
+        if (empty($letter)) {
+            $letter = get_order_letter($length);
         }
 
         $code = (100 - $gradual % 100) % 100;
@@ -1120,13 +1180,34 @@ if (!function_exists('createOrderShortId')) {
     /**
      * 生成订单短ID
      * @param string $letter
+     * @param int $length
      * @return string
      */
-    function createOrderShortId(string $letter = ''): string
+    function createOrderShortId(string $letter = '', int $length = 5): string
     {
-        return $letter . date('Ymd') . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+        if (empty($letter)) {
+            $letter = get_order_letter($length);
+        }
+        return $letter . date('Ymd') . substr(implode('', array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 12);
     }
 }
+
+if (!function_exists('get_order_letter')) {
+    /**
+     * 生成订单短ID
+     * @param int $length
+     * @return string
+     */
+    function get_order_letter(int $length = 2): string
+    {
+        $letter_all = range('A', 'Z');
+        shuffle($letter_all);
+        $letter_array = array_diff($letter_all, ['I', 'O']);
+        $letter = array_rand(array_flip($letter_array), $length);
+        return implode('', $letter);
+    }
+}
+
 
 if (!function_exists('distance_day')) {
     /**
@@ -1156,9 +1237,9 @@ if (!function_exists('request_error')) {
      * @param string $code
      * @return string
      */
-    function request_error(string $app = 'index',string $code = '404'): string
+    function request_error(string $app = 'index', string $code = '404'): string
     {
-        switch ($app){
+        switch ($app) {
             case 'admin':
                 $exception = config('app.exception_template');
                 $_file = $exception[$code] ?? $exception['500'];
@@ -1167,7 +1248,7 @@ if (!function_exists('request_error')) {
                 $_file = public_path() . DIRECTORY_SEPARATOR . $code . '.html';
                 break;
         }
-        return is_file($_file) ? file_get_contents($_file) : $code.' error';
+        return is_file($_file) ? file_get_contents($_file) : $code . ' error';
     }
 }
 
@@ -1184,7 +1265,7 @@ spl_autoload_register(function ($class) {
 
     $pluginPath = plugin_path();
     if (!is_dir($pluginPath)) {
-        @mkdir($pluginPath,0777);
+        @mkdir($pluginPath, 0777);
     }
 
     $dirs = traverse_scanDir(plugin_path(), false);
@@ -1204,7 +1285,7 @@ if (!function_exists('plugin_path')) {
      * @param string $string
      * @return string
      */
-    function plugin_path(string $string = ''): string
+    function plugin_path(string $string = '')
     {
         return $string ? root_path('plugin' . DIRECTORY_SEPARATOR . $string) : root_path('plugin');
     }
@@ -1255,7 +1336,7 @@ if (!function_exists('get_plugin_instance')) {
      * @param string $class 当前类名
      * @return mixed
      */
-    function get_plugin_instance(string $name,string $class = '')
+    function get_plugin_instance(string $name, string $class = '')
     {
         $object = get_plugin_class($name, $class);
         return $object ? new $object : '';
@@ -1293,61 +1374,6 @@ if (!function_exists('get_plugin_list')) {
     }
 }
 
-if (!function_exists('copydirs')) {
-    /**
-     * 复制文件夹
-     * @param string $source 源文件夹
-     * @param string $dest 目标文件夹
-     */
-    function copydirs(string $source, string $dest)
-    {
-
-        if (!is_dir($dest)) {
-            mkdir($dest, 0755, true);
-        }
-
-        $handle = opendir($source);
-        while (($file = readdir($handle)) !== false) {
-            if ($file != "." && $file != "..") {
-                if (is_dir($source . "/" . $file)) {
-                    copydirs($source . "/" . $file, $dest . "/" . $file);
-                } else {
-                    copy($source . "/" . $file, $dest . "/" . $file);
-                }
-            }
-        }
-
-        closedir($handle);
-    }
-}
-
-if (!function_exists('remove_empty_dir')) {
-    /**
-     * 删除空目录
-     * @param string $dir 目录
-     */
-    function remove_empty_dir(string $dir)
-    {
-        try {
-            if (is_dir($dir)) {
-                $handle = opendir($dir);
-                while (($file = readdir($handle)) !== false) {
-                    if ($file != "." && $file != "..") {
-                        remove_empty_dir($dir . "/" . $file);
-                    }
-                }
-
-                if (!readdir($handle)) {
-                    @rmdir($dir);
-                }
-
-                closedir($handle);
-            }
-        } catch (\Exception $e) {
-        }
-    }
-}
-
 if (!function_exists('get_plugin_config')) {
     /**
      * 获取插件配置
@@ -1360,7 +1386,7 @@ if (!function_exists('get_plugin_config')) {
     {
         $array = [];
         $cache = sha1('PLUGIN_' . $name);
-        if (!$force || !getenv('APP_DEBUG')) {
+        if (!$force || !get_env('APP_DEBUG')) {
             if ($array = Cache::get($cache)) {
                 return $array;
             }
@@ -1423,7 +1449,7 @@ if (!function_exists('get_plugin_menu_entry')) {
                     continue;
                 }
 
-                $file = plugin_path($item['name']) . 'data/'.$type.'.html';
+                $file = plugin_path($item['name']) . 'data/' . $type . '.html';
                 if (is_file($file)) {
                     $quickEntry .= file_get_contents($file) . PHP_EOL;
                 }

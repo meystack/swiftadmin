@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+
 
 namespace app\common\model\system;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -80,20 +80,18 @@ class User extends Model
      */
     public function getAvatarAttr(string $value, array $data): string
     {
-        
         if ($value && strpos($value,'://')) {
             return $value;
-        }
-        
-        if (empty($value)) {
-            $value = '/static/images/user_default.jpg';
         }
 
         $prefix = cdn_Prefix();
         if (!empty($prefix) && $value) {
-            if (!str_contains($value,'data:image')) { 
+            if (!str_contains($value,'data:image')
+                && !str_contains($value,'http')) {
                 return $prefix.$value;
             }
+        } else if (empty($value)) {
+            $value =  '/static/images/user_default.jpg';
         }
 
         return $value;

@@ -400,7 +400,8 @@ class Index extends AdminController
                 return $this->error($th->getMessage());
             }
 
-            // 清理系统缓存
+            // 清理系统核心缓存
+            Cache::tag('core_system')->clear();
             $configList = Cache::get('config_list');
             foreach ($configList as $item) {
                 Cache::delete($item);

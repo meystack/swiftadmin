@@ -20,9 +20,8 @@ class ExceptionHandle extends ExceptionHandler
     ];
 
     /**
-     *
+     * 异常日志记录
      * @param Throwable $exception
-     * @return void|mixed
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
@@ -30,8 +29,8 @@ class ExceptionHandle extends ExceptionHandler
     public function report(Throwable $exception)
     {
         try {
-            if (saenv('system_exception')
-                && !empty($exception->getMessage())) {
+
+            if (saenv('system_exception') && !empty($exception->getMessage())) {
                 $data = [
                     'module'     => request()->app,
                     'controller' => request()->controller,
@@ -65,9 +64,12 @@ class ExceptionHandle extends ExceptionHandler
      */
     public function render(Request $request, Throwable $exception): Response
     {
-        if (!file_exists(root_path(). '.env')) {
+        if ($exception instanceof \RuntimeException) {
+            return \response($exception->getMessage());
+        }
+        if (!file_exists(root_path() . '.env')) {
             return parent::render($request, $exception);
         }
-        return getenv('APP_DEBUG') ? parent::render($request, $exception) : view(config('app.exception_tpl'), ['trace' => $exception]);
+        return get_env('APP_DEBUG') ? parent::render($request, $exception) : view(config('app.exception_tpl'), ['trace' => $exception]);
     }
 }

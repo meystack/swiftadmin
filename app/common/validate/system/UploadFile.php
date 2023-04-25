@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+
 
 namespace app\common\validate\system;
 
@@ -16,7 +16,7 @@ class UploadFile extends Validate
 	public $rule = [
 		'images'=>[
 			'fileSize' => 419430400,
-			'fileExt' => 'jpg,jpeg,png,bmp,gif,svg',
+			'fileExt' => 'jpg,jpeg,png,bmp,gif,svg,webp',
 			'fileMime' => 'image/jpeg,image/png,image/gif,image/svg+xml'],
 		'video'=>[
 			'fileSize' => 419430400,

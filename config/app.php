@@ -16,7 +16,7 @@ use support\Request;
 
 return [
 
-    'debug'              => getenv('APP_DEBUG') ?: false,
+    'debug'              => get_env('APP_DEBUG') ?: false,
     'support_php_files'  => false,
     'controller_reuse'   => true,
     'default_timezone'   => 'Asia/Shanghai',
@@ -38,7 +38,7 @@ return [
     'dispatch_success' => app_path() . '/admin/view/public/jumptpl.html',
     'exception_tpl'    => app_path() . '/admin/view/error/500.html',
     'error_message'    => '页面错误！请稍后再试～',
-    'version'          => 'v1.1.5',
+    'version'          => 'v1.1.6',
     'cors_domain'      => ['*', '127.0.0.1'],
     'api_url'          => 'https://api.swiftadmin.net/',
     'show_error_msg'   => false,

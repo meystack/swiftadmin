@@ -30,6 +30,13 @@ class Index extends HomeController
      */
     public function index(): Response
     {
+        $data = [
+            '欢迎使用swiftAdmin极速开发框架',
+            __DIR__.'\Index.php 正在使用halt函数输出到浏览器',
+            '请在app\index\controller\Index.php中删除halt函数',
+        ];
+
+        halt($data);
         return $this->view('index/index', ['name' => 'meystack']);
     }
 }

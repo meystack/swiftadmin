@@ -17,7 +17,7 @@ use DateTime;
 use DateTimeInterface;
 use Opis\Closure\SerializableClosure;
 use Psr\SimpleCache\CacheInterface;
-use think\cache\exception\InvalidArgumentException;
+use think\exception\InvalidArgumentException;
 use think\Container;
 
 /**

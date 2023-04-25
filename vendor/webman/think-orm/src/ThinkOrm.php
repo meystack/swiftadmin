@@ -29,10 +29,15 @@ class ThinkOrm implements Bootstrap
                 $manager_instance = $property->getValue();
             }
             Timer::add(55, function () use ($manager_instance) {
-                $reflect = new \ReflectionClass($manager_instance);
-                $property = $reflect->getProperty('instance');
-                $property->setAccessible(true);
-                $instances  = $property->getValue($manager_instance);
+                $instances = [];
+                if (method_exists($manager_instance, 'getInstance')) {
+                    $instances = $manager_instance->getInstance();
+                } else {
+                    $reflect = new \ReflectionClass($manager_instance);
+                    $property = $reflect->getProperty('instance');
+                    $property->setAccessible(true);
+                    $instances = $property->getValue($manager_instance);
+                }
                 foreach ($instances as $connection) {
                     /* @var \think\db\connector\Mysql $connection */
                     if ($connection->getConfig('type') == 'mysql') {

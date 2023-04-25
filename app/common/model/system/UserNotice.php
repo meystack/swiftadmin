@@ -40,5 +40,4 @@ class UserNotice extends Model
         // 钩子消息推送
         Event::emit('sendUserNotice', $data);
     }
-
 }

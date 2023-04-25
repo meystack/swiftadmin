@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+
 // +----------------------------------------------------------------------
 // | swiftAdmin 极速开发框架 [基于WebMan开发]
 // +----------------------------------------------------------------------
@@ -14,7 +14,11 @@ namespace app\admin\controller;
 use app\AdminController;
 use app\common\library\ResultCode;
 use app\common\library\Upload;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 /**
  * Ajax类
@@ -23,6 +27,15 @@ use support\Response;
  */
 class Ajax extends AdminController
 {
+    /**
+     * 初始化方法
+     * @return void
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
     /**
      * 测试接口
      * @return Response
@@ -51,6 +64,10 @@ class Ajax extends AdminController
     /**
      * 远程下载图片
      * @return Response
+     * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getImage(): Response
     {

@@ -24,7 +24,7 @@ Use [Composer](https://getcomposer.org/) to install the library. Also make sure 
 [GD extension](https://www.php.net/manual/en/book.image.php) if you want to generate images.
 
 ``` bash
-$ composer require endroid/qr-code
+ composer require endroid/qr-code
 ```
 
 ## Usage: using the builder
@@ -113,10 +113,32 @@ $dataUri = $result->getDataUri();
 
 ### Writer options
 
+Some writers provide writer options. Each available writer option is can be
+found as a constant prefixed with WRITER_OPTION_ in the writer class.
+
+* `PdfWriter`
+  * `unit`: unit of measurement (default: mm)
+  * `fpdf`: PDF to place the image in (default: new PDF)
+  * `x`: image offset (default: 0)
+  * `y`: image offset (default: 0)
+* `PngWriter`
+  * `compression_level`: compression level (0-9, default: -1 = zlib default)
+* `SvgWriter`
+  * `block_id`: id of the block element for external reference (default: block)
+  * `exclude_xml_declaration`: exclude XML declaration (default: false)
+  * `exclude_svg_width_and_height`: exclude width and height (default: false)
+  * `force_xlink_href`: forces xlink namespace in case of compatibility issues (default: false)
+* `WebPWriter`
+  * `quality`: image quality (0-100, default: 80)
+
+You can provide any writer options like this.
+
 ```php
 use Endroid\QrCode\Writer\SvgWriter;
 
-$builder->setWriterOptions([SvgWriter::WRITER_OPTION_EXCLUDE_XML_DECLARATION => true]);
+$builder->setWriterOptions([
+    SvgWriter::WRITER_OPTION_EXCLUDE_XML_DECLARATION => true
+]);
 ```
 
 ### Encoding

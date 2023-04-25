@@ -82,7 +82,7 @@ namespace think\facade {
          * @throws \think\db\exception\BindParamException
          * @throws \PDOException
          */
-        public function query(string $sql, array $bind = []): array
+        public static function query(string $sql, array $bind = []): array
         {
             /** @var \think\Db $instance */
             return $instance->query($sql,$bind);
@@ -108,7 +108,7 @@ namespace think\facade {
          * @throws \think\db\exception\BindParamException
          * @throws \PDOException
          */
-        public function execute(string $sql, array $bind = []): int
+        public static function execute(string $sql, array $bind = []): int
         {
             /** @var \think\Db $instance */
             return $instance->execute($sql,$bind);

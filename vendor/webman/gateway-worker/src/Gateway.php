@@ -3,6 +3,11 @@ namespace Webman\GatewayWorker;
 
 class Gateway extends \GatewayWorker\Gateway
 {
+    /**
+     * @var string 
+     */
+    protected $_autoloadRootPath = '';
+    
     public function __construct($config)
     {
         foreach ($config as $key => $value)

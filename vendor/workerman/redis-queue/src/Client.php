@@ -22,6 +22,7 @@ use Workerman\Redis\Client as Redis;
  * Class Client
  * @package Workerman\RedisQueue
  */
+#[\AllowDynamicProperties]
 class Client
 {
     /**

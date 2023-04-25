@@ -16,8 +16,10 @@ class Util
 
     public static function classToName($class)
     {
-        $inflector = InflectorFactory::create()->build();
-        return $inflector->pluralize($inflector->tableize($class));
+        $class = lcfirst($class);
+        return preg_replace_callback(['/([A-Z])/'], function ($matches) {
+            return '_' . strtolower($matches[1]);
+        }, $class);
     }
 
     public static function nameToClass($class)
@@ -59,6 +61,6 @@ class Util
             }
         }
         $realname = implode(DIRECTORY_SEPARATOR, $realname);
-        return $return_full_path ? realpath($base_path . DIRECTORY_SEPARATOR . $realname) : $realname;
+        return $return_full_path ? get_realpath($base_path . DIRECTORY_SEPARATOR . $realname) : $realname;
     }
 }

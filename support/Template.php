@@ -20,13 +20,14 @@ class Template extends ThinkPHP
      * @param string $template
      * @param array $vars
      * @param string|null $app
-     * @return array|false|string|string[]|null
+     * @param string|null $plugin
+     * @return string
      * @throws DataNotFoundException
      * @throws DbException
      * @throws InvalidArgumentException
      * @throws ModelNotFoundException
      */
-    public static function render(string $template, array $vars, string $app = null)
+    public static function render(string $template, array $vars, string $app = null, string $plugin = null): string
     {
         $content = parent::render($template, $vars, $app);
         if (saenv('minify_page')) {

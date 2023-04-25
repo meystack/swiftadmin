@@ -25,7 +25,7 @@
 </style>
 <div class="layui-col-md3">
     <div class="layui-fluid" >
-        <div class="layui-card" style="height: 500px">
+        <div class="layui-card" style="padding-bottom: 20px">
             <div class="layui-card-header layadmin-card-header-auto">
                 <h5> <i class="layui-icon layui-icon-user"></i> {:__('公司结构')}</h5>
             </div>
@@ -185,9 +185,11 @@
 </script>
 
 <!-- // 列表编辑框 -->
-<script type="text/html" id="tableBar"> 
+<script type="text/html" id="tableBar">
+    <if (check_admin_auth(url("/system/admin/edit")))>
     <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="710px,550px" lay-event="edit" >{:__('编辑')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
+    </if>
     <a class="layui-table-text" data-title="{:__('访问权限')}"
         callback="rulecates" data-url="#authForms" data-area="300px" lay-event="rules" >{:__('权限')}</a>
     <div class="layui-divider layui-divider-vertical"></div>

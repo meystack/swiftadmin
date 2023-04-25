@@ -68,7 +68,7 @@ class Wincache extends Driver
      * @param  mixed  $default 默认值
      * @return mixed
      */
-    public function get($name, $default = false)
+    public function get($name, $default = null)
     {
         $this->readTimes++;
 

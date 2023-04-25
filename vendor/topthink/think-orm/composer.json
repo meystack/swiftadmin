@@ -1,6 +1,6 @@
 {
     "name": "topthink/think-orm",
-    "description": "think orm",
+    "description": "the PHP Database&ORM Framework",
     "keywords": [
         "orm",
         "database"
@@ -13,11 +13,11 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=8.0.0",
         "ext-json": "*",
         "ext-pdo": "*",
-        "psr/simple-cache": "^1.0|^2.0",
-        "psr/log": "^1.0|^2.0",
+        "psr/simple-cache": ">=1.0",
+        "psr/log": ">=1.0",
         "topthink/think-helper":"^3.1"
     },
     "require-dev": {

@@ -1,5 +1,5 @@
 <?php
-declare (strict_types = 1);
+
 
 namespace app\common\library;
 
@@ -22,7 +22,7 @@ class DataBase {
             $sql = file_get_contents($sqlPath);
             $sqlRecords = str_ireplace("\r", "\n", $sql);
             $sqlRecords = explode(";\n", $sqlRecords);
-            $sqlRecords = str_replace("__PREFIX__", getenv('DATABASE_PREFIX'), $sqlRecords);
+            $sqlRecords = str_replace("__PREFIX__", get_env('DATABASE_PREFIX'), $sqlRecords);
             foreach ($sqlRecords as $line) {
                 if (empty($line)) {
                     continue;
@@ -49,7 +49,7 @@ class DataBase {
             preg_match_all($regex, file_get_contents($sqlFile), $matches);
             if (isset($matches[2])) {
                 foreach ($matches[2] as $match) {
-                    $tables[] = str_replace('__PREFIX__', getenv('DATABASE_PREFIX'), $match);
+                    $tables[] = str_replace('__PREFIX__', get_env('DATABASE_PREFIX'), $match);
                 }
             }
         }

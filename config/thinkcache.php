@@ -1,6 +1,6 @@
 <?php
 return [
-    'default' => getenv('CACHE_DRIVER') ?: 'file',
+    'default' => get_env('CACHE_DRIVER') ?: 'file',
     'stores'  => [
         'file'  => [
             'type'   => 'File',
@@ -13,10 +13,10 @@ return [
         ],
         'redis' => [
             'type'     => 'redis',
-            'host'     => getenv('CACHE_HOSTNAME') ?: '127.0.0.1',
-            'port'     => getenv('CACHE_HOSTPORT') ?: 6379,
-            'select'   => getenv('CACHE_SELECT') ?: 0,
-            'password' => getenv('CACHE_PASSWORD') ?: '',
+            'host'     => get_env('CACHE_HOSTNAME') ?: '127.0.0.1',
+            'port'     => get_env('CACHE_HOSTPORT') ?: 6379,
+            'select'   => get_env('CACHE_SELECT') ?: 0,
+            'password' => get_env('CACHE_PASSWORD') ?: '',
             'prefix'   => 'redis_',
             'expire'   => 0,
         ],

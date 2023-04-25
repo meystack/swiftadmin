@@ -75,7 +75,6 @@
                         </select>
                     </div>
 
-
                     <div class="layui-inline">
                         <div class="layui-form-label">{:__('账号')}</div>
                         <div class="layui-input-inline ">
@@ -86,6 +85,10 @@
                         <!-- // 默认搜索 -->
                         <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i
                                 class="layui-icon layui-icon-search"></i>{:__('搜索')}
+                        </button>
+                        <!-- // 默认导出 -->
+                        <button class="layui-btn icon-btn" lay-ajax="" data-url="{:url('/system/LoginLog/export')}" data-jump="true" ><i
+                                class="layui-icon layui-icon-export"></i>{:__('导出')}
                         </button>
                         <!-- // 删除所有 -->
                         <button class="layui-btn icon-btn layui-btn-danger" lay-batch="" data-table="lay-tableList"  data-url="{:url('/system/LoginLog/del')}" >

@@ -42,7 +42,7 @@
                 <input name="captcha" placeholder="{:__('请输入验证码')}" type="text" class="layui-input" autocomplete="off" lay-verify="required" maxlength="10"/>
             </div>
             <button id="send" class="layui-btn layui-btn-normal" type="button"
-                    lay-ajax data-url="/ajax/smssend" data-object="mobile:string,event:event">{:__('获取')}
+                    lay-ajax data-url="/ajax/smsSend" data-object="mobile:string,event:event">{:__('获取')}
             </button>
         </div>
         <div class="layui-form-item">
@@ -73,7 +73,7 @@
             if (regx.test(val)) {
                 string.attr('name','mobile');
                 send.attr('data-object','mobile:string,event:event');
-                send.attr('data-url','/ajax/smssend');
+                send.attr('data-url','/ajax/smsSend');
             } else {
                 string.attr('name','email');
                 send.attr('data-object','email:string,event:event');

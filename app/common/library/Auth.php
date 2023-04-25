@@ -35,7 +35,7 @@ class Auth
     /**
      * 用户ID
      */
-    public int $user_id = 0;
+    public mixed $user_id = 0;
 
     /**
      * 用户数据
@@ -103,7 +103,7 @@ class Auth
 
         // 禁止批量注册
         $where[] = ['create_ip', '=', request()->getRealIp()];
-        $where[] = ['create_time', '>', linux_extime(1)];
+        $where[] = ['create_time', '>', linux_time(1)];
         $totalMax = UserModel::where($where)->count();
 
         if ($totalMax >= saenv('user_register_second')) {

@@ -580,10 +580,10 @@ a[lay-event="del"] {
 
 #content #cardInfoList .cardInfoUsers li {
 	display: inline-block;
-	width: 92px;
+	width: 89px;
 	text-align: center;
 	overflow: hidden;
-	margin: 2px 0px;
+	margin: 2px 0;
 }
 
 #content #cardInfoList .cardInfoUsers li img.media-object {
@@ -792,14 +792,13 @@ a[lay-event="del"] {
 }
 
 #content .vip-coupon-row {
-	overflow: auto;
+	overflow: hidden;
 	white-space: nowrap;
 }
 
 #content .vip-coupon-item {
-	padding: 0 10px;
 	margin-top: 20px;
-	padding-right: 15px;
+	padding: 0 15px 0 10px;
 	display: inline-block;
 	border-right: 1px solid rgba(0,0,0,.16);
 }

@@ -59,14 +59,21 @@ Route::any('/static/system/js/plugin.js', function () {
  * @var array $response
  */
 Route::fallback(function ($request) {
+
     $pathInfo = parse_url(request()->url());
     if (!isset($pathInfo['path'])) {
         $parseApp = ['index'];
+    } elseif ($pathInfo['path'] == '/') {
+        // 默认应用路由
+        return redirect('/index');
     } else {
         $parseApp = explode('/', ltrim($pathInfo['path'], '/'));
     }
+
+    // 判断是否为API接口
     if ($request->expectsJson()) {
         return json(['code' => 404, 'msg' => '404 not found']);
     }
+
     return response(request_error(current($parseApp)), 404);
 });

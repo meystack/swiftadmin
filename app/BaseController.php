@@ -381,8 +381,10 @@ class BaseController
             $columns = Db::query("SHOW FULL COLUMNS FROM {$table}");
             $titles = array_column($columns, 'Comment', 'Field');
             $data = $this->model->limit($limit)->page($page)->select()->toArray();
+            if (empty($data)) {
+                return $this->error('没有可导出的数据！');
+            }
             $folder = date('Y-m-d', time());
-
             // 使用表注释为文件名称
             $tableInfo = Db::query("SHOW TABLE STATUS LIKE '{$table}'");
             $Comment = $tableInfo[0]['Comment'] ?: '数据_';

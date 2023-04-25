@@ -1136,6 +1136,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                     type = $(elem).data('type') || 'normal',
                     size = $(elem).data('size') || 102400,
                     accept = $(elem).data('accept') || 'images',
+                    chunk = $(elem).data('chunk') || false,
                     multiple = $(elem).data('multiple') || false,
                     chunkSize = typeof _upload_chunkSize != 'undefined' ? _upload_chunkSize : '2097152',
                     callback = $(elem).attr('callback') || undefined,
@@ -1189,8 +1190,8 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                 layer.error('文件大小超过限制，最大不超过' + size + 'KB');
                                 return false;
                             }
-
-                            if (file.size <= chunkSize) {
+                            // 使用data-chunk="close"关闭分片上传
+                            if (file.size <= chunkSize || chunk === 'close') {
                                 obj.upload(index, file)
                                 delete files[index];
                             } else {

@@ -137,8 +137,8 @@ if (!function_exists('get_env')) {
     {
         $dir = str_replace('\\', '/', realpath(__DIR__ . '/../'));
         $env_path = $dir . '/.env';
-        $env_info = [];
-        if (is_file($env_path)) {
+        static $env_info = [];
+        if (is_file($env_path) && !$env_info) {
             $env_info = parse_ini_file($env_path, true);
         }
         return $env_info[$var] ?? '';

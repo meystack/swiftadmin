@@ -1157,7 +1157,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                     multiple: function (res, name) {
                         let boxList = $(that).parents('.layui-imagesbox').find('.layui-input-inline');
                         let length = boxList.length;
-                        $(this).parents('form').find('input#' + name + '_clear').remove();
+                        that.parents('form').find('input#' + name + '_clear').remove();
                         $(boxList).each(function (i, item) {
                             $(item).find('input.layui-hide').prop('name', name + '[' + i + '][src]');
                             $(item).find('input.layui-input').prop('name', name + '[' + i + '][title]');

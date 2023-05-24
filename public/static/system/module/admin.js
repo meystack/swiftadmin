@@ -1351,6 +1351,24 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 var propsValue = $(elem).data('value') || 'value';
                 var parents = $(elem).data('parents') || false;
 
+                let option_data=[];
+                let tip=$(elem).data('tip') || '请按照级别引导选择';
+                let url = $(elem).data('url'); //获取数据的url
+                let params = $(elem).data('params'); //需要上传的参数
+                if(typeof url != 'undefined' && url)
+                {
+                    let listdata = admin.event.ajax(url,params);
+                    if(listdata.code==200)
+                    {
+                        option_data=listdata.data;
+                    }else {
+                        layer.msg('字段 '+ name + ' 获取数据失败，网址返回错误信息 '+listdata.msg,{icon: 3,time:5000})
+                    }
+                }else {
+                    option_data=cascader_data; //默认为地区数据
+                }
+
+
                 if (typeof value != 'undefined' && value) {
                     value = value.split('/');
                     value = value[value.length - 1];
@@ -1360,13 +1378,14 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 elObj[index] = cascader({
                     elem: elem,
                     value: value,
+                    placeholder:tip,
                     clearable: true,
                     filterable: true,
                     showAllLevels: parents,
                     props: {
                         value: propsValue
                     },
-                    options: cascader_data
+                    options: option_data
                 });
 
                 elObj[index].changeEvent(function (value, node) {

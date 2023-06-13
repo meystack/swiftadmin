@@ -295,6 +295,19 @@ class Plugin extends AdminController
         if (request()->isPost()) {
             $post['extends'] = input('extends');
             $post['rewrite'] = input('rewrite');
+            foreach ($post['rewrite'] as $kk=>$vv)
+            {
+                if($kk[0]!='/')return $this->error('伪静态变量名称“'.$kk.'" 必须以“/”开头');
+                $post['rewrite'][$kk]=str_replace('\\','/',trim($vv,'/\\'));
+                $value=explode('/',$post['rewrite'][$kk]);
+                if(count($value)<2){
+                    return $this->error('伪静态规则变量值，不符合规则');
+                }
+                if(strtoupper($value[count($value)-2][0]) !== $value[count($value)-2][0])
+                {
+                    return $this->error('伪静态规则变量值中，控制器首字母必须大写哦');
+                }
+            }
             $config = array_merge($config, $post);
             try {
                 set_plugin_config($name, $config);

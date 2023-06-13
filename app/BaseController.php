@@ -204,7 +204,8 @@ class BaseController
      */
     protected function getResponseType(): string
     {
-        return request()->isAjax() || request()->acceptJson() ? 'json' : 'html';
+        $mask=request()->input('_ajax')==1 ||request()->input('_pjax')==1;
+        return request()->isAjax() || request()->acceptJson() || $mask ? 'json' : 'html';
     }
 
     /**

@@ -49,7 +49,7 @@ CREATE TABLE `__PREFIX__admin`  (
   `delete_time` int(11) NULL DEFAULT NULL COMMENT '软删除标识',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `id`(`id`) USING BTREE,
-  INDEX `name`(`name`) USING BTREE,
+  UNIQUE INDEX `name`(`name`) USING BTREE,
   INDEX `pwd`(`pwd`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '后台管理员表' ROW_FORMAT = DYNAMIC;
 
@@ -76,8 +76,7 @@ CREATE TABLE `__PREFIX__admin_access`  (
 -- Records of __PREFIX__admin_access
 -- ----------------------------
 INSERT INTO `__PREFIX__admin_access` VALUES (1, '1', '5,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,115,116', NULL);
-INSERT INTO `__PREFIX__admin_access` VALUES (2, '2', '5,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,115,116', '8');
-INSERT INTO `__PREFIX__admin_access` VALUES (3, '1', NULL, NULL);
+INSERT INTO `__PREFIX__admin_access` VALUES (2, '2', '5,11,12,13,15,16,17,18,19,20,21,22,23,24,25,26,115,116', NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_group
@@ -104,7 +103,7 @@ CREATE TABLE `__PREFIX__admin_group`  (
 -- Records of __PREFIX__admin_group
 -- ----------------------------
 INSERT INTO `__PREFIX__admin_group` VALUES (1, 0, 1, '超级管理员', 'admin', 1, 1, '网站超级管理员组的', '100,107,108,109,110,111,112', NULL, 'layui-bg-blue', 1607832158, NULL);
-INSERT INTO `__PREFIX__admin_group` VALUES (2, 1, 2, '网站编辑', 'editor', 1, 1, '负责公司软文的编写', '', '5', 'layui-bg-cyan', 1607832158, NULL);
+INSERT INTO `__PREFIX__admin_group` VALUES (2, 1, 2, '网站编辑', 'editor', 1, 1, '负责公司软文的编写', '', NULL, 'layui-bg-cyan', 1607832158, NULL);
 
 -- ----------------------------
 -- Table structure for __PREFIX__admin_log

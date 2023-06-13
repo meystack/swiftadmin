@@ -36,7 +36,7 @@ class Index extends BaseController
 
             // 检测生产环境
             foreach ($this->checkEnv() as $key => $value) {
-                if ($key == 'php' && (float)$value < 7.3) {
+                if ($key == 'php' && (float)$value < 8.0.0) {
                     return $this->error('PHP版本过低！');
                 }
             }

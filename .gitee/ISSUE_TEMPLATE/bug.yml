@@ -1,0 +1,40 @@
+name: 问题反馈
+description: 使用 SwiftAdmin 过程中遇到的 Bug、异常或其他困惑。
+title: ""
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        在反馈问题之前，请确保：
+        - 您已查看官方使用文档：**https://doc.swiftadmin.net** ，但没有找到相关解决方案。 
+        - 您已在 Issues 中搜索过类似的问题，但没有找到相关解决方案。
+  - type: input
+    attributes:
+        label: 版本号
+        placeholder: 请提供您所使用的 SwiftAdmin 版本号
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 问题描述
+      placeholder: 请提供尽可能详细的问题描述和具体操作步骤等信息，以便我们也能够更轻松地将问题复现。
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 业务代码
+      placeholder: 请提供与该问题对应的业务代码片段，以便我们更好地排查问题。
+      render: html
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 截图补充
+      placeholder: 若上述无法准确地表述问题，可提供必要的截图（支持粘贴上传）
+  - type: checkboxes
+    attributes:
+      label: 友好承诺
+      options:
+        - label: 我承诺将本着相互尊重、理解和友善的态度进行交流，共同维护 SwiftAdmin 良好的社区氛围。
+          required: true

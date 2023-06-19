@@ -8,7 +8,7 @@
 // | Author: meystack <coolsec@foxmail.com> Apache 2.0 License Code
 // +----------------------------------------------------------------------
 
-layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'slider', 'upload', 'laydate', 'dropdown', 'colorpicker', 'cascader', 'content', 'tags'], function (exports) {
+layui.define(['jquery', 'i18n', 'element', 'layer', 'form','notice', 'rate', 'table', 'slider', 'upload', 'laydate', 'dropdown', 'colorpicker', 'cascader', 'content', 'tags'], function (exports) {
 
     "use strict";
     let $ = layui.jquery;
@@ -22,6 +22,7 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
     let laydate = layui.laydate;
     let cascader = layui.cascader;
     let upload = layui.upload;
+    let notice = layui.notice;
     let content = layui.content;
     let colorpicker = layui.colorpicker;
 
@@ -435,7 +436,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         , flowOpen: function (n, that) {
 
             if (typeof that === "undefined") {
-                return layer.msg(i18n.prop('未定义'), 'info');
+                notice.info({
+                    message: i18n.prop('未定义')
+                })
+                return false;
             }
 
             var elemWidth = 0, client = that[0].getBoundingClientRect();
@@ -773,7 +777,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                                     othat.attr("disabled", false);
                                 },
                                 error: function (res) {
-                                    layer.msg(i18n.prop('访问方法失败'), 'error');
+                                    notice.error({
+                                        message: i18n.prop('访问方法失败')
+                                    })
+                                    return false;
                                 }
                             })
 
@@ -867,7 +874,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                         }
                     },
                     error: function (res) {
-                        layer.msg(i18n.prop('访问方法失败'), 'error');
+                        notice.error({
+                            message: i18n.prop('访问方法失败')
+                        })
+                        return false;
                     }
                 })
 
@@ -908,8 +918,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             if (typeof eval(funcObj) === "function") {
                 return eval(funcObj)(clickThis, collection);
             } else {
-                layer.msg(i18n.prop('回调函数错误'), 'error');
-                return false;
+                notice.error({
+                    message: i18n.prop('回调函数错误')
+                })
             }
         }
     }
@@ -922,8 +933,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
 
         var curl = $(othis).attr('data-url');
         if (typeof curl == 'undefined') {
-            layer.msg(i18n.prop('URL未定义'), 'error');
-            throw 'lay-ajax url undefined';
+            notice.info({
+                message: i18n.prop('URL未定义')
+            })
+            return false;
         }
 
         if (curl.indexOf(_global_.app) !== -1) {
@@ -965,7 +978,10 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 if (typeof router.supersAdmin !== undefined) {
                     if (router.supersAdmin === false
                         && curl.indexOf('://') === -1 && !recursive(router.authorities)) {
-                        layer.msg(i18n.prop('无权操作'), 'error');
+                        notice.error({
+                            message: i18n.prop('无权操作')
+                        })
+                        return false;
                     }
                 }
             } catch (e) {
@@ -1355,19 +1371,19 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
                 let tip=$(elem).data('tip') || '请按照级别引导选择';
                 let url = $(elem).data('url'); //获取数据的url
                 let params = $(elem).data('params'); //需要上传的参数
-                if(typeof url != 'undefined' && url)
-                {
-                    let listdata = admin.event.ajax(url,params);
-                    if(listdata.code==200)
-                    {
-                        option_data=listdata.data;
-                    }else {
-                        layer.msg('字段 '+ name + ' 获取数据失败，网址返回错误信息 '+listdata.msg,{icon: 3,time:5000})
+                if (typeof url != 'undefined' && url) {
+                    let listData = admin.event.ajax(url, params);
+                    if (listData.code === 200) {
+                        option_data = listData.data;
+                    } else {
+                        layer.msg('字段 ' + name + ' 获取数据失败，网址返回错误信息 ' + listData.msg, {
+                            icon: 3,
+                            time: 5000
+                        })
                     }
-                }else {
-                    option_data=cascader_data; //默认为地区数据
+                } else {
+                    option_data = cascader_data; //默认为地区数据
                 }
-
 
                 if (typeof value != 'undefined' && value) {
                     value = value.split('/');
@@ -1582,7 +1598,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         }
 
         if (typeof _url === 'undefined') {
-            layer.msg(i18n.prop('远程URL未定义'), 'error');
+            notice.error({
+                message: i18n.prop('远程URL未定义')
+            })
             return false;
         }
 
@@ -1789,7 +1807,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
             , tips = '确定要批量操作';
 
         if (tableId === null || tableId === undefined) {
-            layer.msg(i18n.prop('表格ID未定义'), 'error');
+            notice.error({
+                message: i18n.prop('表格ID未定义')
+            })
             return false;
         }
 
@@ -1799,7 +1819,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         }
 
         if (list.data.length === 0) {
-            layer.msg(i18n.prop('请勾选数据'), 'error');
+            notice.info({
+                message: i18n.prop('请勾选数据')
+            })
             return false;
         }
 
@@ -1836,7 +1858,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         try {
             if (typeof router.supersAdmin !== undefined) {
                 if (router.supersAdmin === false && event === undefined) {
-                    layer.msg(i18n.prop('无权操作'), 'error');
+                    notice.error({
+                        message: i18n.prop('无权操作')
+                    })
                     throw '没有权限';
                 }
             }
@@ -2196,7 +2220,9 @@ layui.define(['jquery', 'i18n', 'element', 'layer', 'form', 'rate', 'table', 'sl
         var options = this.options;
 
         if (!res.url) {
-            layer.msg(i18n.prop('菜单的地址不能为空'));
+            notice.error({
+                message: i18n.prop('菜单的地址不能为空')
+            })
             return;
         }
 

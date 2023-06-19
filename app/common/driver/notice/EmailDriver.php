@@ -211,14 +211,29 @@ class EmailDriver
      */
     public function testEmail(array $config = []): bool
     {
-        $this->config = array_merge($this->config, $config);
-        $this->mail->Host = $this->config['smtp_host'];
-        $this->mail->Port = $this->config['smtp_port'];
-        $this->mail->Username = $this->config['smtp_user'];
-        $this->mail->Password = trim($this->config['smtp_pass']);
-        $this->mail->SetFrom($this->config['smtp_user'], $this->config['smtp_name']);
-        if (!$this->address($config['smtp_test'])->Subject("测试邮件")->MsgHTML("如果您看到这封邮件，说明测试成功了！")->send()) {
-            throw new Exception($this->mail->ErrorInfo);
+        $mail = new PHPMailer();
+        $mail->CharSet = 'UTF-8';
+        $mail->IsSMTP();
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = 'ssl';
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true
+            )
+        );
+
+        $mail->Host = $config['smtp_host'];
+        $mail->Port = $config['smtp_port'];
+        $mail->Username = $config['smtp_user'];
+        $mail->Password = trim($config['smtp_pass']);
+        $mail->SetFrom($config['smtp_user'], $config['smtp_name']);
+        $mail->Subject = "测试邮件";
+        $mail->MsgHTML("如果您看到这封邮件，说明测试成功了！");
+        $mail->addAddress($config['smtp_test']);
+        if (!$mail->send()) {
+            throw new Exception($mail->ErrorInfo);
         }
 
         return true;

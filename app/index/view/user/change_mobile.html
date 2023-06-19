@@ -1,0 +1,30 @@
+<layout name="layout:layout"/>
+<!-- 内容主体区域 -->
+<div id="content">
+    <div class="layui-fluid">
+        <form class="layui-form layui-form-fixed" action="/index/user/changeMobile">
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('手机号')}</label>
+                <div class="layui-input-inline" style="width: 265px">
+                    <input name="mobile" placeholder="{:__('请输入号码')}" type="text" class="layui-input mobile"
+                           autocomplete="off" lay-verify="required|phone"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">{:__('验证码')}</label>
+                <div class="layui-input-inline">
+                    <input name="captcha" placeholder="{:__('请输入验证码')}" type="text" class="layui-input"
+                           autocomplete="off" lay-verify="required" maxlength="10"/>
+                </div>
+                <button class="layui-btn layui-btn-normal" type="button" lay-ajax data-url="/api/ajax/smsSend"
+                        data-object="mobile:mobile,event:event">{:__('获取')}
+                </button>
+            </div>
+            <input type="text" hidden name="event" class="event" value="change">
+            <div class="layui-footer layui-form-item layui-center">
+                <button class="layui-btn layui-btn-primary" type="button" sa-event="closeDialog">{:__('取消')}</button>
+                <button class="layui-btn layui-btn-normal" data-reload="parent" lay-filter="submitIframe" lay-submit>{:__('提交')}</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,477 @@
+/**
+  * 用户登录样式表
+  @ author: meystack
+  @ version: 1.0.0
+ */
+body {
+    color: #1a1a1a;
+    background-size: cover;
+    background-image: url("/static/images/background.svg");
+    background-color: #e9f0f4;
+}
+
+a {
+    text-decoration: none
+}
+
+.fl {
+    float: left
+}
+
+.fr {
+    float: right
+}
+
+.pb0 {
+    padding-bottom: 0;
+}
+
+.red {
+    color: red;
+}
+
+.active {
+    display: block !important;
+}
+
+.forgot-link {
+    margin-top: 7px;
+    color: #1890ff;
+    cursor: pointer;
+}
+
+i, em, span, label, i, a {
+    font-style: normal;
+    display: inline-block;
+}
+
+.layui-fluid {
+    padding: 30px 20px 20px;
+}
+
+.layui-center {
+    text-align: center;
+}
+
+.layui-btn, .layui-input, .layui-select, .layui-textarea {
+    height: 33px;
+    line-height: 33px;
+}
+
+.layui-btn-login {
+    height: 38px;
+    line-height: 38px;
+}
+
+input[type=button]:hover, input[type=submit]:hover {
+    color: #ffffff;
+    cursor: pointer;
+}
+
+input:hover {
+    border: 1px solid #1890ff;
+}
+
+.layui-btn-primary:hover {
+    color: #fff;
+    background-color: #1890ff !important;
+}
+
+.layui-form-checked[lay-skin="primary"] i {
+    border-color: #1890ff !important;
+    background-color: #1890ff !important;
+    color: #fff;
+}
+
+.layui-form-checkbox[lay-skin=primary]:hover i {
+    border-color: #1890ff;
+    color: #fff;
+}
+
+#ajaxLogin {
+    padding: 20px!important;
+    overflow: hidden;
+}
+
+#ajaxLogin .item, #ajaxLogin .layui-col-xs7 {
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+#ajaxLogin .layui-col-xs3 {
+    width: 36%;
+}
+
+#ajaxLogin .layui-form-item .item .layui-input {
+    border: 0;
+    padding-left: 38px;
+    border-radius: 5px;
+}
+
+#ajaxLogin .other-link {
+    padding: 20px 0 20px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e6e6e6
+}
+
+#ajaxLogin .other-link a {
+    vertical-align: middle;
+    margin-left: 13px;
+    width: 56px;
+    height: 56px;
+    display: inline-block;
+}
+
+#ajaxLogin .other-link span.other {
+    font-size: 12px;
+    color: #999;
+    margin-left: 38px;
+}
+
+#ajaxLogin .other-link .wx {
+    background: url(/static/images/wx.png) no-repeat
+}
+
+#ajaxLogin .other-link .qq {
+    background: url(/static/images/qq.png) no-repeat
+}
+
+#ajaxLogin .other-link .sina {
+    background: url(/static/images/sina.png) no-repeat
+}
+
+#ajaxLogin .other-link .wx:hover {
+    background: url(/static/images/wx_h.png) no-repeat
+}
+
+#ajaxLogin .other-link .qq:hover {
+    background: url(/static/images/qq_h.png) no-repeat
+}
+
+#ajaxLogin .other-link .sina:hover {
+    background: url(/static/images/sina_h.png) no-repeat
+}
+
+#ajaxLogin .left-icon {
+    position: absolute;
+    left: 1px;
+    top: -2px;
+    width: 38px;
+    line-height: 36px;
+    text-align: center;
+    color: #d2d2d2;
+}
+
+.userLogin {
+    padding: 0;
+    width: 400px;
+    margin: 10% auto;
+    background-color: #FFF;
+    border-radius: 5px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgb(26 26 26 / 10%);
+}
+
+.userLogin .form-header {
+    text-align: left;
+    display: flex;
+    color: #1E9FFF;
+    padding: 15px 30px 10px;
+    border-bottom: 1px solid #ebebeb;
+}
+
+.userLogin .form-header i {
+    margin-right: 10px;
+}
+
+.userLogin .form-header i,.userLogin .form-header h6 {
+    display: inline-block;
+    font-size: 22px!important;
+    vertical-align: middle;
+}
+
+.userLogin .formLogin {
+    display: none;
+    padding: 0 24px 3px;
+    position: relative;
+    border-radius: 5px 5px 0 0;
+}
+
+.userLogin .formLogin .layui-tab-brief > .layui-tab-title li {
+    color: #1a1a1a !important;
+    font-size: 16px;
+
+}
+
+.userLogin .formLogin .layui-tab-brief > .layui-tab-title li.layui-this {
+    position: relative;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-synthesis: style;
+}
+
+.userLogin .formLogin .layui-tab-brief > .layui-tab-more li.layui-this:after, .layui-tab-brief > .layui-tab-title .layui-this:after {
+    border: none;
+    border-radius: 0;
+    border-bottom: 3px solid #0085ff;
+}
+
+.userLogin .formLogin .layui-tab-title {
+    display: inline-block;
+    height: 60px;
+    font-size: 16px;
+    line-height: 65px;
+    margin-right: 24px;
+    cursor: pointer;
+}
+
+.userLogin .formLogin .layui-tab-title .layui-this:after {
+    height: 49px;
+}
+
+.userLogin .formLogin .item-input {
+    margin-top: 15px;
+    border-bottom: 1px solid #ebebeb;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 50px;
+    line-height: 50px;
+    position: relative;
+}
+
+.userLogin .formLogin .layui-form-item .inputStyle {
+    display: inline-block;
+    outline: 0;
+    flex: 1 1;
+    overflow: hidden;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    background: transparent;
+    border: 0;
+    resize: none;
+    z-index: 100;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 0 0 5px;
+}
+
+.userLogin .formLogin .fr-icon {
+    cursor: pointer;
+    color: #8590a6;
+}
+
+.userLogin .agreement {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    color: grey;
+    font-size: 12px;
+    line-height: 22px;
+    text-align: left;
+}
+
+.userLogin .agreement a {
+    color: #0085ff;
+    text-decoration: none;
+}
+
+.userLogin .socialLogin {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    color: #8590a6;
+    height: 60px;
+    line-height: 60px;
+    padding: 0 24px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.userLogin .socialLogin .social-group {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-left: 2px;
+    -webkit-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+}
+
+.userLogin .socialLogin .social-group .social-item {
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    height: auto;
+    padding: 0 6px;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.userLogin .socialLogin .social-group .social-item .layui-icon {
+    font-size: 18px;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.userLogin .socialLogin .social-group .social-item .layui-icon-login-qq {
+    color: rgb(80, 200, 253);
+}
+
+.userLogin .socialLogin .social-group .social-item .layui-icon-login-wechat {
+    color: rgb(96, 200, 77);
+}
+
+.userLogin .socialLogin .social-group .social-item .layui-icon-login-weibo {
+    color: rgb(251, 102, 34);
+}
+
+.userLogin .socialLogin .social-group .social-item .tit {
+    color: #8590a6;
+    font-size: 14px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.userLogin .socialLogin .social-group .social-item:hover {
+    opacity: .8;
+}
+
+.userLogin .appUserDown {
+    background-color: #f6f6f6;
+    color: #0084ff;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.userLogin .appUserDown .link {
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    height: auto;
+    padding: 0 6px;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.userLogin .appUserDown .link .layui-icon {
+    font-size: 18px;
+    margin-right: 10px;
+    color: #008DFD;
+    vertical-align: middle;
+}
+
+.userLogin .appUserDown .link .tit {
+    color: #008DFD;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    margin: 0;
+    min-width: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+    text-align: center;
+    line-height: inherit;
+    -webkit-text-decoration: none;
+    text-decoration: none;
+    border: 0;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: unset;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0;
+}
+
+.userLogin .switchTabs {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    top: 0;
+    cursor: pointer;
+    right: 8px;
+}
+
+.userLogin .scanLogin {
+    text-align: center;
+    overflow: hidden;
+    display: none;
+    padding: 35px 0;
+}
+
+.userLogin .scanLogin .qrcode-title {
+    font-size: 24px;
+    color: #1a1a1a;
+    line-height: 33px;
+    margin-bottom: 50px;
+    margin-top: 3px;
+}
+
+.userLogin .scanLogin .qrcode-Box {
+    height: 210px;
+}
+
+.userLogin .scanLogin .qrcode-Box .qrcode-img {
+    margin: 0 auto 15px;
+    line-height: 0;
+    height: 150px;
+    width: 150px;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.userLogin .scanLogin .qrcode-Box p {
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.userLogin .scanLogin .qrcode-Box p a {
+    color: #175199;
+}
+
+.userLogin .switch-item {
+    display: none;
+}
+
+.userLogin .loginLine {
+    box-sizing: border-box;
+    min-width: 0;
+    border-top: 1px solid;
+    border-color: #EBEBEB;
+    margin: 5px 24px 0;
+}

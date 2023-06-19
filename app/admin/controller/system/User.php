@@ -98,15 +98,10 @@ class User extends AdminController
     {
         if (request()->isPost()) {
             $post = request()->post();
-            $post = request_validate_rules($post, get_class($this->model));
-            if (empty($post) || !is_array($post)) {
-                return $this->error($post);
-            }
-
             // 禁止重复注册
             $whereName[] = ['nickname', '=', $post['nickname']];
             $whereEmail[] = ['email', '=', $post['email']];
-            if ($this->model->whereOr([$whereName, $whereEmail])->find()) {
+            if ($this->model->whereOr([$whereName, $whereEmail])->findOrEmpty()->toArray()) {
                 return $this->error('该用户ID或邮箱已经存在！');
             }
 

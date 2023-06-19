@@ -10,6 +10,7 @@ declare (strict_types=1);
 // | Author: meystack <coolsec@foxmail.com> Apache 2.0 License
 // +----------------------------------------------------------------------
 namespace app;
+
 use support\Log;
 use support\Response;
 use think\db\exception\BindParamException;
@@ -45,12 +46,6 @@ class BaseController
     public string $scene = '';
 
     /**
-     * 是否批量验证
-     * @var bool
-     */
-    protected bool $batchValidate = false;
-
-    /**
      * 获取访问来源
      * @var string
      */
@@ -58,59 +53,7 @@ class BaseController
 
     public function __construct()
     {
-        $this->referer = \request()->header('referer');
-    }
-
-    /**
-     * 验证数据
-     * @access protected
-     * @param array $data 数据
-     * @param $validate
-     * @param array $message 提示信息
-     * @param bool $batch 是否批量验证
-     * @return bool
-     */
-    protected function validate(array $data, $validate, array $message = [], bool $batch = false): bool
-    {
-        if (is_array($validate)) {
-            $v = new Validate();
-            $v->rule($validate);
-        } else {
-            if (strpos($validate, '.')) {
-                // 支持场景
-                [$validate, $scene] = explode('.', $validate);
-            }
-            $class = str_contains($validate, '\\') ? $validate : $this->parseClass('validate', $validate);
-            $v = new $class();
-            if (!empty($scene)) {
-                $v->scene($scene);
-            }
-        }
-
-        $v->message($message);
-
-        // 是否批量验证
-        if ($batch || $this->batchValidate) {
-            $v->batch();
-        }
-
-        return $v->failException()->check($data);
-    }
-
-    /**
-     * 解析应用类的类名
-     * @access public
-     * @param string $layer 层名 controller model ...
-     * @param string $name 类名
-     * @return string
-     */
-    protected function parseClass(string $layer, string $name): string
-    {
-        $name = str_replace(['/', '.'], '\\', $name);
-        $array = explode('\\', $name);
-        $class = Str::studly(array_pop($array));
-        $path = $array ? implode('\\', $array) . '\\' : '';
-        return 'app' . '\\' . $layer . '\\' . $path . $class;
+        $this->referer = \request()->header('referer', '/');
     }
 
     /**
@@ -204,8 +147,8 @@ class BaseController
      */
     protected function getResponseType(): string
     {
-        $mask=request()->input('_ajax')==1 ||request()->input('_pjax')==1;
-        return request()->isAjax() || request()->acceptJson() || $mask ? 'json' : 'html';
+        $_ajax = request()->input('_ajax', input('_pjax'));
+        return request()->isAjax() || request()->acceptJson() || $_ajax ? 'json' : 'html';
     }
 
     /**

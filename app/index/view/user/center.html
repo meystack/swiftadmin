@@ -74,7 +74,7 @@
                             <div class="contract-title">手机</div>
                             <div class="contract-detail">+86 {$user.mobile|default='未绑定'}
                                 <i class="layui-icon fa-edit" title="编辑" lay-open data-title="修改手机"
-                                   data-url="/index/user/mobile" data-area="500px,300px"></i>
+                                   data-url="/index/user/changeMobile" data-area="500px,300px"></i>
                             </div>
                         </div>
 
@@ -87,7 +87,7 @@
                             <div class="contract-title">办公室邮箱</div>
                             <div class="contract-detail">{$user.email|default='member@domain.com'}
                                 <i class="layui-icon fa-edit" title="编辑" lay-open data-title="修改邮箱"
-                                   data-url="/index/user/email" data-area="500px,300px"></i>
+                                   data-url="/index/user/changeEmail" data-area="500px,300px"></i>
                             </div>
                         </div>
                         <div class="layui-col-md3">
@@ -242,7 +242,7 @@
                             <li>
                                 <a title="{$vo.nickname}" href="#" target="_blank">
                                     <img class="media-object" src="{$vo.avatar}"></a>
-                                <a class="truncate" href="{$vo.url}" target="_blank">{$vo.nickname}</a>
+                                <a class="truncate" href="{$vo.url|default='#'}" target="_blank">{$vo.nickname}</a>
                             </li>
                         </volist>
                     </ul>

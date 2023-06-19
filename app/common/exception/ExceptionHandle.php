@@ -6,8 +6,7 @@ use app\common\model\system\SystemLog;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\exception\BusinessException;
 use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
+use think\exception\ValidateException;
 use Webman\Exception\ExceptionHandler;
 use Webman\Http\Request;
 use Webman\Http\Response;
@@ -17,44 +16,36 @@ class ExceptionHandle extends ExceptionHandler
 {
     public $dontReport = [
         BusinessException::class,
+        ValidateException::class,
+        DataNotFoundException::class,
+        OperateException::class,
+        DumpException::class,
     ];
 
     /**
      * 异常日志记录
      * @param Throwable $exception
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
+     * @throws InvalidArgumentException
      */
     public function report(Throwable $exception)
     {
-        try {
-
-            if (saenv('system_exception') && !empty($exception->getMessage())) {
-                $data = [
-                    'module'     => request()->app,
-                    'controller' => request()->controller,
-                    'action'     => request()->action,
-                    'params'     => serialize(request()->all()),
-                    'method'     => request()->method(),
-                    'url'        => request()->url(),
-                    'ip'         => request()->getRealIp(),
-                    'name'       => session('AdminLogin.name'),
-                ];
-                if (empty($data['name'])) {
-                    $data['name'] = 'system';
-                }
-                $data['type'] = 1;
-                $data['code'] = $exception->getCode();
-                $data['file'] = $exception->getFile();
-                $data['line'] = $exception->getLine();
-                $data['error'] = $exception->getMessage();
-                SystemLog::write($data);
-            }
-
-        } catch (InvalidArgumentException $e) {
+        if (saenv('system_exception')
+            && !$this->shouldntReport($exception)) {
+            $logs['module'] = request()->app;
+            $logs['controller'] = request()->controller;
+            $logs['action'] = request()->action;
+            $logs['params'] = serialize(request()->all());
+            $logs['method'] = request()->method();
+            $logs['url'] = request()->url();
+            $logs['ip'] = request()->getRealIp();
+            $logs['name'] = session('AdminLogin.name') ?? 'system';
+            $logs['type'] = 1;
+            $logs['code'] = $exception->getCode();
+            $logs['file'] = $exception->getFile();
+            $logs['line'] = $exception->getLine();
+            $logs['error'] = $exception->getMessage();
+            SystemLog::write($logs);
         }
-        parent::report($exception);
     }
 
     /**
@@ -64,12 +55,16 @@ class ExceptionHandle extends ExceptionHandler
      */
     public function render(Request $request, Throwable $exception): Response
     {
-        if ($exception instanceof \RuntimeException) {
-            return \response($exception->getMessage());
+        switch (true) {
+            case $exception instanceof OperateException:
+            case $exception instanceof ValidateException:
+                return json(['code' => $exception->getCode() ?? 101, 'msg' => $exception->getMessage()]);
+            case $exception instanceof DumpException:
+                return \response($exception->getMessage());
+            default:
+                break;
         }
-        if (!file_exists(root_path() . '.env')) {
-            return parent::render($request, $exception);
-        }
+
         return get_env('APP_DEBUG') ? parent::render($request, $exception) : view(config('app.exception_tpl'), ['trace' => $exception]);
     }
 }

@@ -12,11 +12,13 @@ declare (strict_types=1);
 
 namespace app\index\controller;
 
-use app\common\library\Auth;
 use app\common\library\ResultCode;
+use app\common\service\user\UserService;
+use app\common\service\user\UserTokenService;
 use app\HomeController;
 use app\common\model\system\User;
 use app\common\model\system\UserThird;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use system\Random;
 use think\db\exception\DataNotFoundException;
@@ -87,10 +89,11 @@ class Third extends HomeController
 
     /**
      * 用户回调函数
-     * @return mixed|void
+     * @return Response
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
+     * @throws InvalidArgumentException
      */
     public function callback()
     {
@@ -100,9 +103,9 @@ class Third extends HomeController
             return $this->error($e->getMessage());
         }
         $user = $this->oauth->getUserInfo();
-        if (!empty($user) && !$this->auth->isLogin()) {
+        if (!empty($user) && !UserTokenService::isLogin()) {
             return $this->register($user, $this->type);
-        } else if ($this->auth->isLogin()) { // 绑定用户
+        } else if (UserTokenService::isLogin()) { // 绑定用户
             return $this->doBind($user, $this->type);
         }
     }
@@ -123,31 +126,28 @@ class Third extends HomeController
         $userInfo = UserThird::alias('th')->view('user', '*', 'user.id=th.user_id')->where(['openid' => $openid, 'type' => $type])->find();
 
         if (!empty($userInfo)) {
-            $array['id'] = $userInfo['id'];
             $array['login_time'] = time();
             $array['login_ip'] = request()->getRealIp();
             $array['login_count'] = $userInfo['login_count'] + 1;
-
-            if (User::update($array)) {
-                $response = $this->auth->responseToken($userInfo);
-                $response->withBody(json_encode(ResultCode::LOGINSUCCESS))->redirect(request()->cookie('redirectUrl', '/'));
+            if (User::update($array, ['id' => $userInfo['user_id']])) {
+                UserService::createUserCookies($userInfo);
+                return redirect(request()->cookie('redirectUrl', '/'));
             }
-
         } else {
 
             // 注册本地用户
-            $data['nickname'] = $nickname;
-            $data['avatar'] = $info['userData']['avatar'];
+            $post['nickname'] = $nickname;
+            $post['avatar'] = $info['userData']['avatar'];
             if (User::getByNickname($nickname)) {
-                $data['nickname'] .= Random::alpha(3);
+                $post['nickname'] .= Random::alpha(3);
             }
-            $data['group_id'] = 1;
-            $data['create_ip'] = request()->getRealIp();
-            $result = $this->auth->register($data);
+            $post['group_id'] = 1;
+            $post['create_ip'] = request()->getRealIp();
+            $result = UserService::register($post);
 
             // 封装第三方数据
             if (!empty($result)) {
-                $userThird = [
+                $third = [
                     'type'          => $this->type,
                     'user_id'       => $result['id'],
                     'openid'        => $openid,
@@ -158,13 +158,10 @@ class Third extends HomeController
                     'login_time'    => time(),
                     'expiretime'    => time() + $info['expires_in'],
                 ];
-            }
 
-            // 注册第三方数据
-            if (isset($userThird) && is_array($userThird)) {
-                if (UserThird::create($userThird)) {
-                    $response = $this->auth->responseToken($result);
-                    $response->withBody(json_encode(ResultCode::LOGINSUCCESS))->redirect(request()->cookie('redirectUrl', '/'));
+                if (UserThird::create($third)) {
+                    UserService::createUserCookies($result);
+                    return redirect(request()->cookie('redirectUrl', '/'));
                 }
             }
         }
@@ -175,17 +172,18 @@ class Third extends HomeController
     /**
      * 用户绑定操作
      * @return Response
+     * @throws InvalidArgumentException
      */
     public function bind(): Response
     {
-        if (Auth::instance()->isLogin()) {
+        if (UserTokenService::isLogin()) {
             $buildQuery = [
                 'bind' => true,
                 'type' => input('type'),
                 'ref'  => input('ref', request()->server('HTTP_REFERER', '/')),
             ];
 
-           return $this->redirect("/third/login?" . http_build_query($buildQuery));
+            return $this->redirect("/third/login?" . http_build_query($buildQuery));
         }
 
         return $this->error('请先登录');
@@ -193,7 +191,9 @@ class Third extends HomeController
 
     /**
      * 用户解除绑定
+     * @return Response
      * @throws DbException
+     * @throws InvalidArgumentException
      */
     public function unbind(): Response
     {
@@ -202,22 +202,21 @@ class Third extends HomeController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
-        if ($this->auth->isLogin()) {
 
-            $result = $this->auth->userInfo;
-            if (!empty($result)) {
+        $result = UserTokenService::isLogin();
+        if (!empty($result)) {
 
-                if (empty($result['email']) || empty($result['pwd'])) {
-                    return $this->error('解除绑定需要设置邮箱和密码！');
-                }
+            if (empty($result['email']) || empty($result['pwd'])) {
+                return $this->error('解除绑定需要设置邮箱和密码！');
+            }
 
-                $where['type'] = $this->type;
-                $where['user_id'] = request()->cookie('uid');
-                if (UserThird::where($where)->delete()) {
-                    return $this->success('解除绑定成功！');
-                }
+            $where['type'] = $this->type;
+            $where['user_id'] = request()->cookie('uid');
+            if (UserThird::where($where)->delete()) {
+                return $this->success('解除绑定成功！');
             }
         }
+
 
         return $this->error();
     }
@@ -233,10 +232,8 @@ class Third extends HomeController
      */
     protected function doBind(array $info = [], string $type = null)
     {
-
         $openid = $info['openid'] ?? $info['id'];
         $nickname = $info['userData']['name'] ?? $info['userData']['nickname'];
-
         // 查询是否被注册
         $where['openid'] = $openid;
         $where['type'] = $this->type;
@@ -277,7 +274,7 @@ class Third extends HomeController
             $referer = '/';
         }
 
-        request()->cookie('redirectUrl', null,1);
+        request()->cookie('redirectUrl', null, 1);
         return $this->redirect($referer);
     }
 }

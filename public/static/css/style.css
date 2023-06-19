@@ -107,7 +107,7 @@ a {
 #header #login {
 	right: 20px;
 	left: unset;
-	width: 150px;
+	/*width: 150px;*/
 }
 
 #header .nav-item a {

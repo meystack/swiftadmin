@@ -9,7 +9,7 @@ use Webman\RedisQueue\Consumer;
  * @author meystack
  * @date 2022-11-20
  */
-class Works implements Consumer
+class Worker implements Consumer
 {
     /**
      * 消费队列名称

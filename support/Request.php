@@ -24,6 +24,16 @@ use system\Random;
 class Request extends \Webman\Http\Request
 {
     /**
+     * @var int
+     */
+    public int $userId = 0;
+
+    /**
+     * @var array
+     */
+    public array $userInfo = [];
+
+    /**
      * 生成请求令牌
      * @access public
      * @param string $name 令牌名称

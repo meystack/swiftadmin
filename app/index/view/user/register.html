@@ -2,85 +2,125 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SwiftAdmin 用户注册</title>
-    <include file="public:header"/>
+    <title>{$site_name} 用户注册</title>
+    <meta http-equiv="Cache-Control" content="no-transform"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="applicable-device" content="pc,mobile">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="/static/js/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/js/layui/css/font-awesome.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/js/layui/css/layui.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css"/>
+    <script src="/static/js/center.js?v={:release()}"></script>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
 </head>
 <body>
-<style>
+<div id="content" class="userLogin layui-fluid">
 
-    .layui-form-item {
-        margin-bottom: 15px;
-    }
+    <div class="form-header">
+        <i class="layui-icon fa-user-plus"></i>
+        <h6>用户注册</h6>
+    </div>
+    <div class="formLogin active">
 
-    .red {
-        color: red;
-    }
-
-    .layui-input:hover {
-        border: 1px solid #1890ff !important;
-    }
-</style>
-<div id="register" class="layui-fluid">
-    <form class="layui-form layui-form-fixed" action="/index/user/register" method="post">
-
-        <div class="layui-form-item">
-            <label class="layui-form-label"><span class="red">*</span> 用户帐号</label>
-            <div class="layui-input-block">
-                <input type="text" name="nickname" placeholder="请输入帐号" class="layui-input">
+        <form class="layui-form mobileLogin" action="/index/user/register" method="post">
+            <div class="layui-form-item item-input">
+                <input type="text" id="nickname" name="nickname" lay-verify="required" data-title="账号"
+                       placeholder="{:__('请输入登录账号')}" class="inputStyle" value="">
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label"><span class="red">*</span> 密码</label>
-            <div class="layui-input-block">
-                <input type="password" id="pwd" name="pwd" placeholder="请输入密码" class="layui-input">
+            <div class="layui-form-item item-input">
+                <input type="password" id="pwd" name="pwd" lay-verify="required" data-title="密码" maxlength="32"
+                       placeholder="{:__('请输入密码')}" class="inputStyle" value="">
+                <span class="fr-icon visiblePwd"><i class="layui-icon fa-eye-slash"></i></span>
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label"><span class="red">*</span> 确认密码</label>
-            <div class="layui-input-block">
-                <input type="password" id="repwd" name="repwd" placeholder="请输入确认密码" class="layui-input">
-            </div>
-        </div>
 
-        <eq name="style" value="mobile">
+            <div class="layui-form-item item-input">
+                <input type="password" id="pwd2" lay-verify="required" data-title="密码" maxlength="32"
+                       placeholder="{:__('请输入确认密码')}" class="inputStyle" value="">
+                <span class="fr-icon visiblePwd"><i class="layui-icon fa-eye-slash"></i></span>
+            </div>
+            <eq name="style" value="mobile">
+                <div class="layui-form-item item-input">
+                    <input type="text" id="mobile" name="mobile" lay-verify="required" data-title="手机号"
+                           placeholder="{:__('请输入手机号码')}" class="inputStyle mobile" value="">
+                </div>
+                <div class="layui-form-item item-input">
+                    <input type="text" id="captcha" name="captcha" lay-verify="required" data-title="验证码"
+                           maxlength="6"
+                           placeholder="{:__('短信验证码')}" class="inputStyle" value="">
+                    <input type="text" hidden name="event" class="event" value="login">
+                    <span class="fr-icon getCaptcha" lay-ajax data-url="/api/ajax/smsSend"
+                          data-object="mobile:mobile,event:event">获取验证码</span>
+                </div>
+                <else/>
+                <div class="layui-form-item item-input">
+                    <input type="text" name="email" lay-verify="require|email" placeholder="请输入邮箱" class="inputStyle">
+                </div>
+            </eq>
+
+            <input type="hidden" id="token" name="__token__" value="{:token()}"/>
             <div class="layui-form-item">
-                <label class="layui-form-label"><span class="red">*</span> 手机号</label>
-                <div class="layui-input-block">
-                    <input type="text" id="mobile" name="mobile" placeholder="请输入手机号" lay-verify="require|phone"
-                           class="layui-input mobile">
+                <div class="fl">
+                    <input type="checkbox" name="remember" lay-skin="primary" title="{:__('记住密码')}" checked>
+                </div>
+                <div class="fr">
+                    <a href="/index/user/login" class="forgot-link" style="margin-top: 7px;">{:__('返回登录')}</a>
                 </div>
             </div>
 
             <div class="layui-form-item">
-                <label class="layui-form-label"><span class="red">*</span> 验证码</label>
-                <div class="layui-input-block">
-                    <input type="text" name="captcha" placeholder="{:__('验证码')}" class="layui-input captcha">
-                    <div class="captcha fr">
-                        <button id="captcha" type="button" class="layui-btn layui-btn-normal"
-                                lay-ajax data-url="/ajax/smsSend" data-object="mobile:mobile,event:event"
-                        >获取验证码
-                        </button>
-                    </div>
-                </div>
+                <button class="layui-btn layui-btn-login layui-btn-fluid layui-btn-normal"
+                        lay-filter="submitIframe" data-reload="top" lay-submit>{:__('立即注册')}</button>
             </div>
-            <else/>
-            <div class="layui-form-item">
-                <label class="layui-form-label"><span class="red">*</span> 邮箱地址</label>
-                <div class="layui-input-block">
-                    <input type="text" name="email" lay-verify="require|email" placeholder="请输入邮箱" class="layui-input">
-                </div>
+            <div class="agreement">
+                <span>未注册手机验证后自动登录，注册即代表同意<a href="#">《用户协议》</a>以及网站<a href="#">《隐私保护指引》</a></span>
             </div>
-        </eq>
+        </form>
+    </div>
 
-        <input type="text" hidden name="event" class="event" value="register">
-        <div class="layui-footer layui-form-item layui-center">
-            <button class="layui-btn layui-btn-primary" type="button" sa-event="closeDialog">{:__('取消')}</button>
-            <button class="layui-btn layui-btn-normal" lay-filter="submitIframe" data-reload="top" lay-submit>
-                {:__('立即注册')}
-            </button>
+    <div class="loginLine"></div>
+    <div class="appUserDown">
+        <div class="fr">
+            <a class="link" href="#" target="_top">
+                <span>
+                    <i class="layui-icon fa-apple"></i>
+                    <i class="layui-icon fa-android"></i>
+                    <i class="layui-icon fa-windows"></i>
+                    <span class="tit">下载 APP</span>
+                </span>
+            </a>
         </div>
-
-    </form>
+    </div>
 </div>
+
 </body>
+<script>
+    layui.use(['jquery'], function (e) {
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        $('#pwd, #pwd2').blur(function(e) {
+            let v1 = $('#pwd').val();
+            let v2 = $('#pwd2').val();
+            let v3 = v1 && v2 && (v1 !== v2);
+            v3 && layer.msg('密码不相同');
+            $('.layui-btn-login').attr('disabled', v3);
+        })
+
+        /* 显示隐藏密码 */
+        $('.visiblePwd').click(function() {
+            // 获取我同级上面得input元素
+            let elem = $(this).prev('input');
+            let type = $(elem).attr('type');
+            if (type === 'password') {
+                $(elem).attr('type','text');
+                $(this).find('i.layui-icon').addClass('fa-eye').removeClass('fa-eye-slash');
+            } else {
+                $(elem).attr('type','password');
+                $(this).find('i.layui-icon').addClass('fa-eye-slash').removeClass('fa-eye');
+            }
+        });
+
+    });
+</script>
 </html>

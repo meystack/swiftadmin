@@ -1,9 +1,9 @@
 <?php
 
 namespace app\api\middleware\system;
-
-use app\common\library\Auth;
 use app\common\library\ResultCode;
+use app\common\service\user\UserTokenService;
+use Psr\SimpleCache\InvalidArgumentException;
 use Webman\Event\Event;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
@@ -29,41 +29,51 @@ class ApiPermissions implements MiddlewareInterface
     public bool $authWorkflow = true;
 
     /**
+     * 禁止登录重复
+     * @var array
+     */
+    public array $repeatLogin = ['login', 'register'];
+
+    /**
      * 非鉴权方法
      * @var array
      */
-    public array $noNeedAuth = [];
+    public array $noNeedLogin = [];
 
     /**
      * 校验权限
-     * @param Request $request
+     * @param \support\Request|Request $request
      * @param callable $handler
      * @return Response
+     * @throws InvalidArgumentException
      * @throws \ReflectionException
      */
-    public function process(Request $request, callable $handler): Response
+    public function process(\support\Request|Request $request, callable $handler): Response
     {
         $app        = request()->getApp();
         $controller = request()->getController();
         $action     = request()->getAction();
         $method     = $controller . '/' . $action;
-
         $refClass = new \ReflectionClass($request->controller);
         $property = $refClass->getDefaultProperties();
         $this->needLogin = $property['needLogin'] ?? $this->needLogin;
-        $this->noNeedAuth = $property['noNeedAuth'] ?? $this->noNeedAuth;
+        $this->noNeedLogin = $property['noNeedLogin'] ?? $this->noNeedLogin;
+        $this->repeatLogin  = $property['repeatLogin'] ?? $this->repeatLogin;
 
-        $auth = Auth::instance();
-        if ($auth->isLogin()) {
-            // 验证权限
+        // 是否验证登录器
+        $userInfo = UserTokenService::isLogin();
+        if (!empty($userInfo)) {
+            $request->userId = $userInfo['id'];
+            $request->userInfo = $userInfo;
+            // 是否验证API权限
             if ($this->authWorkflow && Event::hasListener('apiAuth')) {
-                $result = Event::emit('apiAuth', ['method' => $method, 'user_id' => $auth->user_id], true);
+                $result = Event::emit('apiAuth', ['method' => $method, 'user_id' => $userInfo['id']], true);
                 if (isset($result['code']) && $result['code'] != 200) {
                     return json($result);
                 }
             }
         } else {
-            if ($this->needLogin && !in_array($action, $this->noNeedAuth)) {
+            if ($this->needLogin && !in_array($action, $this->noNeedLogin)) {
                 return json(ResultCode::AUTH_ERROR);
             }
         }

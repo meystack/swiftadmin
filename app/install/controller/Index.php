@@ -3,8 +3,7 @@ declare (strict_types=1);
 
 namespace app\install\controller;
 
-use app\common\library\DataBase;
-use think\facade\Cache;
+use support\Cache;
 use app\BaseController;
 
 const SUCCESS = 'layui-icon-ok-circle';
@@ -36,7 +35,7 @@ class Index extends BaseController
 
             // 检测生产环境
             foreach ($this->checkEnv() as $key => $value) {
-                if ($key == 'php' && (float)$value < 8.0.0) {
+                if ($key == 'php' && (float)$value < 8.0) {
                     return $this->error('PHP版本过低！');
                 }
             }

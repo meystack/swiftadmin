@@ -50,34 +50,14 @@ class AdminRules extends AdminController
 			}
 
 			// 获取总数
-			$total = $this->model->count();
+			$total = $this->model->where($where)->count();
 			$list = $this->model->where($where)->order('sort asc')->select()->toArray();
 			foreach ($list as $key => $value) {
 				$list[$key]['title'] = __($value['title']);
 			}
 
-			// 自定义查询
-			if (count($list) < $total) {
-
-				$parentNode = []; // 查找父节点
-				foreach ($list as $key => $value) {
-					if ($value['pid'] !== 0 && !list_search($list,['id'=>$value['pid']])) {
-						$parentNode[] = $this->parentNode($value['pid']);
-					}
-				}
-
-				foreach ($parentNode as $key => $value) {
-					$list = array_merge($list,$value);
-				}
-
-			}
-
-			$rules = $this->model->getListTree();
-			return $this->success('获取成功', '',[
-				'item'=> $list,
-				'rules'=> $rules 
-			], 
-			count($list),0);
+			$rules = list_to_tree($list,'id','pid','children',0);
+			return $this->success('获取成功', '/',$rules, $total);
 			
 		}
 

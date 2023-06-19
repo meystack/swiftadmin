@@ -19,6 +19,10 @@ class User extends Model
     // 定义时间戳字段名
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
+    /**
+     * @var array|string[] 可见字段
+     */
+    protected array $visibleFields = ['id', 'nickname', 'heart', 'avatar', 'mobile', 'email', 'score', 'gender', 'create_time', 'update_time'];
 
     /**
      * 定义第三方登录
@@ -122,13 +126,32 @@ class User extends Model
     }
 
     /**
+     * 获取可见字段
+     * @return array|string[]
+     */
+    public function getVisibleFields(): array
+    {
+        return $this->visibleFields;
+    }
+
+    /**
+     * 设置可见字段
+     * @param array $visibleFields
+     * @return void
+     */
+    public function setVisibleFields(array $visibleFields): void
+    {
+        $this->visibleFields = $visibleFields;
+    }
+
+    /**
      * 减少会员积分
      *
      * @param integer $id
      * @param integer $score
      * @return void
      */
-    public static function reduceScore(int $id = 0, int $score = 0)
+    public static function reduceScore(int $id = 0, int $score = 0): void
     {
         try {
             if ($score) {

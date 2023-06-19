@@ -26,7 +26,7 @@ use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\Exception;
-use think\facade\Cache;
+use support\Cache;
 use Webman\Http\Request;
 
 /**
@@ -155,14 +155,13 @@ class Admin extends AdminController
                 return $this->error('该用户名或邮箱已被注册！');
             }
 
-
             // 管理员加密
             $post['pwd'] = encryptPwd($post['pwd']);
             $post['create_ip'] = request()->getRealIp();
             $data = $this->model->create($post);
-            if (!is_empty($data->id)) {
-                $access['admin_id'] = $data->id;
-                $access['group_id'] = $data->group_id;
+            if (!is_empty($data['id'])) {
+                $access['admin_id'] = $data['id'];
+                $access['group_id'] = $data['group_id'];
                 AdminAccessModel::insert($access);
                 return $this->success('添加管理员成功！');
             } else {
@@ -182,95 +181,84 @@ class Admin extends AdminController
         if (request()->isPost()) {
 
             $id = request()->input('id');
-
             if (!empty($id) && is_numeric($id)) {
 
                 // 验证数据
                 $post = request()->all();
-                $post = request_validate_rules($post, get_class($this->model), 'edit');
-                if (!is_array($post)) {
-                    return $this->error($post);
+                $retError = request_validate_rules($post, get_class($this->model), 'edit');
+                if (!is_array($retError)) {
+                    return $this->error($retError);
                 }
-
-                if (!empty($post['pwd'])) {
+                if (isset($post['pwd']) && !empty($post['pwd'])) {
                     $post['pwd'] = encryptPwd($post['pwd']);
                 } else {
+                    // 清空避免被覆盖
                     unset($post['pwd']);
                 }
-
                 if ($this->model->update($post)) {
                     $access['group_id'] = $post['group_id'];
                     AdminAccessModel::where('admin_id', $id)->update($access);
                     return $this->success('更新管理员成功！');
-                } else {
-                    return $this->error('更新管理员失败');
                 }
             }
         }
+
+        return $this->error('更新管理员失败');
     }
 
     /**
      * 编辑权限
+     * @return Response
      */
-    public function editRules()
+    public function editRules(): Response
     {
-        if (request()->isPost()) {
-            return $this->_update_RuleCates();
-        }
+        return $this->updateRuleCates();
     }
 
     /**
      * 编辑栏目权限
+     * @return Response
      */
-    public function editCates()
+    public function editCates(): Response
     {
-        return $this->_update_RuleCates(AUTH_CATE);
+        return $this->updateRuleCates(AUTH_CATE);
     }
 
     /**
      * 更新权限函数
      * @access      protected
      * @param string $type
-     * @return      \support\Response|void
+     * @return Response
      */
-    protected function _update_RuleCates(string $type = AUTH_RULES)
+    protected function updateRuleCates(string $type = AUTH_RULES): Response
     {
-        if (request()->isPost()) {
+        $admin_id = input('admin_id');
+        $rules = request()->post($type) ?? [];
+        $access = $this->auth->getRulesNode($admin_id, $type);
+        $rules = array_diff($rules, $access[$this->auth->authGroup]);
 
-            $admin_id = input('admin_id');
-            $rules = request()->post($type) ?? [];
-
-            if (!empty($admin_id) && $admin_id > 0) {
-
-                $access = $this->auth->getRulesNode($admin_id, $type);
-                $rules = array_diff($rules, $access[$this->auth->authGroup]);
-
-                // 权限验证
-                if (!$this->auth->checkRuleOrCateNodes($rules, $type, $this->auth->authPrivate)) {
-                    return $this->error('没有权限!');
-                }
-
-                // 获取个人节点
-                $differ = array_diff($access[$this->auth->authPrivate], $access[$this->auth->authGroup]);
-                $current = [];
-                if (!$this->auth->superAdmin()) {
-                    $current = $this->auth->getRulesNode();
-                    $current = array_diff($differ, $current[$this->auth->authPrivate]);
-                }
-
-                $rules = array_unique(array_merge($rules, $current));
-                $AdminAccessModel = new AdminAccessModel();
-                $data = [
-                    "$type" => implode(',', $rules)
-                ];
-
-                if ($AdminAccessModel->where('admin_id', $admin_id)->save($data)) {
-                    return $this->success('更新权限成功！');
-                }
-
-                return $this->error('更新权限失败！');
-            }
+        // 权限验证
+        if (!$this->auth->checkRuleOrCateNodes($rules, $type, $this->auth->authPrivate)) {
+            return $this->error('没有权限!');
         }
+
+        // 获取个人节点
+        $differ = array_diff($access[$this->auth->authPrivate], $access[$this->auth->authGroup]);
+        $current = [];
+        if (!$this->auth->superAdmin()) {
+            $current = $this->auth->getRulesNode();
+            $current = array_diff($differ, $current[$this->auth->authPrivate]);
+        }
+
+        $rules = array_unique(array_merge($rules, $current));
+        $AdminAccessModel = new AdminAccessModel();
+        $data = ["$type" => implode(',', $rules)];
+
+        if ($AdminAccessModel->update($data, ['admin_id' => $admin_id])) {
+            return $this->success('更新权限成功！');
+        }
+
+        return $this->error('更新权限失败！');
     }
 
     /**
@@ -278,7 +266,7 @@ class Admin extends AdminController
      * getAdminRules
      * @return mixed
      */
-    public function getPermissions()
+    public function getPermissions(): mixed
     {
         $list = [];
         if (\request()->isAjax()) {
@@ -666,7 +654,7 @@ class Admin extends AdminController
                 // 清理内容
                 if ($type == 'all' || $type == 'content') {
                     $session = session(AdminSession);
-                    \think\facade\Cache::clear();
+                    \support\Cache::clear();
                     request()->session()->set(AdminSession, $session);
                 }
 

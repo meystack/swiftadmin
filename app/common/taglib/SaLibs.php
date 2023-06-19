@@ -58,6 +58,8 @@ class SaLibs extends TagLib
         if (isset($variable[$tags['name']])) {
             return $variable[$tags['name']];
         }
+
+        return '';
     }
 
     /**

@@ -3,12 +3,13 @@
  * by meystack to www.swiftadmin.net
  * Apache2.0 Licensed
  */
-layui.define(['laypage'], function (exports) {
+layui.define(['laypage','dropdown'], function (exports) {
     "use strict";
 
     var $ = layui.$
 
         , laypage = layui.laypage
+        , dropdown = layui.dropdown
         //模块名
         , MOD_NAME = 'fileManager'
         , MOD_INDEX = 'layui_' + MOD_NAME + '_index' //模块索引名
@@ -238,7 +239,7 @@ layui.define(['laypage'], function (exports) {
                 });
             }
 
-            layui.dropdown.render({
+            dropdown.render({
                 elem: item
                 , trigger: 'contextmenu'
                 , id: 'file' + index

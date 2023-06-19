@@ -18,4 +18,15 @@ class Dictionary extends Validate
         'name'       => 'require',
         'value'      => 'require',
     ];
+
+    /**
+     * 定义错误信息
+     * 格式：'字段名.规则名'	=>	'错误信息'
+     *
+     * @var array
+     */
+    protected $message  =   [
+        'name.require'       => '字典名称不能为空',
+        'value.require'      => '字典值不能为空',
+    ];
 }

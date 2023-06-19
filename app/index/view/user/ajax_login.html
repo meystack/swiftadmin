@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{$site_name} 用户登录</title>
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="applicable-device" content="pc,mobile">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="/static/js/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/js/layui/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="/static/js/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css" />
+    <script src="/static/js/center.js?v={:release()}"></script>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+</head>
+<body>
+<div id="ajaxLogin" >
+    <div class="other-link">
+        <span class="other">第三方账号登录：</span>
+        <span>
+			<a href="{:url('/third/login',['type'=>'qq'])}&ref={$referer}" class="qq" target="_top"></a>
+			<a href="{:url('/third/login',['type'=>'weixin'])}&ref={$referer}" class="wx" target="_top"></a>
+			<a href="{:url('/third/login',['type'=>'weibo'])}&ref={$referer}" class="sina" target="_top"></a>
+		</span>
+    </div>
+    <form class="layui-form" action="/index/user/login" method="post" style="height: auto">
+        <input type="hidden" name="__token__" value="{:token()}"/>
+        <div class="layui-form-item">
+            <div class="item">
+                <label class="left-icon layui-icon layui-icon-username"></label>
+                <input type="text" id="nickname" name="nickname" lay-verify="required" placeholder="{:__('请输入账号或邮箱')}" class="layui-input" value="test@swiftadmin.net">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="item">
+                <label class="left-icon layui-icon layui-icon-password"></label>
+                <input type="password" id="pwd" name="pwd" lay-verify="required" placeholder="{:__('密码')}" class="layui-input" value="admin888">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-bottom: 20px;">
+            <div class="fl">
+                <input type="checkbox" name="remember" lay-skin="primary" title="{:__('记住密码')}" checked>
+            </div>
+            <a lay-open data-title="找回密码" data-area="500px,320px" data-object="top" data-url="/index/user/forgot"
+               class="forgot-link fr" style="margin-top: 7px;">{:__('忘记密码？')}</a>
+        </div>
+
+        <div class="layui-form-item">
+            <input type="submit" value="{:__('立即登录')}" lay-submit="" lay-filter="submitIframe" data-reload="top"
+                   class="layui-btn layui-btn-login layui-btn-fluid layui-btn-normal">
+        </div>
+    </form>
+</div>
+</body>
+</html>

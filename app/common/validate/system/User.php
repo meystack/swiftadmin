@@ -19,9 +19,11 @@ class User extends Validate
      * @var array
      */
     protected $rule = [
-        'test_filed' => 'max:255',
-        'nickname'   => 'require|min:2|max:12|filters|chsAlphaNum',
-        'pwd|密码'     => 'require|min:6|max:64',
+        'nickname' => 'require|min:5|max:32|checkName',
+        'pwd|密码' => 'require|min:6|max:64',
+        'email'    => 'require',
+        'mobile'   => 'require|mobile',
+        'captcha'  => 'require',
     ];
 
     /**
@@ -32,35 +34,54 @@ class User extends Validate
      */
     protected $message = [
         'nickname.require'     => '用户名不能为空',
-        'nickname.min'         => '用户名不能少于2个字符',
-        'nickname.max'         => '用户名不能超过12个字符',
-        'nickname.filters'     => '用户名包含禁止注册字符',
-        'nickname.chsAlphaNum' => '用户名只能是汉字、字母和数字',
-        'test_filed.max'       => '测试场景用',
+        'nickname.min'         => '用户名不能少于5个字符',
+        'nickname.max'         => '用户名不能超过32个字符',
+        'nickname.checkName'   => '用户名包含禁止注册字符',
+        'pwd.require'          => '密码不能为空',
+        'pwd.min'              => '密码不能少于6个字符',
+        'pwd.max'              => '密码不能超过64个字符',
+        'email.require'        => '邮箱不能为空',
+        'mobile.require'       => '手机号不能为空',
+        'mobile.mobile'        => '手机号格式不正确',
+        'captcha.require'      => '验证码不能为空',
     ];
 
     // 测试验证场景
     protected $scene = [
-        'test'     => ['test_filed'],
         'nickname' => ['nickname'],
+        'mobile'   => ['mobile', 'captcha'],
+        'login'    => ['nickname', 'pwd'],
     ];
 
     /**
      * 自定义验证规则
      * @param $value
-     * @return bool
+     * @return string|bool
      * @throws InvalidArgumentException
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
      */
-    protected function filters($value): bool
+    protected function checkName($value): string|bool
     {
         $notAllow = saenv('user_reg_notallow');
         $notAllow = explode(',', $notAllow);
         if (in_array($value, $notAllow)) {
-            return false;
+            return '用户名不合法！';
         }
+
         return true;
+    }
+
+    public function sceneRegister(): User
+    {
+        return $this->only(['nickname', 'pwd']);
+    }
+
+    public function scenePwd(): User
+    {
+        return $this->only(['pwd'])->append('pwd', 'confirm');
+    }
+
+    public function sceneMobile(): User
+    {
+        return $this->only(['mobile', 'captcha']);
     }
 }

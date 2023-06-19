@@ -73,11 +73,7 @@ class Department extends AdminController
 			}
 
 			$depart = $this->model->getListTree();
-			return $this->success('获取成功', '',[
-				'item'=> $list,
-				'depart'=> $depart 
-			], 
-			count($list));
+			return $this->success('获取成功', '',$depart, $total);
 		}
 
 		return view('system/department/index');

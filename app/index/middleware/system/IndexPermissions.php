@@ -2,8 +2,9 @@
 
 namespace app\index\middleware\system;
 
-use app\common\library\Auth;
 use app\common\library\ResultCode;
+use app\common\service\user\UserTokenService;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\View;
 use Webman\MiddlewareInterface;
 use Webman\Http\Response;
@@ -32,22 +33,23 @@ class IndexPermissions implements MiddlewareInterface
      * 非鉴权方法
      * @var array
      */
-    public array $noNeedAuth = [];
+    public array $noNeedLogin = [];
 
     /**
      * 跳转URL地址
      * @var string
      */
-    public string $JumpUrl = '/index/user/index';
+    public string $JumpUrl = '/index/';
 
     /**
      * 校验权限
-     * @param Request $request
+     * @param \support\Request|Request $request
      * @param callable $handler
      * @return Response
+     * @throws InvalidArgumentException
      * @throws \ReflectionException
      */
-    public function process(Request $request, callable $handler): Response
+    public function process(\support\Request|Request $request, callable $handler): Response
     {
         $app        = request()->getApp();
         $controller = request()->getController();
@@ -56,23 +58,23 @@ class IndexPermissions implements MiddlewareInterface
         $refClass = new \ReflectionClass($request->controller);
         $property = $refClass->getDefaultProperties();
         $this->needLogin    = $property['needLogin'] ?? false;
-        $this->noNeedAuth   = $property['noNeedAuth'] ?? $this->noNeedAuth;
+        $this->noNeedLogin   = $property['noNeedLogin'] ?? $this->noNeedLogin;
         $this->repeatLogin  = $property['repeatLogin'] ?? $this->repeatLogin;
         $this->JumpUrl      = $property['JumpUrl'] ?? $this->JumpUrl;
 
         // 是否验证登录器
-        $auth = Auth::instance();
-        if ($auth->isLogin()) {
-
-            // 禁止重复登录
+        $userInfo = UserTokenService::isLogin();
+        if (!empty($userInfo)) {
             if (in_array($action, $this->repeatLogin)) {
+                var_dump($this->JumpUrl);
                 return redirect($this->JumpUrl);
             }
 
-            View::assign('user', $auth->userInfo);
+            $request->userId = $userInfo['id'];
+            $request->userInfo = $userInfo;
+            View::assign('user', $userInfo);
         } else {
-
-            if ($this->needLogin && !in_array($action, $this->noNeedAuth)) {
+            if ($this->needLogin && !in_array($action, $this->noNeedLogin)) {
                 if (\request()->isAjax()) {
                     return json(ResultCode::PLEASELOGININ);
                 } else {

@@ -27,7 +27,7 @@ class AdminPermissions implements MiddlewareInterface
      * 不需要鉴权的方法
      * @var array
      */
-    protected array $noNeedAuth = [
+    protected array $noNeedLogin = [
         '/Index/index',
         '/Login/index',
         '/Login/logout',
@@ -56,12 +56,12 @@ class AdminPermissions implements MiddlewareInterface
         // 获取权限列表
         $class = new \ReflectionClass($request->controller);
         $properties = $class->getDefaultProperties();
-        $this->noNeedAuth = $properties['noNeedAuth'] ?? $this->noNeedAuth;
+        $this->noNeedLogin = $properties['noNeedLogin'] ?? $this->noNeedLogin;
 
         // 控制器鉴权
         $method = '/' . $controller . '/' . $action;
-        if (!in_array('*', $this->noNeedAuth)
-            && !in_array(strtolower($method), array_map('strtolower', $this->noNeedAuth))) {
+        if (!in_array('*', $this->noNeedLogin)
+            && !in_array(strtolower($method), array_map('strtolower', $this->noNeedLogin))) {
             if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, get_admin_id())) {
                 if (request()->isAjax()) {
                     return json(['code' => 101, 'msg' => '没有权限']);

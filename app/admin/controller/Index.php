@@ -12,21 +12,19 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
+use app\common\service\notice\EmailService;
+use app\common\service\utils\FtpService;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use think\db\exception\BindParamException;
-use think\facade\Cache;
+use support\Cache;
 use think\facade\Db;
 use Webman\Event\Event;
 use system\Random;
-use think\cache\driver\Memcached;
-use think\cache\driver\Redis;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use app\AdminController;
-use app\common\library\Email;
-use app\common\library\Ftp;
 use app\common\model\system\AdminNotice;
 use app\common\model\system\Attachment;
 use app\common\model\system\Config;
@@ -389,7 +387,6 @@ class Index extends AdminController
                 (new Config())->saveAll($config);
                 $env = base_path() . '/.env';
                 $parse = parse_ini_file($env, true);
-                $parse['CACHE_DRIVER'] = $post['cache_type'];
                 $parse['CACHE_HOSTNAME'] = $post['cache_host'];
                 $parse['CACHE_HOSTPORT'] = $post['cache_port'];
                 $parse['CACHE_SELECT'] = $post['cache_select'];
@@ -401,7 +398,6 @@ class Index extends AdminController
             }
 
             // 清理系统核心缓存
-            Cache::tag('core_system')->clear();
             $configList = Cache::get('config_list');
             foreach ($configList as $item) {
                 Cache::delete($item);
@@ -417,7 +413,7 @@ class Index extends AdminController
     public function testFtp(): Response
     {
         if (request()->isPost()) {
-            if (Ftp::instance()->ftpTest(request()->post())) {
+            if (FtpService::ftpTest(request()->post())) {
                 return $this->success('上传测试成功！');
             }
         }
@@ -427,51 +423,49 @@ class Index extends AdminController
 
     /**
      * 邮件测试
+     * @return Response
      */
-    public function testEmail()
+    public function testEmail(): Response
     {
         if (request()->isPost()) {
-            $info = Email::instance()->testEMail(request()->post());
-            return $info === true ? $this->success('测试邮件发送成功！') : $this->error($info);
+            try {
+                EmailService::testEmail(request()->post());
+            } catch (\Exception $e) {
+                return $this->error($e->getMessage());
+            }
         }
+        return $this->success('测试邮件发送成功！');
     }
 
     /**
      * 缓存测试
+     * @return Response
      */
-    public function testCache()
+    public function testCache(): Response
     {
         if (request()->isPost()) {
 
             $param = request()->post();
-            if (!isset($param['type']) || empty($param['host']) || empty($param['port'])) {
+            if (empty($param['host']) || empty($param['port'])) {
                 return $this->error('参数错误!');
             }
 
-            $options = [
-                'host'     => $param['host'],
-                'port'     => (int)$param['port'],
-                'username' => $param['user'],
-                'password' => $param['pass']
-            ];
+            if (!extension_loaded('redis')) {
+                return $this->error('请先安装redis扩展!');
+            }
 
             try {
-                if (strtolower($param['type']) == 'redis') {
-                    $drive = new Redis($options);
-                } else {
-                    $drive = new Memcached($options);
-                }
+                $redis = new \Redis();
+                $redis->connect($param['host'], (int)$param['port']);
+                $redis->auth($param['pass']);
+                $redis->select((int)$param['select']);
+                $redis->set('key-test', time());
+                $redis->close();
             } catch (\Throwable $th) {
                 return $this->error($th->getMessage());
             }
-
-            if ($drive->set('test', 'cacheOK', 1000)) {
-                return $this->success('缓存测试成功！');
-            } else {
-                return $this->error('缓存测试失败！');
-            }
         }
+        return $this->success('缓存测试成功！');
 
-        return false;
     }
 }

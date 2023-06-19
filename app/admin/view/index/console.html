@@ -290,6 +290,7 @@
             </div>
         </div>
     </div>
+    <table class="layui-hide" id="ID-treeTable-demo"></table>
 </div>
 <script src="__STATICADMIN__module/echarts/echarts.js"></script>
 <script src="__STATICADMIN__module/echarts/echarts-wordcloud.js"></script>
@@ -298,10 +299,35 @@
 <include file="/public/footer"/>
 
 <script>
-    layui.use(['jquery','layer'], function () {
+    layui.use(['jquery','layer','treeTable'], function () {
 
         let $ = layui.jquery;
         let layer = layui.layer;
+        let treeTable = layui.treeTable;
+
+        var inst = treeTable.render({
+            elem: '#ID-treeTable-demo',
+            url: '/static/demo-1.json?page=1&limit=10', // 此处为静态模拟数据，实际使用时需换成真实接口
+            tree: {
+                customName: {
+                    icon: 'icon2',
+                    name: 'title'
+                },
+            },
+            maxHeight: '501px',
+            toolbar: '#TPL-treeTable-demo',
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'name', title: '用户名', width: 180, fixed: 'left'},
+                {field: 'experience', title: '积分', width: 90, sort: true},
+                {field: 'sex', title: '性别', width: 80, sort: true},
+                {field: 'score', title: '评分', width: 80, sort: true},
+                {field: 'city', title: '城市'},
+                { fixed: "right", title: "操作", width: 181, align: "center", toolbar: "#TPL-treeTable-demo-tools"}
+            ]],
+            page: true
+        });
 
         /**
          * 用户统计报表

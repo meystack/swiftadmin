@@ -15,16 +15,6 @@ use Webman\Route;
 Route::any('/captcha', [app\BaseController::class, 'captcha']);
 
 /**
- * 加载自定义路由 [插件路由]
- */
-$defineRoute = require __DIR__ . '/defineRoute.php';
-if ($defineRoute && is_array($defineRoute)) {
-    foreach ($defineRoute as $key => $value) {
-        Route::any($key, $value);
-    }
-}
-
-/**
  * 默认管理员路由
  * @var string $manage
  */
@@ -77,3 +67,29 @@ Route::fallback(function ($request) {
 
     return response(request_error(current($parseApp)), 404);
 });
+
+// 执行插件初始化
+$pluginList = get_plugin_list();
+foreach ($pluginList as $item) {
+    if (!$item['status']) {
+        continue;
+    }
+    foreach ($item['rewrite'] as $route => $value) {
+        $separator = explode('/', $value);
+        $method = end($separator);
+        array_pop($separator);
+        $filePath = implode('\\', $separator);
+        $controller = 'app\\index\\controller\\' . $filePath;
+        if (class_exists($controller) && method_exists($controller, $method)) {
+            try {
+                $classFullName = (new ReflectionClass($controller))->getName();
+                Route::any($route, [$classFullName, $method]);
+            } catch (\Throwable $e) {
+                var_dump('error: ' . $e->getMessage());
+            }
+        } else {
+            var_dump("\033[31m$controller or $method does not exist!\033[0m");
+        }
+    }
+
+}

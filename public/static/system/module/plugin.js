@@ -5,6 +5,7 @@ layui.define(['i18n'], function (exports) {
     var table = layui.table;
     var i18n = layui.i18n;
     var form = layui.form;
+    var notice = layui.notice;
 
     i18n.render(layui.admin.getStorage('language') || 'zh-CN');
     var area = [$(window).width() > 800 ? '660px' : '85%', $(window).height() > 800 ? '680px' : '85%'];
@@ -61,8 +62,9 @@ layui.define(['i18n'], function (exports) {
                     top.layui.admin.reloadLayout();
 
                 } else {
-
-                    layer.msg(res.msg, 'error');
+                    notice.error({
+                        message: res.msg,
+                    })
                     // 登录超时
                     if (res.code === -101) {
                         plugin.login();
@@ -111,7 +113,9 @@ layui.define(['i18n'], function (exports) {
                                     layer.closeAll();
                                     plugin.againClick();
                                 } else {
-                                    layer.msg(res.msg, 'error');
+                                    notice.error({
+                                        message: res.msg,
+                                    })
                                 }
                             }, 'json')
 
@@ -185,7 +189,9 @@ layui.define(['i18n'], function (exports) {
                     delete window.plugins[name];
                     $(elems).find('td:last').children('div').html(html);
                 } else {
-                    layer.msg(i18n.prop(res.msg), 'error');
+                    notice.error({
+                        message: res.msg,
+                    })
                 }
 
                 layer.close(window.unIndex);
@@ -211,7 +217,7 @@ layui.define(['i18n'], function (exports) {
             html += '<div class="layui-form-item">';
             html += '<label class="layui-form-label">用户邮箱</label>';
             html += '<div class="layui-input-block">';
-            html += '<input type="text" name="nickname" style="width:330px;" lay-verify="required" placeholder="请输入邮箱或手机号" autocomplete="off" class="layui-input" >';
+            html += '<input type="text" name="nickname" style="width:330px;" lay-verify="required" placeholder="请输入邮箱或用户名" autocomplete="off" class="layui-input" >';
             html += '</div></div>';
             html += '<div class="layui-form-item"><label class="layui-form-label">密码</label>';
             html += '<div class="layui-input-block">';
@@ -270,7 +276,7 @@ layui.define(['i18n'], function (exports) {
         let name = plugin.getTableData(this)['name'];
         layui.sessionData('api_install_index', {
             key: 'index',
-            value: plugin.getTableData(this)['LAY_TABLE_INDEX'],
+            value: plugin.getTableData(this)['LAY_INDEX'],
         });
         plugin.request(name, null, plugin.getUrl('Plugin', 'install'));
     })
@@ -291,7 +297,9 @@ layui.define(['i18n'], function (exports) {
             error: function (res) {
                 $(obj.elem).prop('checked', !obj.elem.checked);
                 form.render('checkbox');
-                layer.msg(res.msg, 'error');
+                notice.error({
+                    message: res.msg,
+                })
             },
             success: function (res) {
                 layer.msg(res.msg);
@@ -335,7 +343,7 @@ layui.define(['i18n'], function (exports) {
         html += '</div></form> ';
         layui.sessionData('api_install_index', {
             key: 'index',
-            value: plugin.getTableData(this)['LAY_TABLE_INDEX'],
+            value: plugin.getTableData(this)['LAY_INDEX'],
         });
         layer.open({
             type: 1,
@@ -388,7 +396,9 @@ layui.define(['i18n'], function (exports) {
                     layer.msg(res.msg);
                     layer.close(confirm);
                 } else {
-                    layer.msg(res.msg, 'error');
+                    notice.error({
+                        message: res.msg,
+                    })
                 }
             })
         });

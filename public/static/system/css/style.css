@@ -409,7 +409,7 @@ a {
 }
 
 .layui-tree-iconClick .layui-icon {
-    font-size: 16px!important;
+    font-size: 14px!important;
 }
 
 .layui-tree-txt {
@@ -1310,10 +1310,6 @@ a {
 
 .layui-layout-admin .layui-body .layui-icon-down {
     right: 0
-}
-
-.layui-tree-subtraction .layui-form-checkbox[lay-skin=primary] i.layui-icon-ok:before {
-    content: "\e67e";
 }
 
 .swiftadmin-tabs-select.layui-nav {
@@ -2233,22 +2229,18 @@ a {
 }
 
 .layui-form-onswitch {
-    height: 16px;
-    line-height: 16px;
-    min-width: 28px;
-    margin-top: 6px;
     background-color: #1890ff;
     border: 1px solid #1890ff;
 }
 
 .layui-form-switch i {
-    top: 2px;
+    top: 1px;
     width: 12px;
     height: 12px;
 }
 
 .layui-form-onswitch i {
-    margin-left: -18px;
+    margin-left: -16px;
 }
 
 /* 拖拽上传 */
@@ -2437,6 +2429,24 @@ a {
 .layui-table-view .layui-form-checkbox[lay-skin=primary] i {
     width: 16px;
     height: 16px;
+    line-height: 15px;
+}
+
+.layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #1890ff;
+    color: #fff;
+    background-color: #1890ff;
+}
+
+.layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate:before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    width: 50%;
+    height: 1px;
+    margin: -1px auto 0;
+    background-color: #fff;
 }
 
 .layui-laypage .layui-laypage-curr .layui-laypage-em {

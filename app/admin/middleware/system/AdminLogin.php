@@ -1,8 +1,6 @@
 <?php
 
 namespace app\admin\middleware\system;
-use app\common\library\Auth;
-use think\facade\Cache;
 use Webman\Http\Request;
 use Webman\Http\Response;
 use Webman\MiddlewareInterface;

@@ -12,7 +12,7 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app;
 
-use app\common\library\Auth;
+use app\common\service\user\UserService;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use think\db\exception\DataNotFoundException;
@@ -46,12 +46,6 @@ class HomeController extends BaseController
     public string $errorText = '';
 
     /**
-     * 接口权限
-     * @var object
-     */
-    public object $auth;
-
-    /**
      * 控制器登录鉴权
      * @var bool
      */
@@ -67,13 +61,13 @@ class HomeController extends BaseController
      * 非鉴权方法
      * @var array
      */
-    public array $noNeedAuth = [];
+    public array $noNeedLogin = [];
 
     /**
      * 跳转URL地址
      * @var string
      */
-    public string $JumpUrl = '/user/index';
+    public string $JumpUrl = '/';
 
     /**
      * 初始化函数
@@ -82,7 +76,6 @@ class HomeController extends BaseController
     {
         // 获取权限实例
         parent::__construct();
-        $this->auth = Auth::instance();
     }
 
     /**
@@ -92,9 +85,6 @@ class HomeController extends BaseController
      * @param string $app
      * @return Response
      * @throws InvalidArgumentException
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
      */
     protected function view(string $template = '', array $argc = [], string $app = 'index'): \support\Response
     {
@@ -112,5 +102,15 @@ class HomeController extends BaseController
         }
 
         return view($template, $argc, $app);
+    }
+
+    /**
+     * 退出登录
+     * @access public
+     */
+    public function logOut(): Response
+    {
+        UserService::logout();
+        return $this->success('退出成功', '/');
     }
 }

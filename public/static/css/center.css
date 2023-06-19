@@ -65,6 +65,11 @@ b.msg {
 	color: #000;
 }
 
+.layui-btn {
+	height: 33px!important;
+	line-height: 33px!important;
+}
+
 .layui-form-label {
 	padding: 6px 15px;
 }

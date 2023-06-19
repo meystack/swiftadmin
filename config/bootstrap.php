@@ -12,9 +12,11 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use app\common\bootstrap\RedisCache;
+
 return [
     support\bootstrap\Session::class,
     support\bootstrap\LaravelDb::class,
+    RedisCache::class, // 缓存服务器
     Webman\ThinkOrm\ThinkOrm::class,
-    Webman\ThinkCache\ThinkCache::class,
 ];

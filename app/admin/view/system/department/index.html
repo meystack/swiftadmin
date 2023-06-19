@@ -112,26 +112,35 @@
 <include file="/public/footer" />
 <script src="__STATICADMIN__module/xmselect/xmselect.js"></script>
 <script>
-    layui.use(['admin','form','treetable'], function () {
+    layui.use(['admin','form','treeTable'], function () {
 
         var jquery = layui.jquery;
         var admin = layui.admin;
         var form = layui.form;
         var table = layui.table;
-        var treetable = layui.treetable;
+        var treeTable = layui.treeTable;
         var tableURL = "{:url('/system/Department/index')}";
 
         // 渲染初始化表格
         var renderTable = function (tableURL) {
 
-            var ss = treetable.render({
+            treeTable.render({
                 elem: '#lay-tableList',
-                treeColIndex: 1,
-                treeSpid: 0,
-                treeIdName: 'id',
-                treePidName: 'pid',
                 url: tableURL,
-                cellMinWidth: 100,
+                tree: {
+                    customName: {
+                        name: 'title',
+                        icon: 'icon1',
+                    },
+                    view: {
+                        iconClose: '', // 关闭时候的图标
+                        iconOpen: '', // 打开时候的图标
+                        iconLeaf: '', // 叶子节点的图标
+                        expandAllDefault: true,
+
+                    }
+                },
+                // 默认展开
                 cols: [[
                     {type: 'numbers'},
                     {field: 'title', title: '{:__("部门名称")}'},
@@ -179,7 +188,7 @@
                 tips: '请选择上级部门',
                 name: 'pid',
                 height: 'auto',
-                data: table.cache.depart,
+                data: table.cache['lay-tableList'],
                 radio: true,
                 clickClose: true,
                 initValue: checkedId,
@@ -210,10 +219,11 @@
                 var pageThat = jquery(this);
                 pageThat.attr("disabled",true);
                  // 获取提交地址
-                if (typeof(tableThis) !== 'undefined') {
+                var _pageUrl;
+                if (typeof (tableThis) !== 'undefined') {
                     _pageUrl = tableThis.event === 'edit' ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
-                }else {
-                     _pageUrl = pageThat.attr('lay-add');
+                } else {
+                    _pageUrl = pageThat.attr('lay-add');
                 }
                 
                 
@@ -225,7 +235,7 @@
                 // 开始POST提交数据
                 jquery.post(_pageUrl, 
                     post.field, function(res){
-                        if (res.code == 200) {
+                        if (res.code === 200) {
                             layer.msg(res.msg);
                             // 更新列数据
                             if (typeof(tableThis) !== 'undefined') {

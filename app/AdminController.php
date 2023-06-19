@@ -68,6 +68,12 @@ class AdminController extends BaseController
     protected bool $dataLimit = false;
 
     /**
+     * 是否开启部门限制
+     * @var bool
+     */
+    protected bool $departmentLimit = false;
+
+    /**
      * 数据限制字段
      * @var string
      */
@@ -108,7 +114,7 @@ class AdminController extends BaseController
 
     /**
      * 获取资源列表
-     * @return Response|void
+     * @return Response
      */
     public function index()
     {
@@ -117,7 +123,6 @@ class AdminController extends BaseController
             $limit = (int)input('limit', 18);
             $where = $this->buildSelectParams();
             $count = $this->model->where($where)->count();
-            $limit = is_empty($limit) ? 10 : $limit;
             $page = $count <= $limit ? 1 : $page;
             $fieldList = $this->model->getFields();
             $order = !array_key_exists('sort', $fieldList) ? 'id' : 'sort';
@@ -219,6 +224,7 @@ class AdminController extends BaseController
 
     /**
      * 删除资源
+     * @return Response
      */
     public function del()
     {
@@ -362,14 +368,14 @@ class AdminController extends BaseController
 
     /**
      * 获取查询参数
+     * @return array
      */
-    protected function buildSelectParams()
+    protected function buildSelectParams(): array
     {
+        $where = [];
         $params = request()->all();
-
         if (!empty($params) && is_array($params)) {
 
-            $where = [];
             $this->tableFields = $this->model->getFields();
             foreach ($params as $field => $value) {
 
@@ -413,23 +419,18 @@ class AdminController extends BaseController
                     case 'year':
                         $value = str_replace(',', '-', $value);
                         if (strpos($value, '-')) {
-
                             $arr = explode(' - ', $value);
                             if (empty($arr)) {
                                 continue 2;
                             }
-
                             if (in_array($field, $this->converTime)) {
-
                                 if (isset($arr[0])) {
                                     $arr[0] = strtotime($arr[0]);
                                 }
-
                                 if (isset($arr[1])) {
                                     $arr[1] = strtotime($arr[1]);
                                 }
                             }
-
                             $exp = 'between';
                             if ($arr[0] === '') {
                                 $exp = '<=';
@@ -438,7 +439,6 @@ class AdminController extends BaseController
                                 $exp = '>=';
                                 $arr = $arr[0];
                             }
-
                             $where[] = [$field, $exp, $arr];
                         } else {
                             $where[] = [$field, '=', $value];
@@ -484,17 +484,20 @@ class AdminController extends BaseController
                 }
             }
 
-            // 限制数据字段
-            if (!$this->auth->SuperAdmin() && $this->dataLimit) {
+            // 限制个人数据权限
+            $superAdmin = $this->auth->SuperAdmin();
+            if (!$superAdmin && $this->dataLimit) {
                 if (in_array($this->dataLimitField, $this->tableFields)) {
                     $where[] = [$this->dataLimitField, '=', get_admin_id()];
                 }
+            } // 限制部门数据权限
+            else if (!$superAdmin && $this->departmentLimit
+                && in_array('department_id', $this->tableFields)) {
+                $where[] = ['department_id', 'in', get_admin_info('AdminLogin.department_id')];
             }
-
-            return $where;
         }
 
-        return false;
+        return $where;
     }
 
     /**

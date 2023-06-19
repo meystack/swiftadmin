@@ -23,7 +23,7 @@ return [
         'tpl_cache'          => true,
         'taglib_begin'       => '<',
         'taglib_end'         => '>',
-        'taglib_pre_load'    => implode(',', array_merge(['app\common\taglib\SaLibs'],include __DIR__ . '/taglib.php')),
+        'taglib_pre_load'    => 'app\common\taglib\SaLibs',
         'tpl_replace_string' => [
             '__STATIC__'       => '/static/',
             '__STATICJS__'     => '/static/js/',

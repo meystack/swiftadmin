@@ -14,9 +14,11 @@
 
 return [
     'default' => [
-        'host'     => '127.0.0.1',
+        'host'     => get_env('CACHE_HOSTNAME') ?? '127.0.0.1',
         'password' => get_env('REDIS_PASSWORD'),
-        'port'     => 6379,
-        'database' => 1,
+        'port'     => get_env('CACHE_HOSTPORT') ?? 6379,
+        'database' => get_env('CACHE_SELECT') ?? 0,
+        'prefix'   => 'redis_',
+        'expire'   => 0,
     ],
 ];

@@ -162,8 +162,7 @@
                                     <div class="layui-form-mid layui-word-aux">* {:__('是否开启手机版模式')}</div>
                                 </div>
 
-                                <div class="mobile" <eq name="$config['site_state']" value="0"> style="display:none;"
-                                    </eq> >
+                                <div class="mobile" <eq name="$config['site_state']" value="0"> style="display:none;" </eq> >
 
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">{:__('手机版类型')}</label>
@@ -328,88 +327,61 @@
                                     <label class="layui-form-label">{:__('缓存开关')}</label>
                                     <div class="layui-input-inline">
                                         <input type="radio" name="cache_status" data-display="cache_status"
-                                            lay-filter="radioStatus" value="1" title="开启" <if
+                                               lay-filter="radioStatus" value="1" title="开启" <if
                                             condition="$config['cache_status'] eq 1 "> checked </if> >
                                         <input type="radio" name="cache_status" data-display="cache_status"
-                                            lay-filter="radioStatus" value="0" title="关闭" <if
+                                               lay-filter="radioStatus" value="0" title="关闭" <if
                                             condition="$config['cache_status'] eq 0 "> checked </if>>
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">* {:__('开启数据库缓存会提高网站性能！')}</div>
                                 </div>
 
-                                <div class="cache_status" <eq name="$config['cache_status']" value="0">
-                                    style="display:none;" </eq> >
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">{:__('缓存方式')}</label>
-                                        <div class="layui-input-inline">
-                                            <select name="cache_type" data-display="cache_type" data-disable="file"
-                                                lay-filter="selectStatus" class="ctype">
-                                                <option value="file" <if condition="$config['cache_type'] eq 'file'">
-                                                    selected</if> >file</option>
-                                                <option value="redis" <if condition="$config['cache_type'] eq 'redis'">
-                                                    selected</if> >redis</option>
-                                                <option value="memcached" <if
-                                                    condition="$config['cache_type'] eq 'memcached'">selected</if>
-                                                    >memcached</option>
-                                            </select>
-                                        </div>
-                                        <div class="layui-form-mid layui-word-aux">
-                                            <i class="layui-icon layui-icon-about"
-                                                lay-tips="{:__('使用Redis缓存方式,出错会抛出Connection refused！')}"></i>
-                                        </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('服务器IP')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cache_host" placeholder="{:__('缓存服务器IP')}"
+                                               value="{$config['cache_host']}" class="layui-input chost">
                                     </div>
-
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">{:__('缓存时间')}</label>
-                                        <div class="layui-input-inline">
-                                            <input type="text" name="cache_time" autocomplete="off"
-                                                value="{$config.cache_time}" class="layui-input">
-                                        </div>
-                                        <div class="layui-form-mid layui-word-aux">* {:__('单位 /秒')}</div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('端 口')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cache_port" placeholder="{:__('缓存服务器端口')}"
+                                               value="{$config['cache_port']}" class="layui-input cport">
                                     </div>
-
-                                    <div class="cache_type" <if
-                                        condition="$config['cache_type'] eq 'file' or $config['cache_type'] eq ''">
-                                        style="display:none;" </if> >
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">{:__('服务器IP')}</label>
-                                            <div class="layui-input-inline">
-                                                <input type="text" name="cache_host" placeholder="{:__('缓存服务器IP')}"
-                                                    value="{$config['cache_host']}" class="layui-input chost">
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">{:__('端 口')}</label>
-                                            <div class="layui-input-inline">
-                                                <input type="text" name="cache_port" placeholder="{:__('缓存服务器端口')}"
-                                                    value="{$config['cache_port']}" class="layui-input cport">
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">{:__('数据库')}</label>
-                                            <div class="layui-input-inline">
-                                                <input type="number" name="cache_select" min="1" max="16"
-                                                    placeholder="{:__('缓存服务redis库 1- 16')}"
-                                                    value="{$config['cache_select']}" class="layui-input cuser">
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">{:__('账 号')}</label>
-                                            <div class="layui-input-inline">
-                                                <input type="text" name="cache_user" placeholder="{:__('缓存服务账号,没有请留空')}"
-                                                    value="{$config['cache_user']}" class="layui-input cuser">
-                                            </div>
-                                        </div>
-                                        <div class="layui-form-item">
-                                            <label class="layui-form-label">{:__('密 码')}</label>
-                                            <div class="layui-input-inline">
-                                                <input type="text" name="cache_pass" placeholder="{:__('缓存服务密码,没有请留空')}"
-                                                    value="{$config['cache_pass']}" class="layui-input cpass">
-                                            </div>
-                                            <button type="button" class="layui-btn layui-btn-primary" lay-ajax=""
-                                                data-url="{:url('/Index/testCache')}"
-                                                data-object="type:ctype,host:chost,port:cport,user:cuser,pass:cpass">{:__('测试连接')}</button>
-                                        </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('缓存时间')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cache_time" autocomplete="off"
+                                               value="{$config.cache_time}" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">* {:__('单位 /秒')}</div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('数据库')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="number" name="cache_select" min="1" max="16"
+                                               placeholder="{:__('缓存服务redis库 1- 16')}"
+                                               value="{$config['cache_select']}" class="layui-input cselect">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('账 号')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cache_user" placeholder="{:__('缓存服务账号,没有请留空')}"
+                                               value="{$config['cache_user']}" class="layui-input cuser">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{:__('密 码')}</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="cache_pass" placeholder="{:__('缓存服务密码,没有请留空')}"
+                                               value="{$config['cache_pass']}" class="layui-input cpass">
+                                    </div>
+                                    <button type="button" class="layui-btn layui-btn-primary" lay-ajax=""
+                                            data-url="{:url('/index/testCache')}"
+                                            data-object="host:chost,port:cport,user:cuser,select:cselect,pass:cpass">{:__('测试连接')}</button>
                                     </div>
                                 </div>
 
@@ -427,8 +399,7 @@
                                 <div class="layui-form-item layui-col-md5">
                                     <label class="layui-form-label">{:__('提示信息')}</label>
                                     <div class="layui-input-block">
-                                        <textarea id="site_notice" name="site_notice" lay-verify="siteClose"
-                                            type="layui-textarea">{$config.site_notice}</textarea>
+                                        <textarea name="site_notice" lay-verify="siteClose" class="layui-textarea">{$config.site_notice}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1835,21 +1806,11 @@
 <include file="/public/footer" />
 
 <script>
-    layui.use(['form', 'jquery', 'layedit', 'admin'], function () {
+    layui.use(['form', 'jquery', 'admin'], function () {
 
         var form = layui.form;
         var admin = layui.admin;
         var jquery = layui.jquery;
-        // 渲染富文本编辑器
-        var layedit = layui.layedit;
-        var layindex = layedit.build('site_notice', { height: 110, color: '#ffffff' });
-
-        // 异步验证表单
-        form.verify({
-            siteClose: function (value) {
-                return layedit.sync(layindex);
-            }
-        });
 
         // 增加变量
         jquery('.layui-variable-add').on('click', function () {

@@ -12,11 +12,8 @@ declare (strict_types=1);
 namespace app\index\controller;
 
 use app\HomeController;
-use support\Response;
 use Psr\SimpleCache\InvalidArgumentException;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
+use support\Response;
 
 class Index extends HomeController
 {
@@ -24,19 +21,9 @@ class Index extends HomeController
      * 前端首页
      * @return Response
      * @throws InvalidArgumentException
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
      */
     public function index(): Response
     {
-        $data = [
-            '欢迎使用swiftAdmin极速开发框架',
-            __DIR__.'\Index.php 正在使用halt函数输出到浏览器',
-            '请在app\index\controller\Index.php中删除halt函数',
-        ];
-
-        halt($data);
         return $this->view('index/index', ['name' => 'meystack']);
     }
 }

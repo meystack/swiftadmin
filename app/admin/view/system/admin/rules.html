@@ -122,31 +122,37 @@
 <include file="/public/footer" />
 
 <script>
-    layui.use(['admin','form','treetable','iconPicker'], function () {
+    layui.use(['admin','form','treeTable','iconPicker'], function () {
 
         var jquery = layui.jquery;
         var admin = layui.admin;
         var form = layui.form;
         var table = layui.table;
-        var treetable = layui.treetable;
+        var treeTable = layui.treeTable;
         var iconPicker = layui.iconPicker;
         var tableURL = "{:url('/system/AdminRules/index')}";
 
-
         // 渲染初始化表格
         var renderTable = function (tableURL) {
-            treetable.render({
+            treeTable.render({
                 elem: '#lay-tableList',
-                treeColIndex: 1,
-                treeSpid: 0,
-                treeIdName: 'id',
-                treePidName: 'pid',
                 url: tableURL,
-                cellMinWidth: 100,
-                treeDefaultClose: true,
+                tree: {
+                    customName: {
+                        pid: 'pid',
+                        icon: 'icon1',
+                    },
+                    view: {
+                        iconClose: '', // 关闭时候的图标
+                        iconOpen: '', // 打开时候的图标
+                        iconLeaf: '', // 叶子节点的图标
+                    }
+                },
                 cols: [[
                     {type: 'numbers'},
-                    {field: 'title', title: '{:__("菜单名称")}'},
+                    {field: 'name', title: '{:__("菜单名称")}',templet: function(d) {
+                            return '<i class="layui-icon '+d.icon+'"></i> '+d.title;
+                        },},
                     {field: 'router', title: '{:__("路由地址")}'},
                     {field: 'alias', title: '{:__("权限标识")}'},
                     {field: 'auth',  width: 80,title: '{:__("鉴权")}',templet: function(d) {
@@ -246,7 +252,7 @@
                 tips: '请选择上级菜单',
                 name: 'pid',
                 height: 'auto',
-                data: table.cache['rules'],
+                data: table.cache['lay-tableList'],
                 radio: true,
                 clickClose: true,
                 initValue: checkedId,
@@ -314,9 +320,10 @@
                 var pageThat = jquery(this);
                 pageThat.attr("disabled",true);
                 // 获取提交地址
-                if (typeof(tableThis) !== 'undefined') {
+                var _pageUrl;
+                if (typeof (tableThis) !== 'undefined') {
                     _pageUrl = tableThis.event === 'edit' ? pageThat.attr('lay-edit') : pageThat.attr('lay-add');
-                }else {
+                } else {
                     _pageUrl = pageThat.attr('lay-add');
                 }
 
@@ -328,7 +335,7 @@
                 // 开始POST提交数据
                 jquery.post(_pageUrl,
                     post.field, function(res){
-                        if (res.code == 200) {
+                        if (res.code === 200) {
 
                             layer.msg(res.msg);
 
@@ -356,12 +363,12 @@
 
         // 展开所有
         jquery('#expandAll').click(function(){
-            treetable.expandAll('#lay-tableList');
+            treeTable.expandAll('lay-tableList', true);
         })
 
         // 折叠所有
         jquery('#foldAll').click(function () {
-            treetable.foldAll('#lay-tableList');
+            treeTable.expandAll('lay-tableList',false);
         });
 
         // 执行初始化

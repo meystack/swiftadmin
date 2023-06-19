@@ -14,8 +14,30 @@
 
 		<div class="layui-nav layui-hide-xs fr" id="login">
 			<notempty name="$user.id"> <li class="layui-nav-item"><a class="" href="/index/user/index" >会员中心</a></li> <else/>
-			<li class="layui-nav-item"><a href="javascript:;" lay-open data-title="用户注册" data-area="490px" data-url="/index/user/register" >注册</a></li>
-			<li class="layui-nav-item"><a href="javascript:;" lay-open data-title="用户登录" data-area="450px,420px" data-url="/index/user/login" >登录</a></li>
+			<li class="layui-nav-item"><a href="/index/user/register" target="_blank">注册</a></li>
+			<li class="layui-nav-item"><a href="/index/user/login" target="_blank">登录</a></li>
+			<li class="layui-nav-item"><a id="ajaxLogin" href="javascript:;" lay-open data-title="用户登录" data-area="450px,420px" data-url="/index/user/ajaxLogin" >Ajax登录</a></li>
 			</notempty>
 		</div>
 	</div>
+	<script >
+
+		layui.use([], function(e) {
+			var $ = layui.jquery;
+			var layer = layui.layer;
+			//监听导航点击
+			$('#ajaxLogin').on('click', function() {
+				var url = $(this).attr('data-url');
+				var title = $(this).attr('data-title');
+				var area = $(this).attr('data-area');
+				layer.open({
+					type: 2,
+					title: title,
+					area: ['450px','420px'],
+					shadeClose: true, //点击遮罩关闭
+					content: url
+				});
+			});
+		})
+
+	</script>

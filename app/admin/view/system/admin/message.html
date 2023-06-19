@@ -10,7 +10,7 @@
     <div class="layui-card-body">
         <div class="layui-panel">
             <div class="layui-card-header">
-                <div class="title"><span class="titles"><img src="{$detail.face}" class="face" width="20"> </span>{$detail.nickname}</div>
+                <div class="title"><span class="titles"><img src="{$detail.face|default=''}" class="face" width="20"> </span>{$detail.nickname|default='隐藏用户'}</div>
                 <div class="time"><span class="times">时间：</span>{$detail.create_time}</div>
             </div>
             <div id="layui-info">{$detail.content|raw}</div>

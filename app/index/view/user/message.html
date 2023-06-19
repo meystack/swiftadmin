@@ -17,8 +17,8 @@
               <button class="layui-btn layui-btn-normal layui-btn-sm layui-btn-post" data-status="all" >{:__('全部消息')}</button>
               <button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-post" data-status="1">{:__('已读消息')}</button>
               <button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-post" data-status="0">{:__('未读消息')}</button>
-              <button class="layui-btn layui-btn-danger layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/dermessage?type=del"  >{:__('删除消息')}</button>
-              <button class="layui-btn layui-btn-checked layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/dermessage?type=read" >{:__('标记已读')}</button>
+              <button class="layui-btn layui-btn-danger layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/batchMessage?type=del"  >{:__('删除消息')}</button>
+              <button class="layui-btn layui-btn-checked layui-btn-sm" lay-batch data-table="lay-tableList" data-url="/index/user/batchMessage?type=read" >{:__('标记已读')}</button>
             </div>
           </div>
         </div>
@@ -45,14 +45,14 @@
       , page: true
       , limit: 20
       , cols: [[
-        {type: 'checkbox', width: 45},
+        {type: 'checkbox', width: 60},
         {
           field: 'title', align: 'left',  templet: function (e) {
             let title = '<a class="layui-table-text';
             if (e.status === 0) {
               title += ' layui-table-text-red';
             }
-            title += '" lay-open data-title="查看消息" data-url="/index/user/viewmessage?id=' + e.id + '" data-area="600px, 390px" >';
+            title += '" lay-open data-title="查看消息" data-url="/index/user/viewMessage?id=' + e.id + '" data-area="600px, 390px" >';
             if (e.status === 0) {
               title += '<i class="layui-icon fa-envelope"></i> ';
             } else {

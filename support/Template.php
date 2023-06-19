@@ -29,8 +29,35 @@ class Template extends ThinkPHP
      */
     public static function render(string $template, array $vars, string $app = null, string $plugin = null): string
     {
-        $content = parent::render($template, $vars, $app);
-        if (saenv('minify_page')) {
+        $request = request();
+        $app = $app === null ? $request->app : $app;
+        $viewPath = app_path() . "/$app/view/";
+        $defaultOptions = [
+            'view_path' => $viewPath,
+            'cache_path' => runtime_path() . '/views/',
+            'view_suffix' => 'html'
+        ];
+        $options = $defaultOptions + config("view.options", []);
+        $options['taglib_pre_load'] = rtrim($options['taglib_pre_load'], ',');
+        foreach (get_plugin_list() as $index => $item) {
+            if (empty($item['status'])) {
+                continue;
+            }
+            $name = $item['name'];
+            $taglibPath = plugin_path($name . DIRECTORY_SEPARATOR . 'taglib');
+            $tagList = glob($taglibPath . '*.php');
+            foreach ($tagList as $key => $tag) {
+                $tag = pathinfo($tag, PATHINFO_FILENAME);
+                $options['taglib_pre_load'] .= ',plugin\\' . $name . '\\taglib\\' . $tag;
+            }
+        }
+        $views = new \think\Template($options);
+        ob_start();
+        $vars = array_merge(static::$vars, $vars);
+        $views->fetch($template, $vars);
+        $content = ob_get_clean();
+        static::$vars = [];
+        if (saenv('minify_page') && strtolower($app) == 'index') {
             $content = preg_replace('/\s+/i', ' ', $content);
         }
         return $content;

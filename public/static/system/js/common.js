@@ -12,7 +12,6 @@ layui.config({
     iconPicker: 'iconPicker/iconPicker',
     echarts: "echarts/echarts",
     xmselect: 'xmselect/xmselect',
-    treetable: 'treetable/treetable',
     tableSelect: 'tableSelect/tableSelect',
     formDesign: 'formDesign/formDesign',
     soulTable: 'soulTable/soulTable',

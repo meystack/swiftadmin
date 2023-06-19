@@ -81,7 +81,7 @@ class Plugin extends AdminController
                 return $this->error('请勿重复安装插件');
             }
 
-//            try {
+            try {
 
                 $pluginZip = self::downLoad($name, ['name' => $name, 'token' => input('token')]);
                 ZipArchives::unzip($pluginZip, plugin_path(), '', true);
@@ -95,10 +95,10 @@ class Plugin extends AdminController
                 self::pluginMenu($name);
                 self::executeSql($name);
                 self::enabled($name);
-//            } catch (\Throwable $th) {
-//                recursive_delete($pluginPath);
-//                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
-//            }
+            } catch (\Throwable $th) {
+                recursive_delete($pluginPath);
+                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
+            }
 
             return $this->success('插件安装成功', null, get_plugin_config($name, true));
         }
@@ -295,17 +295,15 @@ class Plugin extends AdminController
         if (request()->isPost()) {
             $post['extends'] = input('extends');
             $post['rewrite'] = input('rewrite');
-            foreach ($post['rewrite'] as $kk=>$vv)
-            {
-                if($kk[0]!='/')return $this->error('伪静态变量名称“'.$kk.'" 必须以“/”开头');
-                $post['rewrite'][$kk]=str_replace('\\','/',trim($vv,'/\\'));
-                $value=explode('/',$post['rewrite'][$kk]);
-                if(count($value)<2){
-                    return $this->error('伪静态规则变量值，不符合规则');
+            foreach ($post['rewrite'] as $kk => $vv) {
+                if ($kk[0] != '/') return $this->error('伪静态变量名称“' . $kk . '" 必须以“/”开头');
+                $post['rewrite'][$kk] = str_replace('\\', '/', trim($vv, '/\\'));
+                $value = explode('/', $post['rewrite'][$kk]);
+                if (count($value) < 2) {
+                    return $this->error('伪静态不符合规则');
                 }
-                if(strtoupper($value[count($value)-2][0]) !== $value[count($value)-2][0])
-                {
-                    return $this->error('伪静态规则变量值中，控制器首字母必须大写哦');
+                if (strtoupper($value[count($value) - 2][0]) !== $value[count($value) - 2][0]) {
+                    return $this->error('控制器首字母必须大写');
                 }
             }
             $config = array_merge($config, $post);

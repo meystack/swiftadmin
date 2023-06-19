@@ -3,11 +3,10 @@
  * 全局公共函数库
  */
 
-use app\common\library\Auth;
 use app\common\model\system\UserThird;
-use think\facade\Cache;
 use app\common\model\system\Config;
 use think\helper\Str;
+use support\Cache;
 
 // 权限常量
 const AUTH_CATE = 'cates';
@@ -110,31 +109,6 @@ if (!function_exists('token_field')) {
     {
         $token = \request()->buildToken($name, $type);
         return '<input type="hidden" name="' . $name . '" value="' . $token . '" />';
-    }
-}
-
-if (!function_exists('get_user_id')) {
-    /**
-     * 获取会员ID
-     */
-    function get_user_id()
-    {
-        return get_user_info('id');
-    }
-}
-
-if (!function_exists('get_user_info')) {
-    /**
-     * 获取会员信息
-     */
-    function get_user_info($field = '')
-    {
-        $data = Auth::instance()->getUserInfo();
-        if ($field && isset($data[$field])) {
-            return $data[$field];
-        }
-
-        return $data;
     }
 }
 
@@ -660,15 +634,11 @@ if (!function_exists('saenv')) {
      * @param bool $group
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    function saenv(string $name, bool $group = false)
+    function saenv(string $name, bool $group = false): mixed
     {
         $redis = 'config_' . $name;
         $config = Cache::get($redis);
-
         try {
             $configList = Cache::get('config_list') ?? [];
             if (is_array($config) ? empty($config) : is_empty($config)) {
@@ -683,49 +653,8 @@ if (!function_exists('saenv')) {
                     Cache::set('config_list', $configList);
                 }
             }
-
-        } catch (\Exception $e) {
-        }
+        } catch (\Exception $e) {}
         return $config;
-    }
-}
-
-if (!function_exists('system_cache')) {
-    /**
-     * 全局缓存控制函数
-     * @param string $name
-     * @param mixed $value
-     * @param null $options
-     * @param null $tag
-     * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    function system_cache(string $name = '', mixed $value = '', $options = null, $tag = null)
-    {
-        if (is_null($name)) {
-            return [];
-        }
-
-        if ('' === $value) {
-            // 获取缓存
-            return str_starts_with($name, '?') ? Cache::has(substr($name, 1)) : Cache::get($name);
-        } elseif (is_null($value)) {
-            // 删除缓存
-            return Cache::delete($name);
-        }
-
-        // 缓存数据
-        if (is_array($options)) {
-            $expire = $options['expire'] ?? null;
-        } else {
-            $expire = $options;
-        }
-
-        if (is_null($tag)) {
-            return Cache::set($name, $value, $expire);
-        } else {
-            return Cache::tag($tag)->set($name, $value, $expire);
-        }
     }
 }
 
@@ -1096,6 +1025,71 @@ if (!function_exists('request_validate_rules')) {
     }
 }
 
+if (!function_exists('validate')) {
+    /**
+     * 验证数据
+     * @access protected
+     * @param $validate
+     * @param array $message 提示信息
+     * @param bool $batch 是否批量验证
+     * @param bool $failException
+     * @return \think\Validate
+     */
+    function validate($validate, array $message = [], bool $batch = false, bool $failException = true): \think\Validate
+    {
+        if (is_array($validate) || '' === $validate) {
+            $v = new \think\Validate();
+            if (is_array($validate)) {
+                $v->rule($validate);
+            }
+        } else {
+            if (strpos($validate, '.')) {
+                // 支持场景
+                [$validate, $scene] = explode('.', $validate);
+            }
+
+            $class = str_contains($validate, '\\') ? $validate : parseClass('validate', $validate);
+
+            $v = new $class();
+
+            if (!empty($scene)) {
+                $v->scene($scene);
+            }
+        }
+
+        return $v->message($message)->batch($batch)->failException($failException);
+    }
+}
+if (!function_exists('parseClass')) {
+    /**
+     * 解析应用类的类名
+     * @access public
+     * @param string $layer 层名 controller model ...
+     * @param string $name 类名
+     * @return string
+     */
+    function parseClass(string $layer, string $name): string
+    {
+        $name = str_replace(['/', '.'], '\\', $name);
+        $array = explode('\\', $name);
+        $class = underline_to_hump(array_pop($array));
+        $path = $array ? implode('\\', $array) . '\\' : '';
+        return 'app' . '\\' . $layer . '\\' . $path . $class;
+    }
+}
+if (!function_exists('underline_to_hump')) {
+    /**
+     * 下划线转驼峰
+     * @param string $value
+     * @return string
+     */
+    function underline_to_hump(string $value): string
+    {
+        $value = ucwords(str_replace(['-', '_'], ' ', $value));
+        return str_replace(' ', '', $value);
+    }
+}
+
 if (!function_exists('check_user_third')) {
     /**
      * 获取第三方登录
@@ -1336,7 +1330,7 @@ if (!function_exists('get_plugin_instance')) {
      * @param string $class 当前类名
      * @return mixed
      */
-    function get_plugin_instance(string $name, string $class = '')
+    function get_plugin_instance(string $name, string $class = ''): mixed
     {
         $object = get_plugin_class($name, $class);
         return $object ? new $object : '';
@@ -1370,7 +1364,7 @@ if (!function_exists('get_plugin_list')) {
             $list = array_merge($list, $other);
         }
 
-        return $list ?: [];
+        return $list ?? [];
     }
 }
 
@@ -1434,21 +1428,18 @@ if (!function_exists('set_plugin_config')) {
 if (!function_exists('get_plugin_menu_entry')) {
     /**
      * 获取插件快捷入口
+     * @param string $type
      * @return void
      */
-    function get_plugin_menu_entry(string $type = 'menu')
+    function get_plugin_menu_entry(string $type = 'menu'): void
     {
         $quickEntry = '';
         $pluginList = get_plugin_list();
-
         foreach ($pluginList as $item) {
-
             try {
-
                 if (!$item['status']) {
                     continue;
                 }
-
                 $file = plugin_path($item['name']) . 'data/' . $type . '.html';
                 if (is_file($file)) {
                     $quickEntry .= file_get_contents($file) . PHP_EOL;
@@ -1457,7 +1448,6 @@ if (!function_exists('get_plugin_menu_entry')) {
                 continue;
             }
         }
-
         echo $quickEntry;
     }
 }
@@ -1469,77 +1459,48 @@ if (!function_exists('plugin_refresh_hooks')) {
      */
     function plugin_refresh_hooks(): bool
     {
+        $pluginEvent = [];
         $pluginList = get_plugin_list();
-        $taglib = [];
-        $events = [];
-        $routeList = '';
-        $parseRules = '<?php' . PHP_EOL . 'return [array' . PHP_EOL . '];';
         foreach ($pluginList as $item) {
-
             if (!$item['status']) {
                 continue;
             }
-
+            // 插件名称
             $name = $item['name'];
-            $rewrite = $item['rewrite'] ?: [];
-            foreach ($rewrite as $key => $route) {
-                $parse = explode('/', $route);
-                $action = end($parse);
-                array_pop($parse);
-                $path = implode('\\', $parse);
-                $controller = 'app\\index\\controller\\' . $path;
-                if (class_exists($controller) && method_exists($controller, $action)) {
-                    $controller = preg_replace('#//#', '/', $controller);
-                    $routeList .= PHP_EOL . "   '$key'=>[$controller::class, '$action'],";
-                }
-            }
-
             $namespace = '\\plugin\\' . $name . '\\' . ucfirst($name);
             $methods = get_class_methods($namespace);
             $diff_hooks = array_diff($methods, get_class_methods("\\app\\PluginController"));
             foreach ($diff_hooks as $hook) {
                 $hookName = $name . '.' . $hook;
-                $events[$hook][] = [$namespace, $hook];
-            }
-
-            $taglibPath = plugin_path($name . DIRECTORY_SEPARATOR . 'taglib');
-
-            $tagList = glob($taglibPath . '*.php');
-            foreach ($tagList as $index => $tag) {
-                $tag = pathinfo($tag, PATHINFO_FILENAME);
-                $taglib[] = 'plugin\\' . $name . '\\taglib\\' . $tag;
+                $pluginEvent[$hook][] = [$namespace, $hook];
             }
         }
 
-        arr2file(root_path('config') . 'taglib.php', $taglib);
-        $routePath = root_path('config') . 'defineRoute.php';
-        write_file($routePath, str_replace('array', $routeList, $parseRules));
-        $hooks = include/** @lang text */
-        (root_path('config') . 'event.php');
-
-        foreach ($hooks as $key => $item) {
+        $eventPath = root_path('config') . 'event.php';
+        $eventOrigin = include /** @lang text */
+        $eventPath;
+        foreach ($eventOrigin as $key => $item) {
             $separator = explode('.', $key);
             if (current($separator) == 'system') {
                 continue;
             }
-            if (!array_key_exists($key, $events)) {
-                unset($hooks[$key]);
+            if (!array_key_exists($key, $pluginEvent)) {
+                unset($eventOrigin[$key]);
             }
         }
 
-        $eventList = '';
-        $events = array_merge($hooks, array_diff_key($events, $hooks));
-        foreach ($events as $key => $event) {
-            $eventList .= PHP_EOL . "    '$key'=> [";
+        $eventChars = '';
+        $eventLists = array_merge($eventOrigin, array_diff_key($pluginEvent, $eventOrigin));
+        foreach ($eventLists as $key => $event) {
+            $eventChars .= PHP_EOL . "    '$key'=> [";
             foreach ($event as $value) {
-                $eventList .= PHP_EOL . "       [" . $value[0] . "::class, '" . $value[1] . "']," . PHP_EOL;
+                $eventChars .= PHP_EOL . "       [" . $value[0] . "::class, '" . $value[1] . "']," . PHP_EOL;
             }
-
-            $eventList .= '     ],';
+            $eventChars .= '     ],';
         }
 
-        $eventPath = root_path('config') . 'event.php';
-        write_file($eventPath, str_replace('array', $eventList, $parseRules));
+        $parseEvents = '<?php' . PHP_EOL . 'return [array' . PHP_EOL . '];';
+        write_file($eventPath, str_replace('array', $eventChars, $parseEvents));
         return system_reload();
     }
 }

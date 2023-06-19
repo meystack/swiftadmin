@@ -13,6 +13,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use app\common\exception\DumpException;
 use support\Container;
 use support\Request;
 use support\Response;
@@ -113,19 +114,25 @@ if (!function_exists('halt')) {
     /**
      * 调试变量并且中断输出
      * @param mixed $vars 调试变量或者信息
+     * @throws DumpException
+     * @return void
      */
-    function halt(...$vars)
+    function halt(...$vars): void
     {
-        ob_start();
-        $cloner = new VarCloner();
-        $cloner->addCasters(ReflectionCaster::UNSET_CLOSURE_FILE_INFO);
-        $dumper = new HtmlDumper();
-        $dumper = new ContextualizedDumper($dumper, [new SourceContextProvider()]);
-        foreach ($vars as $var) {
-            $dumper->dump($cloner->cloneVar($var));
+        try {
+            ob_start();
+            $cloner = new VarCloner();
+            $cloner->addCasters(ReflectionCaster::UNSET_CLOSURE_FILE_INFO);
+            $dumper = new HtmlDumper();
+            $dumper = new ContextualizedDumper($dumper, [new SourceContextProvider()]);
+            foreach ($vars as $var) {
+                $dumper->dump($cloner->cloneVar($var));
+            }
+            $ob_response = (string)ob_get_clean();
+        } catch (\Throwable $e) {
+            $ob_response = $e->getMessage();
         }
-        $ob_response = (string)ob_get_clean();
-        throw new \RuntimeException($ob_response, 600);
+        throw new DumpException($ob_response, 600);
     }
 }
 

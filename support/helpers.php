@@ -140,7 +140,7 @@ if (!function_exists('get_env')) {
     /**
      * Get environment variable
      */
-    function get_env($var)
+    function get_env($var, $default = '')
     {
         $dir = str_replace('\\', '/', realpath(__DIR__ . '/../'));
         $env_path = $dir . '/.env';
@@ -148,7 +148,7 @@ if (!function_exists('get_env')) {
         if (is_file($env_path) && !$env_info) {
             $env_info = parse_ini_file($env_path, true);
         }
-        return $env_info[$var] ?? '';
+        return $env_info[$var] ?? $default;
     }
 }
 

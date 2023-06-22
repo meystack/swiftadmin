@@ -72,7 +72,7 @@
                     <!-- // 默认搜索 -->
                     <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}</button>
                     <!-- // 打开添加页面 -->
-                    <button class="layui-btn icon-btn" lay-open="" data-title="{:__('添加')}{:__('管理员')}" callback="edits" data-area="710px,550px" data-url="#adminforms" >
+                    <button class="layui-btn icon-btn" lay-open="" data-title="{:__('添加')}{:__('管理员')}" callback="edits" data-area="690px,500px" data-url="#adminforms" >
                         <i class="layui-icon layui-icon-add-1"></i>{:__('添加')}
                     </button>
                 </div>
@@ -187,14 +187,14 @@
 <!-- // 列表编辑框 -->
 <script type="text/html" id="tableBar">
     <if (check_admin_auth(url("/system/admin/edit")))>
-    <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="710px,550px" lay-event="edit" >{:__('编辑')}</a>
+    <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="690px,500px" lay-event="edit" >{:__('编辑')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
     </if>
     <a class="layui-table-text" data-title="{:__('访问权限')}"
-        callback="rulecates" data-url="#authForms" data-area="300px" lay-event="rules" >{:__('权限')}</a>
+        callback="rulecates" data-url="#authForms" data-area="300px,80%" lay-event="rules" >{:__('权限')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
     <a class="layui-table-text" data-title="{:__('栏目授权')}" 
-        callback="rulecates" data-url="#authForms" data-area="300px" lay-event="cates" >{:__('栏目')}</a>
+        callback="rulecates" data-url="#authForms" data-area="300px,80%" lay-event="cates" >{:__('栏目')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
     <a class="layui-table-text" data-url="{:url('/system/admin/del')}?id={{d.id}}" lay-event="del" >{:__('删除')}</a>
 </script>
@@ -234,13 +234,13 @@
             ,page: true
             ,cols: [[
                 {type: 'checkbox'},
-                {field: 'id', align: 'center',sort: true,width: 80,  title: 'ID'},
-                {field: 'name', align: 'center', title: '{:__("用户名")}'},
-                {field: 'status', align: 'center',templet: '#userStatus', width: 135, title: '{:__("状态")}'},
-                {field: 'group', align: 'center', templet:'#userGroup', title: '{:__("用户组")}'},
+                {field: 'id', align: 'center',sort: true, width: 80,  title: 'ID'},
+                {field: 'name', align: 'center', width: 120, title: '{:__("用户名")}'},
+                {field: 'status', align: 'center',templet: '#userStatus', width: 100, title: '{:__("状态")}'},
+                {field: 'group', align: 'center', templet:'#userGroup', width: 220, title: '{:__("用户组")}'},
                 {field: 'login_ip', align: 'center',width: 180, title: '{:__("登录 IP")}'},
                 {field: 'create_time', align: 'center', width: 180,title: '{:__("创建时间")}'},
-                {align: 'center', toolbar: '#tableBar',width: 250, title: '{:__("操作")}'},
+                {align: 'center', toolbar: '#tableBar',width: 250, fixed: 'right', title: '{:__("操作")}'},
             ]]
         })
 

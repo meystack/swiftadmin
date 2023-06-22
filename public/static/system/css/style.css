@@ -1499,7 +1499,6 @@ a {
 
 .layui-authtree {
     overflow:auto;
-    height: 500px;
     padding-left: 15px;
     max-height: 650px;
 }

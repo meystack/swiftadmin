@@ -112,9 +112,9 @@
 <script type="text/html" id="tableBar">
     <a class="layui-table-text" data-title="{:__('编辑')} {{d.title}}" data-area="500px" data-url="#editforms"  lay-event="edit" >{:__('编辑')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
-    <a class="layui-table-text" callback="auth" data-area="300px" data-title="{:__('访问权限')}" data-url="#authForms" lay-event="auth">{:__('权限')}</a>
+    <a class="layui-table-text" callback="auth" data-area="300px,80%" data-title="{:__('访问权限')}" data-url="#authForms" lay-event="auth">{:__('权限')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
-    <a class="layui-table-text" callback="cate" data-area="300px" data-title="{:__('栏目权限')}" data-url="#cateForms" lay-event="cate" >{:__('栏目')}</a>
+    <a class="layui-table-text" callback="cate" data-area="300px,80%" data-title="{:__('栏目权限')}" data-url="#cateForms" lay-event="cate" >{:__('栏目')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
     <a class="layui-table-text" data-url="{:url('/system/AdminGroup/del')}?id={{d.id}}" lay-event="del" >{:__('删除')}</a>
 </script>

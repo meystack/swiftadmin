@@ -211,12 +211,11 @@ class Third extends HomeController
             }
 
             $where['type'] = $this->type;
-            $where['user_id'] = request()->cookie('uid');
+            $where['user_id'] = request()->userId;
             if (UserThird::where($where)->delete()) {
                 return $this->success('解除绑定成功！');
             }
         }
-
 
         return $this->error();
     }

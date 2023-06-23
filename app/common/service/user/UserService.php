@@ -237,7 +237,6 @@ class UserService
     /**
      * 退出登录
      * @return void
-     * @throws InvalidArgumentException
      */
     public static function logout(): void
     {

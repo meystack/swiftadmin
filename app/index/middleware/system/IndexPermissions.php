@@ -66,7 +66,6 @@ class IndexPermissions implements MiddlewareInterface
         $userInfo = UserTokenService::isLogin();
         if (!empty($userInfo)) {
             if (in_array($action, $this->repeatLogin)) {
-                var_dump($this->JumpUrl);
                 return redirect($this->JumpUrl);
             }
 

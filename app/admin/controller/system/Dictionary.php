@@ -43,8 +43,8 @@ class Dictionary extends AdminController
     {
         $post = input();
         $pid = input('pid'); 
-        $limit = input('limit/d') ?? 10;
-        $page = input('page/d') ?? 1;
+        $limit = input('limit') ?? 10;
+        $page = input('page') ?? 1;
         if ($pid == null) {
             $pid = (string)$this->model->minId();
         } 

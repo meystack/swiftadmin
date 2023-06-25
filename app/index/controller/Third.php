@@ -12,6 +12,7 @@ declare (strict_types=1);
 
 namespace app\index\controller;
 
+use app\common\exception\OperateException;
 use app\common\library\ResultCode;
 use app\common\service\user\UserService;
 use app\common\service\user\UserTokenService;
@@ -92,8 +93,9 @@ class Third extends HomeController
      * @return Response
      * @throws DataNotFoundException
      * @throws DbException
-     * @throws ModelNotFoundException
      * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
+     * @throws OperateException
      */
     public function callback()
     {
@@ -102,24 +104,29 @@ class Third extends HomeController
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
         }
+
         $user = $this->oauth->getUserInfo();
         if (!empty($user) && !UserTokenService::isLogin()) {
             return $this->register($user, $this->type);
         } else if (UserTokenService::isLogin()) { // 绑定用户
             return $this->doBind($user, $this->type);
         }
+
+        return $this->error('登录失败');
     }
 
     /**
      * 用户注册操作
      * @param array $info
-     * @param string|null $type
+     * @param string $type
      * @return Response
      * @throws DataNotFoundException
      * @throws DbException
+     * @throws InvalidArgumentException
      * @throws ModelNotFoundException
+     * @throws OperateException
      */
-    protected function register(array $info = [], string $type = null)
+    protected function register(array $info, string $type): Response
     {
         $openid = $info['openid'] ?? $info['id'];
         $nickname = $info['userData']['name'] ?? $info['userData']['nickname'];
@@ -204,17 +211,14 @@ class Third extends HomeController
         }
 
         $result = UserTokenService::isLogin();
-        if (!empty($result)) {
+        if (empty($result['email']) || empty($result['pwd'])) {
+            return $this->error('解除绑定需要设置邮箱和密码！');
+        }
 
-            if (empty($result['email']) || empty($result['pwd'])) {
-                return $this->error('解除绑定需要设置邮箱和密码！');
-            }
-
-            $where['type'] = $this->type;
-            $where['user_id'] = request()->userId;
-            if (UserThird::where($where)->delete()) {
-                return $this->success('解除绑定成功！');
-            }
+        $where['type'] = $this->type;
+        $where['user_id'] = request()->userId;
+        if (UserThird::where($where)->delete()) {
+            return $this->success('解除绑定成功！');
         }
 
         return $this->error();

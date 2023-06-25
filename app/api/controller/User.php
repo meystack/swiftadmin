@@ -163,8 +163,8 @@ class User extends ApiController
      */
     public function message(Request $request): Response
     {
-        $page = input('page/d', 1);
-        $limit = input('limit/d', 1);
+        $page = input('page', 1);
+        $limit = input('limit', 1);
         $status = input('status', 'all');
         $where[] = ['user_id', '=', $request->userId];
         if ($status !== 'all') {
@@ -185,7 +185,7 @@ class User extends ApiController
      */
     public function viewMessage(Request $request): Response
     {
-        $id = input('id/d', 0);
+        $id = input('id', 0);
         $result = UserService::viewMessage($id, $request->userId);
         return $this->success('查询成功', "/", $result);
     }

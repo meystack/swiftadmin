@@ -587,9 +587,10 @@ class User extends HomeController
             if (!$response) {
                 return $this->error(Upload::instance()->getError());
             }
-            $userInfo = $request->userInfo;
-            $userInfo->avatar = $response['url'] . '?' . Random::alpha(12);
-            if ($userInfo->save()) {
+
+            $avatar = $response['url'] . '?' . Random::alpha(12);
+            $result = $this->model->where('id', $request->userId)->update(['avatar' => $avatar]);
+            if (!empty($result)) {
                 return json($response);
             }
         }

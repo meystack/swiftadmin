@@ -71,7 +71,7 @@ class SmsService
             throw new OperateException(__('短信插件未安装'));
         }
 
-        list($smsType, $config) = self::getSmsConfig();
+        list('type' => $smsType, 'config' => $config) = self::getSmsConfig();
         $smsConf = include(root_path() . "extend/conf/sms/sms.php");
         if (!isset($smsConf[$smsType][$event]['template'])) {
             throw new OperateException(__('短信模板错误'));
@@ -83,8 +83,8 @@ class SmsService
             'template' => $smsConf[$smsType][$event]['template'],
         ],true);
 
-        if (isset($response['error']) && $response['error']) {
-            throw new \Exception($response['error']);
+        if ($response['error'] == 1) {
+            throw new \Exception($response['msg']);
         }
 
         return true;
@@ -153,7 +153,9 @@ class SmsService
     protected static function getSmsConfig(): array
     {
         $smsType = saenv('smstype');
+        var_dump($smsType);
         $config = saenv($smsType) ?? [];
+        var_dump($config);
         return ['type' => $smsType, 'config' => $config];
     }
 }

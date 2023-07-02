@@ -153,9 +153,7 @@ class SmsService
     protected static function getSmsConfig(): array
     {
         $smsType = saenv('smstype');
-        var_dump($smsType);
         $config = saenv($smsType) ?? [];
-        var_dump($config);
         return ['type' => $smsType, 'config' => $config];
     }
 }

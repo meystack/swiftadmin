@@ -48,7 +48,10 @@ class Ajax extends AdminController
     /**
      * 文件上传
      * @return Response|void
-     * @throws \Exception
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
     public function upload()
     {
@@ -72,7 +75,11 @@ class Ajax extends AdminController
     public function getImage(): Response
     {
         if (request()->isPost()) {
-            $file = Upload::instance()->download(input('url'));
+            $url = request()->post('url');
+            if (empty($url)) {
+                return $this->error('图片地址不能为空');
+            }
+            $file = Upload::instance()->download($url);
             if (!$file) {
                 return $this->error(Upload::instance()->getError());
             }

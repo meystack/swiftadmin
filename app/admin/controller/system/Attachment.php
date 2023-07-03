@@ -12,9 +12,14 @@
 
 namespace app\admin\controller\system;
 
+use app\admin\service\AttachmentService;
 use app\AdminController;
 
 use app\common\model\system\Attachment as AttachmentModel;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -32,10 +37,8 @@ class Attachment extends AdminController
 
     /**
      * 初始化函数
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * Attachment constructor.
+     * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
      */
     public function __construct()
     {
@@ -46,32 +49,18 @@ class Attachment extends AdminController
 
     /**
      * 获取资源列表
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function index()
+    public function index(): Response
     {
         if (request()->isAjax()) {
 
-            // 生成查询条件
-            $post  = request()->post();
-            $page = (int)input('page') ?: 1;
-            $limit = (int)input('limit') ?: 10;
-            $type = input('type','');
-
-            $where = [];
-            if (!empty($post['filename'])) {
-                $where[] = ['filename','like','%'.$post['filename'].'%'];
-            }
-
-            if (!empty($type)) {
-                $where[] = ['type','=',$type];
-            }
-
-            $count = $this->model->where($where)->count();
-            $page = ($count <= $limit) ? 1 : $page;            
-
-            // 生成查询数据
-            $list = $this->model->where($where)->order("id desc")->limit((int)$limit)->page((int)$page)->select()->toArray();
-            return $this->success('查询成功', "", $list, $count);
+            $params = request()->post();
+            list($count, $list) = AttachmentService::dataList($params);
+            return $this->success('查询成功', "/", $list, $count);
         }
 
 		return view('/system/attachment/index',[

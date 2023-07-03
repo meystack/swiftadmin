@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>查看消息</title>
-    <include file="public:header"/>
-</head>
-<body>
+<layout name="layout:layout" />
 <style>
-
     h1 {
         font-family: "helvetica neue", PingFangSC-Light, arial, "hiragino sans gb", "microsoft yahei ui", "microsoft yahei", simsun, sans-serif;
         font-size: 20px;
@@ -28,19 +20,19 @@
     }
 
 </style>
-<div class="layui-fluid">
+<div class="layui-fluid" style="margin-top: 15px">
     <div id="unread" data-count="{$unread|default='0'}"></div>
     <div class="layui-card">
         <div class="layui-card-header">
-            <h1>{$info.title}</h1>
-            <p style="color: #3464ff">{$info.nickname|default='系统'} 于 {$info.create_time}</p>
+            <h1>{$msgInfo.title}</h1>
+            <p style="color: #3464ff">{$msgInfo.nickname|default='系统'} 于 {$msgInfo.create_time}</p>
         </div>
         <div class="layui-card-body layui-text">
-            {$info.content|raw}
+            {$msgInfo.content|raw}
         </div>
     </div>
 </div>
-</body>
+
 <script>
     layui.use('jquery', function () {
         let $ = layui.jquery;
@@ -55,4 +47,3 @@
 
     })
 </script>
-</html>

@@ -46,6 +46,7 @@ body a:hover {
     margin-right: 16px;
     display: block;
     margin-top: 4px;
+    border-radius: 50%;
 }
 
 .layui-instant-item-right {
@@ -138,47 +139,118 @@ body a:hover {
     font-size: 12px;
 }
 
-#instant-content .layui-card-header {
-    padding: 0;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-#instant-content .layui-card-header div {
-    display: inline-block;
-}
-
-#instant-content .layui-card-header .time {
-    float: right;
-    font-weight: normal;
-    color: #999;
-}
-
-#instant-content .layui-panel {
-    min-height: 250px;
-    padding: 0 20px 20px;
-    /*border-top: 2px solid #fe5d58;*/
+/*// 系统通知样式*/
+#adminNotice {
     position: relative;
 }
 
-#instant-content .layui-banner {
-    position: absolute;
-    bottom: 8px;
-    color: #999;
+#adminNotice .layui-title {
+    font-size: 14px;
+    font-weight: 400;
+    padding-bottom: 10px;
 }
 
-#instant-content #layui-info {
+#adminNotice .layui-title .time {
+    font-weight: normal;
+    color: #999;
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+#adminNotice .layui-title img {
+    border-radius: 50%;
+    margin-bottom: 3px;
+    vertical-align: middle;
+}
+
+#adminNotice .layui-message {
     height: 150px;
+    padding: 5px 5px 10px;
+    text-indent: 1em;
     overflow: auto;
 }
 
-#instant-content #layui-info img {
+#adminNotice .borderNone {
+    border-bottom: 1px solid #ebebeb;
+}
+
+#adminNotice .layui-message  img {
     max-width: 100%;
     padding: 10px;
     border: 1px solid #eee;
 }
 
-#instant-content .layui-footer {
+#adminNotice .layui-instructions {
+    color: #999;
+}
+
+#adminNotice .layui-footer {
+    text-align: right;
+    padding: 10px 0;
+}
+
+#adminNotice .layui-card-header {
+    display: flex;
+}
+
+#adminNotice .layui-card-header .time {
+    float: right;
+    font-size: 12px;
+    color: #999;
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+}
+
+/*// 用户私信样式*/
+#adminMessage {
+
+}
+
+/*// 代办项样式*/
+#adminTodo .layui-card-header {
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#adminTodo .layui-card-header div {
+    display: inline-block;
+}
+
+#adminTodo .layui-card-header .time {
+    float: right;
+    font-weight: normal;
+    color: #999;
+    font-size: 12px;
+}
+
+#adminTodo .layui-panel {
+    min-height: 250px;
+    padding: 0 20px 20px;
+    position: relative;
+}
+
+#adminTodo .layui-banner {
+    position: absolute;
+    bottom: 8px;
+    color: #999;
+}
+
+#adminTodo .layui-todo {
+    height: 180px;
+    overflow: auto;
+}
+
+#adminTodo .layui-todo img {
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+#adminTodo .layui-footer {
     text-align: right;
     padding: 10px 0;
 }

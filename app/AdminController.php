@@ -216,7 +216,8 @@ class AdminController extends BaseController
         /**
          * 默认共享模板
          */
-        return $this->view(Str::lower(request()->getController()) . '/add', [
+        $template = str_replace('/_', '/', Str::snake(request()->getController()));
+        return $this->view($template . '/add', [
             'data' => $data
         ]);
     }

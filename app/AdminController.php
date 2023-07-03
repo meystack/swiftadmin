@@ -191,7 +191,7 @@ class AdminController extends BaseController
     public function edit()
     {
         $id = input('id');
-        $data = $this->model->find($id);
+        $data = $this->model->where('id', $id)->findOrEmpty()->toArray();
 
         // 限制数据调用
         if (!$this->authService->SuperAdmin() && $this->dataLimit

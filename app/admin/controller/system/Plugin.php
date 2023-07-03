@@ -12,6 +12,7 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\admin\controller\system;
+use app\admin\service\AuthService;
 use GuzzleHttp\Exception\TransferException;
 use process\Monitor;
 use support\Response;
@@ -124,7 +125,7 @@ class Plugin extends AdminController
                 $pluginPath = plugin_path($name);
                 $pluginClass = get_plugin_instance($name);
                 $pluginClass->uninstall();
-                if (get_env('APP_DEBUG') && Auth::instance()->SuperAdmin()) {
+                if (get_env('APP_DEBUG') && AuthService::instance()->SuperAdmin()) {
                     self::executeSql($name, 'uninstall');
                 }
 

@@ -74,7 +74,9 @@ foreach ($pluginList as $item) {
     if (!$item['status']) {
         continue;
     }
-    foreach ($item['rewrite'] as $route => $value) {
+
+    $routeList = $item['rewrite'] ?? [];
+    foreach ($routeList as $route => $value) {
         $separator = explode('/', $value);
         $method = end($separator);
         array_pop($separator);

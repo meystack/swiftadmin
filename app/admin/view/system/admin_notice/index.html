@@ -1,0 +1,180 @@
+<include file="/public/header"/>
+<!--<link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css" />-->
+<style>
+    #msgType {
+        padding-bottom: 16px;
+    }
+
+    #msgType li {
+        border-radius: 3px;
+        cursor: pointer;
+        margin-bottom: 5px;
+        padding: 8px 8px 8px 16px;
+    }
+
+    #msgType li i {
+        margin-right: 10px;
+    }
+
+    #msgType li.active, #msgType li:hover {
+        color: #1890ff;
+        background-color: #e6f7ff;
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md2">
+
+            <div class="layui-card">
+                <div class="layui-card-header layadmin-card-header-auto">
+                    <h5>{:__('我的信箱')}</h5>
+                </div>
+                <div id="msgType" class="layui-card-body">
+                    <li class="active" data-event="todo">
+                        <i class="layui-icon fa-tags"></i>
+                        <span>待办项</span>
+                    </li>
+                    <li data-event="send">
+                        <i class="layui-icon fa-rocket"></i>
+                        <span>已发送</span>
+                    </li>
+                    <li data-event="notice">
+                        <i class="layui-icon fa-volume-up"></i>
+                        <span>系统通知</span>
+                    </li>
+                    <li data-event="message">
+                        <i class="layui-icon fa-comment"></i>
+                        <span>我的私信</span>
+                    </li>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md10">
+            <!-- // 展示数据 -->
+            <div class="layui-card">
+                <!-- // 默认操作按钮 -->
+                <div class="layui-card-header layadmin-card-header-auto ">
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+
+                            <div class="layui-inline">
+                                <div class="layui-input-inline ">
+                                    <input name="title" class="layui-input" type="text"
+                                           placeholder="{:__('请输入消息标题')}"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <!-- // 默认搜索 -->
+                                <button class="layui-btn icon-btn" lay-filter="formSearch" lay-submit><i
+                                        class="layui-icon layui-icon-search"></i>{:__('搜索')}
+                                </button>
+                                <!-- // 打开添加页面 -->
+                                <button class="layui-btn icon-btn" lay-open="" data-title="{:__('发送私信')}"
+                                        data-area="36%,39%" data-url="{:url('system/AdminNotice/add')}">
+                                    <i class="layui-icon layui-icon-add-1"></i>{:__('发私信')}
+                                </button>
+                                <button class="layui-btn layui-btn-danger" lay-batch data-table="lay-tableList"
+                                        data-url="/user/batchMessage?type=read">{:__('全部已读')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- // 创建数据实例 -->
+                <table id="lay-tableList" lay-filter="lay-tableList"></table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- // 列表编辑框 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-table-text" data-title="{:__('查看')}" data-url="{:url('/system/AdminNotice/read')}?id={{d.id}}"
+       data-area="39%,46%" lay-event="edit">{:__('查看')}</a>
+    <div class="layui-divider layui-divider-vertical"></div>
+    <a class="layui-table-text" data-url="{:url('/system/AdminNotice/del')}?id={{d.id}}" lay-event="del">{:__('删除')}</a>
+</script>
+
+<script type="text/html" id="setRowChecked">
+    <div class="layui-btn-container ">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="all">{:__('全部')}</button>
+        <button class="layui-btn layui-btn-primary layui-btn-xs" lay-event="1">{:__('已读')}</button>
+        <button class="layui-btn layui-btn-primary layui-btn-xs" lay-event="0">{:__('未读')}</button>
+    </div>
+</script>
+
+<include file="/public/footer"/>
+
+<script>
+    layui.use(['table', 'jquery',], function () {
+        let $ = layui.jquery;
+        let table = layui.table;        // 表格
+
+        // 定义表格URL
+        let tableURL = "{:url('/system/AdminNotice/index')}";
+
+        // 基础表格
+        table.render({
+            elem: "#lay-tableList"
+            , url: tableURL
+            , page: true
+            , toolbar: '#setRowChecked'
+            , cols: [[
+                {type: 'checkbox'},
+                {
+                    field: 'title', align: 'left',  templet: function (e) {
+                        let title = '<a class="layui-table-text';
+                        title += '" lay-open data-title="查看消息" data-url="{:url(\'/system/AdminNotice/read\')}?id=' + e.id + '" data-area="600px, 390px" >';
+                        if (e.status === 0) {
+                            title += '<i class="layui-icon fa-envelope"></i> ';
+                        } else {
+                            title += '<i class="layui-icon fa-envelope-o"></i> ';
+                        }
+                        title += e.title;
+                        title += '</a>';
+                        return title;
+                    }, title: '{:__("标题")}'
+                },
+                {field: 'send_ip', align: 'center', width: 180, title: '{:__("发送者 IP")}'},
+                {field: 'create_time', align: 'center', width: 180, title: '{:__("创建时间")}'},
+                {align: 'center', toolbar: '#tableBar', width: 160, title: '{:__("操作")}'},
+            ]]
+        })
+
+        $('#msgType li').click(function () {
+            let event = $(this).data('event');
+            table.reloadData('lay-tableList', {
+                where: {type: event}
+            }, true);
+            $(this).addClass('active').siblings().removeClass('active');
+        });
+
+        // 列表双击
+        table.on('rowDouble(lay-tableList)', function (obj) {
+            let data = obj.data;
+        });
+
+        // 头工具栏事件
+        table.on('toolbar(lay-tableList)', function (obj) {
+            let checkBtn = null;
+            switch (obj.event) {
+                case 'all':
+                case '0':
+                case '1':
+                    checkBtn = $(this);
+                    break;
+            }
+            table.reloadData('lay-tableList', {
+                where: {status: obj.event}
+            },true);
+            $('.layui-btn-container .layui-btn').removeClass('layui-btn-normal').addClass('layui-btn-primary');
+            $(checkBtn).removeClass('layui-btn-primary').addClass('layui-btn-normal');
+        });
+
+    });
+</script>

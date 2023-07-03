@@ -1,0 +1,23 @@
+<include file="/public/header"/>
+<link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css"/>
+<div id="adminTodo" class="layui-card">
+    <div class="layui-card-body">
+        <div class="layui-panel">
+            <div class="layui-card-header">
+                <div class="title">{$detail.title}</div>
+                <div class="time"><span class="times">任务创建于：</span>{$detail.create_time}</div>
+            </div>
+            <div class="layui-todo">{$detail.content|raw}</div>
+            <div class="layui-banner">
+                <p>本消息属系统工作流待办流程管理</p>
+                <p>在系统使用过程中，如果有问题请联系网站运维组 </p>
+            </div>
+        </div>
+
+        <div class="layui-footer">
+            <button type="button" class="layui-btn layui-btn-danger" sa-event="closeDialog">确认</button>
+        </div>
+    </div>
+</div>
+
+<include file="/public/footer"/>

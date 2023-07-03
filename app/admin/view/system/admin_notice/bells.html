@@ -1,0 +1,258 @@
+<include file="/public/header" />
+<link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css" />
+<div class="layui-tab layui-tab-brief" >
+
+    <ul class="layui-tab-title" style="text-align: center;">
+        <li class="layui-this" id="msg" >{:__('通知')}({$count['notice']})</li>
+        <li>{:__('私信')}({$count['message']})</li>
+        <li>{:__('待办')}({$count['todo']})</li>
+    </ul>
+
+     <div class="layui-tab-content" style="padding: 5px 0px;">
+        <div class="layui-tab-item layui-show">
+            <ul id="notice" class="layui-instant-list" >
+                <volist name="list['notice']" id="vo">
+                    <a data-id="{$vo.id}" data-type="notice" class="layui-instant-list-item active_{$vo.status}" href="javascript:;">
+                    <img class="layui-instant-item-icon" src="__ADMINIMAGES__message.png">
+                    <div class="layui-instant-item-right">
+                        <h2 class="layui-instant-item-title">{$vo.title}</h2>
+                        <p class="layui-instant-item-text">{$vo.create_time}</p>
+                    </div>
+                </a>
+                </volist>
+            </ul>
+
+            <!-- // 列表为空 -->
+            <div class="layui-instant-list-empty" <empty name="$list['notice']"> style="display:black;" <else/>  style="display:none;" </empty>  >
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有通知')}</div>
+            </div>
+
+            <!-- // 底部操作 -->
+            <notempty name="$list['notice']">
+            <div class="layui-instant-footer">
+                <a href="javascript:;" class="instant-clear" data-type="notice">{:__('清空通知')}</a>
+                <span>|</span>
+                <a href="javascript:;" class="instant-reads" data-type="notice">{:__('全部已读')}</a>
+            </div>
+            </notempty>
+        </div>
+
+        <div class="layui-tab-item">
+
+            <ul id="message" class="layui-instant-list" >
+                <volist name="list['message']" id="vo">
+                <a data-id="{$vo.id}" data-type="message" class="layui-instant-list-item active_{$vo.status}" href="javascript:;">
+                    <img class="layui-instant-item-icon" src="{$vo.face|default='__ADMINIMAGES__head.png'}" >
+                    <div class="layui-instant-item-right">
+                        <h2 class="layui-instant-item-title">{$vo.title}</h2>
+                        <p class="layui-instant-item-text">{$vo.create_time}</p>
+                    </div>
+                </a>
+                </volist>
+            </ul>
+
+            <!-- // 列表为空 -->
+            <div class="layui-instant-list-empty" <empty name="$list['message']"> style="display:black;" <else/>  style="display:none;" </empty>  >
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有私信')}</div>
+            </div>
+            <notempty name="$list['message']">
+                <div class="layui-instant-footer">
+                    <a href="javascript:;" class="instant-clear" data-type="message">{:__('清空私信')}</a>
+                    <span>|</span>
+                    <a href="javascript:;" class="instant-reads" data-type="message">{:__('全部已读')}</a>
+                </div>
+            </notempty>
+        </div>
+
+        <div class="layui-tab-item">
+            <ul id="todo" class="layui-instant-list" >
+                <volist name="list['todo']" id="vo">
+                <a data-id="{$vo.id}" data-type="todo" class="layui-instant-list-item active_{$vo.status}" href="javascript:;">
+                    <div class="layui-instant-item-right">
+                        <eq name="$vo['status']" value="0">
+                            <span class="layui-badge pull-right">{:__('待完成')}</span>
+                            <else/>
+                            <eq name="$vo['status']" value="3">
+                                <span class="layui-badge layui-bg-green pull-right">{:__('进行中')}</span>
+                                <else/>
+                                <span class="layui-badge layui-bg-gray pull-right">{:__('已完成')}</span>
+                            </eq>
+                        </eq>
+                        <h2 class="layui-instant-item-title">{$vo.title}</h2>
+                        <p class="layui-instant-item-text">{$vo.create_time}</p>
+                    </div>
+                </a>
+                </volist>
+            </ul>
+
+            <!-- // 列表为空 -->
+            <div class="layui-instant-list-empty" <empty name="$list['todo']"> style="display:black;" <else/>  style="display:none;" </empty>  >
+                <img src="__ADMINIMAGES__noting.png"><div>{:__('没有待办')}</div>
+            </div>
+            <notempty name="$list['todo']">
+            <div class="layui-instant-footer">
+                <a href="javascript:;" class="instant-clear" data-type="todo">{:__('清空待办')}</a>
+                <span>|</span>
+                <a href="javascript:;" class="instant-reads" data-type="todo">{:__('全部完成')}</a>
+            </div>
+            </notempty>
+        </div>
+
+    </div>
+</div>
+
+<include file="/public/footer" />
+
+<script>
+    layui.use(['element'], function () {
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        let flow = layui.flow;
+        let instantItem = {
+            notice: {
+                title: '我的通知',
+                anim: 2,
+            },
+            message: {
+                title: '我的私信',
+                anim: 0,
+            },
+            todo: {
+                title: '我的待办',
+                anim: 0,
+            },
+        };
+
+        // 执行通知流加载
+        $.each(instantItem, function (index, type) {
+            flow.load({
+                elem: '#' + index,
+                done: function (page, next) {
+                    let list = [];
+                    let url = "{:url('/system/AdminNotice/getBells')}?type=" + index + "&page=" + page;
+                    $.get(url, function (res) {
+                        let data = res.data;
+                        if (page >= 2) {
+                            layui.each(data.data, function (key, item) {
+                                let html = '';
+                                switch (index) {
+                                    case 'notice':
+                                        html += '<a data-id="' + item.id + '" data-type="notice" class="layui-instant-list-item active_' + item.status + '" href="javascript:;">';
+                                        html += '<img class="layui-instant-item-icon" src="__ADMINIMAGES__message.png">';
+                                        html += '<div class="layui-instant-item-right">';
+                                        html += '<h2 class="layui-instant-item-title">' + item.title + '</h2>';
+                                        html += '<p class="layui-instant-item-text">' + item.create_time + '</p>';
+                                        html += '</div>';
+                                        html += '</a>';
+                                        break;
+                                    case 'message':
+                                        html += '<a data-id="' + item.id + '" data-type="message" class="layui-instant-list-item active_' + item.status + '" href="javascript:;">';
+                                        html += '<img class="layui-instant-item-icon" src="' + item.face + '">';
+                                        html += '<div class="layui-instant-item-right">';
+                                        html += '<h2 class="layui-instant-item-title">' + item.title + '</h2>';
+                                        html += '<p class="layui-instant-item-text">' + item.create_time + '</p>';
+                                        html += '</div>';
+                                        html += '</a>';
+                                        break;
+                                    case 'todo':
+                                        html += '<a data-id="' + item.id + '" data-type="todo" class="layui-instant-list-item active_' + item.status + '" href="javascript:;">';
+                                        html += '<div class="layui-instant-item-right">';
+                                        if (item.status === 0) {
+                                            html += '<span class="layui-badge pull-right">待完成</span>';
+                                        } else if (item.status === 3) {
+                                            html += '<span class="layui-badge layui-bg-green pull-right">进行中</span>';
+                                        } else {
+                                            html += '<span class="layui-badge layui-bg-gray pull-right">已完成</span>';
+                                        }
+                                        html += '<h2 class="layui-instant-item-title">' + item.title + '</h2>';
+                                        html += '<p class="layui-instant-item-text">' + item.create_time + '</p>';
+                                        html += '</div>';
+                                        html += '</a>';
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                list.push(html);
+                            });
+                        }
+                        next(list.join(''), page < data.last_page);
+                    });
+                }
+            });
+        });
+
+        // 打开新窗口
+        $('.layui-instant-list').on('click', '.layui-instant-list-item', function () {
+
+            let that = this;
+            $(that).addClass('active_open');
+            $(that).removeClass('active_0').addClass('active_1');
+            let id = $(that).attr('data-id');
+            let type = $(that).attr('data-type');
+            let openURL = "{:url('/system/AdminNotice/read')}?type=" + type + "&id=" + id;
+
+            parent.layer.open({
+                id: type + id,
+                type: 2,
+                title: instantItem[type].title,
+                shade: 0,
+                maxmin: true,
+                isOutAnim: false,
+                area: ['38%', '41%'],
+                content: [openURL, 'no'],
+                success: function (layero, index) {
+                    $('body').on('click', '.active_open', function (e) {
+                        parent.layer.close(index);
+                        $(that).removeClass('active_open');
+                    })
+                }
+            });
+        });
+
+        // 清空消息点击事件
+        $('.instant-clear').click(function (obj) {
+            var that = $(this), type = that.data('type');
+            var findElem = $('#' + type);
+
+            // 删除元素
+            that.parent().prev().prev().remove();
+            that.parent().prev().show();
+            that.parent().remove();
+            // 替换标题
+            findElem.text(findElem.text().replace(/\([^\)]*\)/,''));
+            // 执行AJAX请求...
+            $.ajax({
+                url: "{:url('/system/AdminNotice/clear')}",
+                type: 'post',
+                data: {type: type},
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg(res.msg);
+                    } else {
+                        layer.error(res.msg);
+                    }
+                }
+            });
+        });
+
+        // 一键已读
+        $('.instant-reads').click(function (obj) {
+            var that = $(this), type = that.data('type');
+            // 执行AJAX请求...
+            $.ajax({
+                url: "{:url('/system/AdminNotice/readAll')}",
+                type: 'post',
+                data: {type: type},
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg(res.msg);
+                        $('.layui-instant-list-item').removeClass('active_0').addClass('active_1');
+                    } else {
+                        layer.error(res.msg);
+                    }
+                }
+            });
+        });
+    });
+</script>

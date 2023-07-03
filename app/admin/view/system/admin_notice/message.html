@@ -1,0 +1,56 @@
+<include file="/public/header"/>
+<link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css"/>
+<div id="adminNotice" class="layui-fluid">
+    <div class="layui-card layui-panel">
+        <div class="layui-card-body">
+            <div class="layui-title borderNone">
+                <div class="title" style="display: inline-block">发送者：<span>
+                    <img src="{$detail.face|default=''}" class="face" width="20"> </span>
+                    {$detail.nickname|default='隐藏用户'}
+                </div>
+                <div class="time layui-fr"><i class="layui-icon fa-clock-o"></i> {$detail.create_time}</div>
+            </div>
+            <div class="layui-message">{$detail.content|raw}</div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <if ($detail[
+        'send_id'] != $AdminLogin['id'])>
+        <button type="button" class="layui-btn layui-btn-normal" lay-open data-title="回复私信" data-url="#replyForms"
+                data-area="500px,350px">回复
+        </button>
+        </if>
+        <button type="button" class="layui-btn layui-btn-danger" sa-event="closeDialog">关闭</button>
+    </div>
+</div>
+
+<script type="text/html" id="replyForms">
+    <div class="layui-fluid layui-bg-white">
+        <form action="{:url('/system/AdminNotice/add')}" class="layui-form">
+            <input type="text" name="admin_id" value="{$detail.send_id}" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('标题')}</label>
+                <div class="layui-input-block">
+
+                    <input type="text" name="title" class="layui-input" lay-verify="required" value=""
+                           placeholder="请输入私信标题">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red; ">* </span>{:__('回复内容')}</label>
+                <div class="layui-input-block">
+                    <textarea name="content" class="layui-textarea"
+                              placeholder="请输入私信内容"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-footer layui-form-item layui-center ">
+                <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog">{:__('取消')}
+                </button>
+                <button class="layui-btn" lay-filter="submitPage" lay-submit>{:__('提交')}</button>
+            </div>
+        </form>
+    </div>
+</script>
+
+<include file="/public/footer"/>

@@ -1,0 +1,19 @@
+<include file="/public/header" />
+<link href="__STATICADMIN__css/message.css" rel="stylesheet" type="text/css" />
+<div id="adminNotice" class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-title">
+            <div class="title">标题：{$detail.title}</div>
+            <div class="time">时间：{$detail.create_time}</div>
+        </div>
+        <div class="layui-message">{$detail.content|raw}</div>
+    </div>
+    <div class="layui-instructions">
+        <p>本消息属系统通知，来源于业务流程管理系统，请勿回复</p>
+        <p>在系统使用过程中，如果有问题请联系网站运维组：## </p>
+    </div>
+    <div class="layui-footer">
+        <button type="button" class="layui-btn layui-btn-danger" sa-event="closeDialog" >关闭</button>
+    </div>
+</div>
+<include file="/public/footer" />

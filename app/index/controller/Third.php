@@ -190,7 +190,7 @@ class Third extends HomeController
                 'ref'  => input('ref', request()->server('HTTP_REFERER', '/')),
             ];
 
-            return $this->redirect("/third/login?" . http_build_query($buildQuery));
+            return $this->redirect("/index/third/login?" . http_build_query($buildQuery));
         }
 
         return $this->error('请先登录');

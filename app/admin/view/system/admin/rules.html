@@ -21,7 +21,7 @@
                     </div>
                     <div class="layui-inline" >
                         <!-- // 默认搜索 -->
-                        <button class="layui-btn icon-btn"
+                        <button class="layui-btn icon-btn" type="submit"
                                 lay-filter="treeSearch" lay-submit><i class="layui-icon layui-icon-search"></i>{:__('搜索')}
                         </button>
                         <!-- // 打开添加页面 -->
@@ -336,17 +336,8 @@
                 jquery.post(_pageUrl,
                     post.field, function(res){
                         if (res.code === 200) {
-
                             layer.msg(res.msg);
-
-                            // 更新列数据
-                            if (typeof(tableThis) !== 'undefined') {
-                                if (tableThis.event === 'edit')
-                                    tableThis.update(JSON.parse(JSON.stringify(post.field)));
-                            }else { // 添加则更新列表
-                                renderTable(tableURL);
-                            }
-
+                            treeTable.reloadData('lay-tableList');
                             // 调用接口更新菜单
                             top.layui.admin.reloadLayout();
 

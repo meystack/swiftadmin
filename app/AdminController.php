@@ -10,12 +10,11 @@
 // +----------------------------------------------------------------------
 namespace app;
 
-use app\admin\library\Auth;
+use app\admin\enums\AdminEnum;
+use app\admin\service\AuthService;
 use support\Log;
 use support\Response;
 use think\helper\Str;
-
-define('AdminSession', 'AdminLogin');
 
 class AdminController extends BaseController
 {
@@ -47,7 +46,7 @@ class AdminController extends BaseController
      * 权限验证类
      * @var object
      */
-    public object $auth;
+    public object $authService;
 
     /**
      * 当前表字段
@@ -109,7 +108,7 @@ class AdminController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->auth = Auth::instance();
+        $this->authService = AuthService::instance();
     }
 
     /**
@@ -195,7 +194,7 @@ class AdminController extends BaseController
         $data = $this->model->find($id);
 
         // 限制数据调用
-        if (!$this->auth->SuperAdmin() && $this->dataLimit
+        if (!$this->authService->SuperAdmin() && $this->dataLimit
             && in_array($this->dataLimitField, $this->model->getFields())) {
             if ($data[$this->dataLimitField] != get_admin_id()) {
                 return $this->error('没有权限');
@@ -236,7 +235,7 @@ class AdminController extends BaseController
         try {
             $list = $this->model->whereIn('id', $id)->select();
             foreach ($list as $item) {
-                if (!$this->auth->SuperAdmin() && $this->dataLimit
+                if (!$this->authService->SuperAdmin() && $this->dataLimit
                     && in_array($this->dataLimitField, $this->model->getFields())) {
                     if ($item[$this->dataLimitField] != get_admin_id()) {
                         continue;
@@ -266,7 +265,7 @@ class AdminController extends BaseController
         if (request()->isAjax()) {
 
             $where[] = ['id', '=', input('id')];
-            if (!$this->auth->SuperAdmin() && $this->dataLimit
+            if (!$this->authService->SuperAdmin() && $this->dataLimit
                 && in_array($this->dataLimitField, $this->model->getFields())) {
                 $where[] = [$this->dataLimitField, '=', get_admin_id()];
             }
@@ -485,7 +484,7 @@ class AdminController extends BaseController
             }
 
             // 限制个人数据权限
-            $superAdmin = $this->auth->SuperAdmin();
+            $superAdmin = $this->authService->SuperAdmin();
             if (!$superAdmin && $this->dataLimit) {
                 if (in_array($this->dataLimitField, $this->tableFields)) {
                     $where[] = [$this->dataLimitField, '=', get_admin_id()];
@@ -533,7 +532,7 @@ class AdminController extends BaseController
      */
     public function logout(): Response
     {
-        request()->session()->set(AdminSession, null);
+        request()->session()->set(AdminEnum::ADMIN_SESSION, null);
         return $this->success('退出成功！', '/');
     }
 

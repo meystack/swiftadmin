@@ -81,22 +81,19 @@ class Department extends AdminController
 
 	/**
 	 * 添加部门数据
+     * @return Response
 	 */
-	public function add() 
-	{
+	public function add(): Response
+    {
+        if (request()->isPost()) {
+            $post = request()->post();
+            validate(\app\common\validate\system\Department::class.'.add')->check($post);
+            if ($this->model->create($post)) {
+                return $this->success('添加部门成功！');
+            }
+        }
 
-		if (request()->isPost()) {
-			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->create($post)) {
-				return $this->success('添加部门成功！');
-			}else {
-				return $this->error('添加部门失败！');
-			}		
-		}			
+        return $this->error('添加部门失败！');
 	}
 
 	/**
@@ -104,27 +101,26 @@ class Department extends AdminController
 	 */
 	public function edit() 
 	{
-		if (request()->isPost()) {
-			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->update($post)) {				
-				return $this->success('更新部门成功！');
-			}else {
-				return $this->error('更新部门失败');
-			}
-		}	
+        if (request()->isPost()) {
+            $post = request()->post();
+            validate(\app\common\validate\system\Department::class.'.edit')->check($post);
+            if ($this->model->update($post)) {
+                return $this->success('更新部门成功！');
+            }
+        }
+
+        return $this->error('更新部门失败');
 	}
 
-	/**
-	 * 删除部门数据
-	 */
-	public function del() 
-	{
+    /**
+     * 删除部门数据
+     * @return Response
+     * @throws DbException
+     */
+	public function del(): Response
+    {
 		$id = input('id');
-		if (!empty($id) && is_numeric($id)) {
+		if ($id > 0) {
 			// 查询子部门
 			if ($this->model->where('pid',$id)->count()) {
 				return $this->error('当前部门存在子部门！');

@@ -25,9 +25,9 @@ use Webman\Http\Request;
  * Class Company
  * @package app\admin\controller\system
  */
-class Company extends AdminController 
+class Company extends AdminController
 {
-   
+
     // 初始化函数
     public function __construct()
     {
@@ -50,7 +50,7 @@ class Company extends AdminController
             $post = input();
             $where = array();
             if (!empty($post['title'])) {
-                $where[] = ['title','like','%'.$post['title'].'%'];
+                $where[] = ['title', 'like', '%' . $post['title'] . '%'];
             }
 
             // 生成查询数据
@@ -58,55 +58,51 @@ class Company extends AdminController
             return $this->success('查询成功', null, $list, count($list));
         }
 
-		return view('/system/company/index');
+        return view('/system/company/index');
     }
 
     /**
      * 添加公司信息
+     * @return Response
      */
-    public function add () 
+    public function add(): Response
     {
-		if (request()->isPost()) {
-
-			$post = request()->post();
-            $post = request_validate_rules($post,get_class($this->model));
-            if (empty($post) || !is_array($post)) {
-                $this->error($post);
-            }
-            
-            if ($this->model->create($post)){
+        if (request()->isPost()) {
+            $post = request()->post();
+            if ($this->model->create($post)) {
                 return $this->success();
             }
 
             return $this->error();
         }
- 
-        return view('/system/company/add',[
-            'data'=> $this->getTableFields()
+
+        return view('/system/company/add', [
+            'data' => $this->getTableFields()
         ]);
     }
 
     /**
      * 编辑公司信息
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function edit() 
+    public function edit(): Response
     {
         $id = input('id');
         if (request()->isPost()) {
             $post = request()->post();
-            $post = request_validate_rules($post,get_class($this->model));
-            if (empty($post) || !is_array($post)) {
-                $this->error($post);
-            }
-
-            if ($this->model->update($post)){
+            if ($this->model->update($post)) {
                 return $this->success();
             }
             return $this->error();
         }
 
         $data = $this->model->find($id);
-        return view('/system/company/add',['data'=> $data]);
+        return view('/system/company/add', [
+            'data' => $data
+        ]);
     }
 
 }   

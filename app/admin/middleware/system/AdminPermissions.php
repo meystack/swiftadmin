@@ -2,10 +2,9 @@
 
 namespace app\admin\middleware\system;
 
+use app\admin\enums\AdminEnum;
+use app\admin\service\AuthService;
 use support\View;
-use app\admin\library\Auth;
-use app\common\library\ResultCode;
-use app\common\model\system\Admin as AdminModel;
 use app\common\model\system\SystemLog;
 use Psr\SimpleCache\InvalidArgumentException;
 use think\db\exception\DataNotFoundException;
@@ -45,57 +44,32 @@ class AdminPermissions implements MiddlewareInterface
      */
     public function process(Request $request, callable $handler): Response
     {
+        // 控制器鉴权
         $app = request()->getApp();
         $controller = request()->getController();
         $action = request()->getAction();
-        $AdminLogin = request()->session()->get(AdminSession);
+        $method = '/' . $controller . '/' . $action;
+
+        $AdminLogin = request()->session()->get(AdminEnum::ADMIN_SESSION);
         if (!isset($AdminLogin['id']) && strtolower($controller) !== 'login') {
             return redirect(url('/login/index'));
         }
+
+        // 获取管理员信息
+        $request->adminInfo = $AdminLogin;
+        $request->adminId = $AdminLogin['id'] ?? 0;
 
         // 获取权限列表
         $class = new \ReflectionClass($request->controller);
         $properties = $class->getDefaultProperties();
         $this->noNeedLogin = $properties['noNeedLogin'] ?? $this->noNeedLogin;
-
-        // 控制器鉴权
-        $method = '/' . $controller . '/' . $action;
+        // 开始校验菜单权限
+        $authService = AuthService::instance();
         if (!in_array('*', $this->noNeedLogin)
             && !in_array(strtolower($method), array_map('strtolower', $this->noNeedLogin))) {
-            if (!Auth::instance()->SuperAdmin() && !Auth::instance()->check($method, get_admin_id())) {
-                if (request()->isAjax()) {
-                    return json(['code' => 101, 'msg' => '没有权限']);
-                } else {
-                    return $this->abortPage('没有权限!', 401);
-                }
-            }
-        }
-
-        /**
-         * Admin应用
-         * 控制器权限分发
-         */
-        if (\request()->isPost()) {
-
-            $id = input('id');
-
-            if ($controller == 'system/Admin') {
-                if ($data = AdminModel::getById($id)) {
-                    $group_id = input('group_id');
-                    $group_id = !empty($group_id) ? $group_id . ',' . $data['group_id'] : $data['group_id'];
-                    $group_id = array_unique(explode(',', $group_id));
-                    if (!Auth::instance()->checkRulesForGroup($group_id)) {
-                        return json(ResultCode::AUTH_ERROR);
-                    }
-                }
-            }
-
-            if ($controller == 'system/AdminGroup') {
-                if (!empty($id) && $id >= 1) {
-                    if (!Auth::instance()->checkRulesForGroup((array)$id)) {
-                        return json(ResultCode::AUTH_ERROR);
-                    }
-                }
+            $superAdmin = $authService->superAdmin();
+            if (!$superAdmin && !$authService->permissions($method, $AdminLogin['id'])) {
+                return request()->isAjax() ? json(['code' => 101, 'msg' => '没有权限']) : $this->abortPage('没有权限！', 401);
             }
         }
 
@@ -103,7 +77,7 @@ class AdminPermissions implements MiddlewareInterface
         View::assign('app', $app);
         View::assign('controller', $controller);
         View::assign('action', $action);
-        View::assign('AdminLogin', $AdminLogin);
+        View::assign(AdminEnum::ADMIN_SESSION, $AdminLogin);
         self::writeAdminRequestLogs();
         return $handler($request);
     }
@@ -111,9 +85,6 @@ class AdminPermissions implements MiddlewareInterface
     /**
      * 写入后台操作日志
      * @throws InvalidArgumentException
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
      */
     public static function writeAdminRequestLogs()
     {

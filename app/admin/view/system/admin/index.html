@@ -358,7 +358,7 @@
                 event = tableThis.event;
 
             layui.$.ajax({
-                url:'{:url("/system/Admin/getPermissions")}',
+                url:'{:url("/system/Admin/getRuleCateTree")}',
                 type:'post',
                 dataType:'json',
                 data:{
@@ -383,7 +383,7 @@
                         // 增加节点数据
                         post.field[event] = tree.getChecked('authTree', true);
                         // 开始POST提交数据
-                        layui.$.post("{:url('/system/admin/edit" + event + "')}",
+                        layui.$.post("{:url('/system/Admin/edit" + event + "')}",
                             post.field, function (res) {
                                 if (res.code === 200) {
                                     // 更新本地规则

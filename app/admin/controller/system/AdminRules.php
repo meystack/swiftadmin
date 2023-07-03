@@ -11,8 +11,11 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller\system;
 
+use app\admin\service\AdminRuleService;
 use app\AdminController;
 use app\common\model\system\AdminRules as AdminRuleModel;
+use support\Response;
+use think\db\exception\DbException;
 use Webman\Http\Request;
 
 /**
@@ -31,34 +34,14 @@ class AdminRules extends AdminController
 	
     /**
      * 获取资源列表
-     *
+     * return Response
      */
-    public function index()
+    public function index(): Response
     {
 		if (request()->isAjax()) {
-			
-			// 查询参数
-			$where = array();
-			$post['title'] = input('title');
-			$post['router'] = input('router');	
-			if (!empty($post['title'])) {
-				$where[] = ['title','like','%'.$post['title'].'%'];
-			}
-
-			if (!empty($post['router'])) {
-				$where[] = ['router','like','%'.$post['router'].'%'];
-			}
-
-			// 获取总数
-			$total = $this->model->where($where)->count();
-			$list = $this->model->where($where)->order('sort asc')->select()->toArray();
-			foreach ($list as $key => $value) {
-				$list[$key]['title'] = __($value['title']);
-			}
-
-			$rules = list_to_tree($list,'id','pid','children',0);
-			return $this->success('获取成功', '/',$rules, $total);
-			
+            list($count, $list) = AdminRuleService::dataList(request()->all());
+            $rules = list_to_tree($list,'id','pid','children',0);
+            return $this->success('获取成功', '/',$rules, $count);
 		}
 
 		return view('/system/admin/rules');
@@ -66,47 +49,43 @@ class AdminRules extends AdminController
 
 	/**
 	 * 添加节点数据
+     * @return Response
 	 */
-	public function add() 
-	{
-		if (request()->isPost()) {
-			$post = \request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->create($post)) {
-				return $this->success('添加菜单成功！');
-			}else {
-				return $this->error('添加菜单失败！');
-			}
-		}
+	public function add(): Response
+    {
+        if (request()->isPost()) {
+            $post = \request()->post();
+            validate(\app\common\validate\system\AdminRules::class . '.add')->check($post);
+            if ($this->model->create($post)) {
+                return $this->success('添加菜单成功！');
+            }
+        }
+        return $this->error('添加菜单失败！');
 	}
 
 	/**
 	 * 编辑节点数据
+     * @return Response
 	 */
-	public function edit() 
-	{
-		if (request()->isPost()) {
-			$post = \request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->update($post)) {				
-				return $this->success('更新菜单成功！');
-			}else {
-				return $this->error('更新菜单失败');
-			}
-		}	
+	public function edit(): Response
+    {
+        if (request()->isPost()) {
+            $post = \request()->post();
+            validate(\app\common\validate\system\AdminRules::class . '.edit')->check($post);
+            if ($this->model->update($post)) {
+                return $this->success('更新菜单成功！');
+            }
+        }
+        return $this->error('更新菜单失败');
 	}
 
-	/**
-	 * 删除节点数据
-	 */
-	public function del() 
-	{
+    /**
+     * 删除节点数据
+     * @return Response
+     * @throws DbException
+     */
+	public function del(): Response
+    {
 		$id = input('id');
 		if (!empty($id)) {
 			// 查询子节点

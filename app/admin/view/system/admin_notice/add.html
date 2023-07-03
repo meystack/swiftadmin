@@ -1,0 +1,36 @@
+<include file="/public/header" />
+<div class="layui-fluid layui-bg-white">
+  <form action="{:url('/system/AdminNotice/add')}" class="layui-form">
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color: red; ">* </span>{:__('收件人')}</label>
+      <div class="layui-input-block">
+        <select name="admin_id" lay-verify="required" lay-search>
+          <option value=""></option>
+          <volist name="adminList" id="vo">
+          <option value="{$vo.id}">{$vo.name}</option>
+          </volist>
+        </select>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color: red; ">* </span>{:__('标题')}</label>
+      <div class="layui-input-block">
+        <input type="text" name="title" class="layui-input" lay-verify="required" value="" placeholder="请输入私信标题">
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label class="layui-form-label"><span style="color: red; ">* </span>{:__('回复内容')}</label>
+      <div class="layui-input-block">
+        <textarea name="content" class="layui-textarea" placeholder="请输入私信内容"></textarea>
+      </div>
+    </div>
+
+    <div class="layui-footer layui-form-item layui-center ">
+      <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog">{:__('取消')}
+      </button>
+      <button class="layui-btn" lay-filter="submitIframe" lay-submit>{:__('提交')}</button>
+    </div>
+  </form>
+</div>
+<include file="/public/footer" />

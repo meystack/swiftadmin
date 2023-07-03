@@ -11,8 +11,15 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller\system;
 
+use app\admin\enums\AdminEnum;
+use app\admin\service\AdminGroupService;
 use app\AdminController;
+use app\common\exception\OperateException;
 use app\common\model\system\AdminGroup as AdminGroupModel;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -22,165 +29,116 @@ use Webman\Http\Request;
  */
 class AdminGroup extends AdminController
 {
-	// 初始化函数
+    // 初始化函数
     public function __construct()
     {
         parent::__construct();
-		$this->model = new AdminGroupModel();
-	}
+        $this->model = new AdminGroupModel();
+    }
 
     /**
      * 获取资源列表
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function index()
+    public function index(): Response
     {
-	   if (request()->isAjax()) {
+        if (request()->isAjax()) {
+            $params = \request()->all();
+            list($count, $list) = AdminGroupService::dataList($params);
+            return $this->success('查询成功', '/', $list, $count);
+        }
 
-			$param = \request()->all();
-			$param['page'] = input('page');
-			$param['limit'] = input('limit');
+        return view('/system/admin/group', [
+            'group' => $this->model->getListGroup()
+        ]);
+    }
 
-			// 查询条件
-			$where = array();
-			if (!empty($param['title'])) {
-				$where[] = ['title','like','%'.$param['title'].'%'];
-			}
-			if (!empty($param['alias'])) {
-				$where[] = ['alias','like','%'.$param['alias'].'%'];
-			}
-			if (!empty($param['content'])) {
-				$where[] = ['content','like','%'.$param['content'].'%'];
-			}
-
-			// 查询数据
-            $count = $this->model->where($where)->count();
-            $limit = is_empty($param['limit']) ? 10 : (int)$param['limit'];
-            $page = ($count <= $limit) ? 1 : $param['page'];
-			$list = $this->model->where($where)->order("id asc")->limit((int)$limit)->page((int)$page)->select()->toArray();
-			foreach ($list as $key => $value) {
-				$list[$key]['title'] = __($value['title']);
-			}
-
-			return $this->success('查询成功', null, $list, $count);
-		}
-
-		return view('/system/admin/group',['group'=>$this->model->getListGroup()]);
-	}
-	
-	/**
-	 * 添加角色
-	 */
+    /**
+     * 添加角色
+     */
     public function add()
     {
-		if (request()->isPost()) {
-			// 接收数据
-			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->create($post)) {
-				return $this->success('添加角色成功！');
-			}else {
-				return $this->error('添加角色失败！');
-			}
-		}
-    }	
+        if (request()->isPost()) {
+            $post = request()->post();
+            validate(\app\common\validate\system\AdminGroup::class)->scene('add')->check($post);
+            AdminGroupService::add($post);
+            return $this->success('添加角色成功！');
+        }
 
-	/**
-	 * 编辑角色
-	 */
+        return $this->error('添加角色失败！');
+    }
+
+    /**
+     * 编辑角色
+     */
     public function edit()
     {
-		if (request()->isPost()) {
-			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
-			if ($this->model->update($post)) {				
-				return $this->success('更新角色成功！');
-			}else {
-				return $this->error('更新角色失败');
-			}
-		}			
-	}
+        if (request()->isPost()) {
+            $post = request()->post();
+            validate(\app\common\validate\system\AdminGroup::class)->scene('edit')->check($post);
+            AdminGroupService::edit($post);
+            return $this->success('更新角色成功！');
+        }
 
-	/**
-	 * 更新权限
-	 */
-	public function editRules() 
-	{
-		if (request()->isPost()) {
+        return $this->error('更新角色失败！');
+    }
 
-			$id = input('id');
+    /**
+     * 权限函数接口
+     * @access      public
+     */
+    public function getRuleCateTree()
+    {
+        $type = input('type', AdminEnum::ADMIN_AUTH_RULES);
+        return $this->authService->getRuleCatesTree($type, $this->authService->authGroup);
+    }
 
-			if (!is_empty($id) && is_numeric($id)) {
+    /**
+     * 更新权限
+     * @return Response
+     * @throws OperateException
+     */
+    public function editRules(): Response
+    {
+        $id = input('id', 0);
+        $post = request()->post();
+        $rules = input(AdminEnum::ADMIN_AUTH_RULES, []);
+        validate(\app\common\validate\system\AdminGroup::class)->scene('edit')->check($post);
+        AdminGroupService::editRules((int)$id, $rules);
+        return $this->success('更新权限成功！');
+    }
 
-				$rules = request()->post('rules') ?? [];
-				$array = [
-					'id'=>$id,
-					'rules'=>implode(',',$rules)
-				];
+    /**
+     * 更新栏目
+     * @return Response
+     * @throws OperateException
+     */
+    public function editCates(): Response
+    {
+        $id = input('id', 0);
+        $cates = input(AdminEnum::ADMIN_AUTH_CATES, []);
+        $post = request()->post();
+        validate(\app\common\validate\system\AdminGroup::class)->scene('edit')->check($post);
+        AdminGroupService::editCates($id, $cates);
+        return $this->success('更新权限成功！');
+    }
 
-				if (!$this->auth->checkRuleOrCateNodes($rules)) {
-					return $this->error('没有权限！');
-				}
+    /**
+     * 删除角色/用户组
+     */
+    public function del(): Response
+    {
+        $id = input('id', 0);
+        validate(\app\common\validate\system\AdminGroup::class)->scene('edit')->check(request()->all());
+        if ($id == 1) {
+            return $this->error('系统内置禁止删除！');
+        } else if ($this->model::destroy($id)) {
+            return $this->success('删除角色成功！');
+        }
 
-				if ($this->model->update($array)) {
-					return $this->success('更新权限成功！');
-				}
-			}
-
-			return $this->error('更新权限失败！');
-		}
-	}
-
-	/**
-	 * 更新栏目
-	 */
-	public function editCates() 
-	{
-		if (request()->isPost()) {
-
-			$id = input('id');
-			if (!is_empty($id) && is_numeric($id)) {
-
-				$cates = request()->post('cates') ?? [];
-				$array = [
-					'id'=>$id,
-					'cates'=>implode(',',$cates)
-				];
-
-				if (!$this->auth->checkRuleOrCateNodes($cates,AUTH_CATE)) {
-					return $this->error('没有权限！');
-				}
-
-				if ($this->model->update($array)) {
-					return $this->success('更新栏目权限成功！');
-				}
-			}
-
-			return $this->error('更新栏目权限失败！');
-		}		
-	}
-
-	/**
-	 * 删除角色/用户组
-	 */
-	public function del()
-	{
-		$id = input('id');
-		if (!empty($id) && is_numeric($id)) {
-			if ($id == 1) {
-				return $this->error('系统内置禁止删除！');
-			}
-			if ($this->model::destroy($id)) {
-				return $this->success('删除角色成功！');
-			}
-		}
-		
-		return $this->error('删除角色失败，请检查您的参数！');
-	}
+        return $this->error('删除角色失败，请检查您的参数！');
+    }
 
 }

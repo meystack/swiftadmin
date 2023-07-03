@@ -7,10 +7,8 @@ use app\common\model\system\UserThird;
 use app\common\model\system\Config;
 use think\helper\Str;
 use support\Cache;
+use webman\Event\Event;
 
-// 权限常量
-const AUTH_CATE = 'cates';
-const AUTH_RULES = 'rules';
 // +----------------------------------------------------------------------
 // | 常规助手函数
 // +----------------------------------------------------------------------
@@ -35,9 +33,9 @@ if (!function_exists('hook')) {
      * @param bool $array
      * @return mixed
      */
-    function hook($event, $params = '', bool $array = true)
+    function hook($event, mixed $params = '', bool $array = true): mixed
     {
-        $result = \webman\Event\Event::emit($event, $params, true);
+        $result = Event::emit($event, $params, true);
         return $array ? $result : join('', $result);
     }
 }
@@ -1119,14 +1117,14 @@ if (!function_exists('check_admin_auth')) {
      */
     function check_admin_auth($method): bool
     {
-        if (\app\admin\library\Auth::instance()->SuperAdmin()) {
+        if (\app\admin\service\AuthService::instance()->SuperAdmin()) {
             return true;
         }
 
         $app = '/' . request()->app;
         $pattern = '#^' . $app . '#';
         $method = preg_replace($pattern, '', $method, 1);
-        return \app\admin\library\Auth::instance()->check($method, get_admin_id());
+        return \app\admin\service\AuthService::instance()->permissions($method, get_admin_id());
     }
 }
 

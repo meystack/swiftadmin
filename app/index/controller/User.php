@@ -308,12 +308,13 @@ class User extends HomeController
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
+     * @throws OperateException
      */
     public function viewMessage(Request $request): Response
     {
         $id = input('id', 0);
         $result = UserService::viewMessage($id, $request->userId);
-        return view('message_view', [
+        return view('/user/message_view', [
             'msgInfo' => $result['msgInfo'],
             'unread'  => $result['unread'],
         ]);

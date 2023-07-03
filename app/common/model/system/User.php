@@ -3,6 +3,9 @@
 
 namespace app\common\model\system;
 use Psr\SimpleCache\InvalidArgumentException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\Model;
 use app\common\library\ParseData;
 use think\model\concern\SoftDelete;
@@ -81,6 +84,9 @@ class User extends Model
      * @param array $data
      * @return string
      * @throws InvalidArgumentException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getAvatarAttr(string $value, array $data): string
     {

@@ -308,7 +308,7 @@ class Index extends AdminController
         $columns = ['用户注册' => 'create_time', '用户登录' => 'login_time', '邀请注册' => 'invite_id'];
         foreach ($columns as $index => $field) {
             $time = str_replace('invite_id', 'create_time', $field);
-            $resultList[$index] = \app\common\model\system\User::where($time, 'between time', [$dateBefore, $dateAfter])
+            $resultList[$index] = User::where($time, 'between time', [$dateBefore, $dateAfter])
                 ->when($condition, function ($query) use ($condition, $time, $field) {
                     $query->field("FROM_UNIXTIME($time, '$condition') as day,count(*) as count");
                     if ($field == 'invite_id') {

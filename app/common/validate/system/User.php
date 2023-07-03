@@ -56,18 +56,28 @@ class User extends Validate
     /**
      * 自定义验证规则
      * @param $value
-     * @return string|bool
+     * @return bool
      * @throws InvalidArgumentException
      */
-    protected function checkName($value): string|bool
+    protected function checkName($value): bool
     {
         $notAllow = saenv('user_reg_notallow');
         $notAllow = explode(',', $notAllow);
         if (in_array($value, $notAllow)) {
-            return '用户名不合法！';
+            return false;
         }
 
         return true;
+    }
+
+    public function sceneAdd(): User
+    {
+        return $this->only(['nickname', 'pwd', 'email', 'mobile']);
+    }
+
+    public function sceneEdit(): User
+    {
+        return $this->only(['nickname', 'email']);
     }
 
     public function sceneRegister(): User

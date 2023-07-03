@@ -19,7 +19,6 @@ use system\File;
 use system\Http;
 use system\ZipArchives;
 use app\AdminController;
-use app\admin\library\Auth;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;

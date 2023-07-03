@@ -14,6 +14,10 @@ namespace app\admin\controller\system;
 
 use app\AdminController;
 use app\common\model\system\Jobs as JobsModel;
+use support\Response;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -29,11 +33,15 @@ class Jobs extends AdminController
         parent::__construct();
         $this->model = new JobsModel();
 	}
-	
+
     /**
      * 获取资源列表
+     * @return Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
-    public function index()
+    public function index(): Response
     {
 		if (request()->isAjax()) {
 			
@@ -76,16 +84,12 @@ class Jobs extends AdminController
 	{
 		if (request()->isPost()) {
 			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
 			if ($this->model->create($post)) {
 				return $this->success('添加岗位成功！');
-			}else {
-				return $this->error('添加岗位失败！');
 			}
 		}
+
+        return $this->error('添加岗位失败！');
 	}
 
 	/**
@@ -95,25 +99,21 @@ class Jobs extends AdminController
 	{
 		if (request()->isPost()) {
 			$post = request()->post();
-			$post = request_validate_rules($post, get_class($this->model));
-			if (empty($post) || !is_array($post)) {
-				return $this->error($post);
-			}
 			if ($this->model->update($post)) {				
 				return $this->success('更新岗位成功！');
-			}else {
-				return $this->error('更新岗位失败');
 			}
-		}	
+		}
+        return $this->error('更新岗位失败');
 	}
 
 	/**
 	 * 删除岗位数据
+     * @return Response
 	 */
-	public function del() 
-	{
+	public function del(): Response
+    {
 		$id = input('id');
-		if (!empty($id) && is_numeric($id)) {
+		if ($id > 0) {
 			if ($this->model::destroy($id)) {
 				return $this->success('删除岗位成功！');
 			}

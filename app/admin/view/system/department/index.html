@@ -237,14 +237,7 @@
                     post.field, function(res){
                         if (res.code === 200) {
                             layer.msg(res.msg);
-                            // 更新列数据
-                            if (typeof(tableThis) !== 'undefined') {
-                                if (tableThis.event === 'edit')
-                                    tableThis.update(JSON.parse(JSON.stringify(post.field)));
-                            }else { // 添加则更新列表
-                                renderTable(tableURL);
-                            }
-
+                            treeTable.reloadData('lay-tableList');
                             // 关闭当前窗口
                             layer.close(colletction.index);
                         }

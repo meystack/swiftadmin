@@ -203,11 +203,9 @@
             var that = $(this), _form = that.parents('form'),
                 name = $('input[name="name"]').val(),
                 pwd = $('input[name="pwd"]').val(),
-                captcha = $('input[name="captcha"]').val(),
-                __token__ = $('input[name="__token__"]').val();
-            layer.msg("{:__('数据提交中...')}",'warning');
+                captcha = $('input[name="captcha"]').val();
             that.prop('disabled', true);
-            $_ajax(that,{name: name, pwd: pwd, captcha: captcha,__token__:__token__});
+            $_ajax(that,{name: name, pwd: pwd, captcha: captcha});
             return false;
         })
 
@@ -342,38 +340,31 @@
 
             var _form = that.attr('lay-filter'),
                 _urls = $('.'+_form).attr('action');
-
             $.ajax({
                 type: "POST",
                 url: _urls,
                 data: data,
                 success: function (res) {
-
-                    if(res.code == 200){
-
+                    if(res.code === 200){
                         layer.msg(res.msg);
-
                         if (jump === undefined) {
                             window.location = res.url; // 跳转到主页
                         }
 
                     }else {
-
                         layer.error(res.msg);
                         that.prop('disabled', false);
                         $("#captchaImg,#captchaImg2,#captchaImg3").attr('src',captchaUrl+'?rand='+Math.random()).parents('.layui-form-item').show();
-                        if (res.data.token) {
-                            $('input[name=__token__]').val(res.data.token);
-                        }
-
                         return false;
                     }
                 },
                 error: function() {
                     that.prop('disabled', false);
-                    layer.msg("{:__('好像是网络出错了...')}",'error');
+                    layer.msg("{:__('好像是网络出错了...')}");
                 }
             })
+
+            return false;
         }
 
         /**
@@ -383,7 +374,7 @@
             var array = ['login','register','forget'],
                 event = $(this).attr("sa-event-type");
             for (var i in array) {
-                if (array[i] != event) {
+                if (array[i] !== event) {
                     $('#' + array[i]).css('display','none');
                 }
             }

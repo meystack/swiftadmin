@@ -187,11 +187,11 @@ CREATE TABLE `__PREFIX__admin_rules`  (
 -- ----------------------------
 -- Records of __PREFIX__admin_rules
 -- ----------------------------
-INSERT INTO `__PREFIX__admin_rules` VALUES (1, 0, 'Dashboard', 'Dashboard', 'ashboard', 0, '', '', 1, 'layui-icon-home', 0, 1, 0, 1688348880, 1688348880, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (1, 0, 'Dashboard', 'Dashboard', 'Dashboard', 0, '', '', 1, 'layui-icon-home', 0, 1, 0, 1688348880, 1688348880, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (2, 1, '控制台', '/index/console', 'index:console', 0, '', '', 2, '', 0, 1, 0, 1688348881, 1688348881, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (3, 1, '分析页', '/Index/analysis', 'Index:analysis', 0, '', '', 3, '', 0, 1, 0, 1688348881, 1688348881, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (4, 1, '监控页', '/Index/monitor', 'Index:monitor', 0, '', '', 4, '', 0, 1, 0, 1688348881, 1688348881, NULL);
-INSERT INTO `__PREFIX__admin_rules` VALUES (5, 0, '系统管理', 'System', 'ystem', 0, '', '', 5, 'layui-icon-set-fill', 0, 1, 0, 1688348881, 1688348881, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (5, 0, '系统管理', 'System', 'System', 0, '', '', 5, 'layui-icon-set-fill', 0, 1, 0, 1688348881, 1688348881, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (6, 5, '基本设置', '/Index/baseCfg', 'Index:baseCfg', 0, '', '', 6, '', 1, 1, 0, 1688348881, 1688348881, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (7, 6, '修改配置', '/Index/baseSet', 'Index:baseSet', 2, '', '', 7, '', 1, 1, 0, 1688348881, 1688348881, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (8, 6, 'FTP接口', '/Index/testFtp', 'Index:testFtp', 2, '', '', 8, '', 0, 1, 0, 1688348881, 1688348881, NULL);
@@ -244,7 +244,7 @@ INSERT INTO `__PREFIX__admin_rules` VALUES (54, 53, '添加', '/system/LoginLog/
 INSERT INTO `__PREFIX__admin_rules` VALUES (55, 53, '编辑', '/system/LoginLog/edit', 'system:LoginLog:edit', 1, '', '', 52, NULL, 1, 1, 0, 1688348884, 1688348884, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (56, 53, '删除', '/system/LoginLog/del', 'system:LoginLog:del', 1, '', '', 53, NULL, 1, 1, 0, 1688348884, 1688348884, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (57, 53, '状态', '/system/LoginLog/status', 'system:LoginLog:status', 1, '', '', 54, NULL, 1, 1, 0, 1688348884, 1688348884, NULL);
-INSERT INTO `__PREFIX__admin_rules` VALUES (58, 0, '高级管理', 'Management', 'anagement', 0, '', '', 55, 'layui-icon-engine', 1, 1, 0, 1688348884, 1688348884, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (58, 0, '高级管理', 'Management', 'Management', 0, '', '', 55, 'layui-icon-engine', 1, 1, 0, 1688348884, 1688348884, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (59, 58, '公司管理', '/system/Company/index', 'system:Company:index', 0, '', '', 56, '', 1, 1, 0, 1688348884, 1688348884, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (60, 59, '查看', '/system/Company/index', 'system:Company:index', 1, '', '', 57, '', 1, 1, 0, 1688348884, 1688348884, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (61, 59, '添加', '/system/Company/add', 'system:Company:add', 1, '', '', 58, '', 1, 1, 0, 1688348884, 1688348884, NULL);
@@ -275,7 +275,7 @@ INSERT INTO `__PREFIX__admin_rules` VALUES (85, 83, '编辑', '/system/Attachmen
 INSERT INTO `__PREFIX__admin_rules` VALUES (86, 83, '删除', '/system/Attachment/del', 'system:Attachment:del', 1, '', '', 83, '', 1, 1, 0, 1688348885, 1688348885, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (87, 83, '附件上传', '/Ajax/upload', 'Ajax:upload', 2, '', '', 84, '', 0, 1, 0, 1688348885, 1688348885, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (88, 83, '远程下载', '/Ajax/getImage', 'Ajax:getImage', 2, '', '', 85, '', 0, 1, 0, 1688348885, 1688348885, NULL);
-INSERT INTO `__PREFIX__admin_rules` VALUES (89, 0, '插件应用', 'Plugin', 'lugin', 0, '', '', 85, 'layui-icon-component', 1, 1, 0, 1688348885, 1688348885, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (89, 0, '插件应用', 'Plugin', 'Plugin', 0, '', '', 85, 'layui-icon-component', 1, 1, 0, 1688348885, 1688348885, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (90, 89, '插件管理', '/system/Plugin/index', 'system:Plugin:index', 0, '', '', 86, '', 1, 1, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (91, 90, '查看', '/system/Plugin/index', 'system:Plugin:index', 1, '', '', 87, '', 1, 1, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (92, 90, '安装', '/system/Plugin/install', 'system:Plugin:install', 1, '', '', 88, '', 1, 1, 0, 1688348886, 1688348886, NULL);
@@ -284,13 +284,13 @@ INSERT INTO `__PREFIX__admin_rules` VALUES (94, 90, '配置', '/system/Plugin/co
 INSERT INTO `__PREFIX__admin_rules` VALUES (95, 90, '状态', '/system/Plugin/status', 'system:Plugin:status', 2, '', '', 91, '', 1, 1, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (96, 90, '升级', '/system/Plugin/upgrade', 'system:Plugin:upgrade', 2, '', '', 92, '', 1, 1, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (97, 90, '数据表', '/system/Plugin/tables', 'system:Plugin:tables', 2, '', '', 93, '', 0, 1, 0, 1688348886, 1688348886, NULL);
-INSERT INTO `__PREFIX__admin_rules` VALUES (98, 89, '占位菜单', '#', '', 0, '', '', 94, '', 1, 0, 1, 1688348886, 1688348886, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (98, 89, '占位菜单', '#', '#', 0, '', '', 94, '', 1, 0, 1, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (99, 98, '查看', '#0', '0', 1, '', '', 95, '', 1, 0, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (100, 98, '安装', '#1', '1', 1, '', '', 96, '', 1, 0, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (101, 98, '卸载', '#2', '2', 1, '', '', 97, '', 1, 0, 0, 1688348886, 1688348886, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (102, 98, '预留1', '#3', '3', 1, '', '', 98, '', 1, 0, 0, 1688348887, 1688348887, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (103, 98, '预留2', '#4', '4', 2, '', '', 99, '', 1, 0, 0, 1688348887, 1688348887, NULL);
-INSERT INTO `__PREFIX__admin_rules` VALUES (104, 0, '会员管理', 'User', 'ser', 0, '', '', 100, 'layui-icon-user', 1, 1, 0, 1688348887, 1688348887, NULL);
+INSERT INTO `__PREFIX__admin_rules` VALUES (104, 0, '会员管理', 'User', 'User', 0, '', '', 100, 'layui-icon-user', 1, 1, 0, 1688348887, 1688348887, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (105, 104, '会员管理', '/system/User/index', 'system:User:index', 0, '', '', 101, '', 1, 1, 0, 1688348887, 1688348887, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (106, 105, '查看', '/system/User/index', 'system:User:index', 1, '', '', 102, '', 1, 1, 0, 1688348887, 1688348887, NULL);
 INSERT INTO `__PREFIX__admin_rules` VALUES (107, 105, '添加', '/system/User/add', 'system:User:add', 1, '', '', 103, '', 1, 1, 0, 1688348887, 1688348887, NULL);

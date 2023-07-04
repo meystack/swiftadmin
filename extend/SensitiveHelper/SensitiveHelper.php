@@ -7,7 +7,6 @@ declare (strict_types = 1);
  * Time: 上午9:11
  */
 namespace SensitiveHelper;
-use app\common\controller\common\model\system\Tags;
 
 class SensitiveHelper
 {
@@ -81,14 +80,6 @@ class SensitiveHelper
      */
     public function setTree($sensitiveWords = null, bool $type = true)
     {
-         // 默认从数据库读取
-        if (empty($sensitiveWords)) {
-            $sensitiveWords = Tags::where([
-                'type'=> $type,
-                'status'=> true,
-            ])->column('name');
-        }
-
         $this->wordTree = new HashMap();
         foreach ($sensitiveWords as $word) {
             $this->buildWordToTree($word);

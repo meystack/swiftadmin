@@ -12,9 +12,9 @@ declare (strict_types=1);
 namespace app\admin\service;
 
 use app\common\exception\OperateException;
-use app\common\library\Ip2Region;
 use app\common\model\system\User;
 use app\common\model\system\UserGroup;
+use system\IpLocation;
 use system\Random;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
@@ -54,14 +54,15 @@ class UserService
         $list = $model->where($conditions)->order("id asc")->limit($limit)->page($page)->select();
         // 循环处理数据
         $userGroup = (new UserGroup)->select()->toArray();
+        $qqWry = new IpLocation();
         foreach ($list as $key => $value) {
             $value->hidden(['pwd', 'salt']);
             try {
-                $region = Ip2Region::instance()->memorySearch($value['login_ip']);
+                $region = $qqWry->getLocation($value['login_ip']);
+                $region = $region['country'] . ' ' . $region['area'];
             } catch (\Exception $e) {
-                $region = ['region' => '未知|未知|未知'];
+                $region = 'unKnown';
             }
-            $region = explode('|',$region['region']);
             $list[$key]['region'] = $region;
             $result = list_search($userGroup,['id'=> $value['group_id']]);
             if (!empty($result)) {

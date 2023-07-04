@@ -11,11 +11,11 @@ class Http
 {
     /**
      * PC/Mobile 标识
-     * @var object 对象实例
+     * @var array 对象实例
      */
-    protected static $agent = [
+    protected static array $agent = [
         'Opera/9.80 (Android 2.3.4; Linux; Opera Mobi/build-1107180945; U; en-GB) Presto/2.8.149 Version/11.10',
-        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (HTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
     ];
 
     /**
@@ -25,12 +25,13 @@ class Http
      * @param bool $agent
      * @param array $options
      * @param array $header
+     * @param bool $headerOnly
      * @return mixed|string
      */
-    public static function post(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [])
+    public static function post(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [], bool $headerOnly = false)
     {
         $req = self::request($url, $params, $agent, 'POST', $options, $header);
-        return $req['ret'] ? $req['msg'] : '';
+        return $headerOnly ? ($req['ret'] ? ['data' => $req['msg'], 'header' => $req['header']] : ['header' => $req['header']]) : ($req['ret'] ? $req['msg'] : '');
     }
 
     /**
@@ -40,12 +41,13 @@ class Http
      * @param bool $agent
      * @param array $options
      * @param array $header
+     * @param bool $headerOnly
      * @return mixed|string
      */
-    public static function get(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [])
+    public static function get(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [], bool $headerOnly = false)
     {
         $req = self::request($url, $params, $agent, 'GET', $options, $header);
-        return $req['ret'] ? $req['msg'] : '';
+        return $headerOnly ? ($req['ret'] ? ['data' => $req['msg'], 'header' => $req['header']] : ['header' => $req['header']]) : ($req['ret'] ? $req['msg'] : '');
     }
 
     /**
@@ -61,15 +63,18 @@ class Http
     {
         try {
             $client = self::getClient($agent, $options, $header);
-            $response = $client->request($method, $url, $params ? ['query' => $params] : [])->getBody()->getContents();
-            if (!empty($response)) {
-                return ['ret' => true, 'msg' => $response];
+            $query = $method == 'GET' ? ['query' => $params] : ['form_params' => $params];
+            $response = $client->request($method, $url, $query);
+            $content = $response->getBody()->getContents();
+            $header = $response->getHeaders();
+            if (!empty($content)) {
+                return ['ret' => true, 'msg' => $content, 'header' => $header];
             }
         } catch (\Throwable $e) {
-            return ['ret' => false, 'msg' => $e->getMessage()];
+            return ['ret' => false, 'msg' => $e->getMessage(), 'header' => $header];
         }
 
-        return ['ret' => false, 'msg' => $response];
+        return ['ret' => false, 'msg' => $content, 'header' => $header];
     }
 
     /**
@@ -77,9 +82,9 @@ class Http
      * @param bool $agent
      * @param array $options
      * @param array $header
-     * @return mixed
+     * @return Client
      */
-    private static function getClient(bool $agent, array $options = [], array $header = [])
+    private static function getClient(bool $agent, array $options = [], array $header = []): Client
     {
         if (empty($options)) {
             $options = [
@@ -101,5 +106,4 @@ class Http
 
         return new Client($options);
     }
-
 }

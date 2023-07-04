@@ -48,7 +48,7 @@ class AdminService
         }
 
         if (!empty($params['dep'])) {
-            $where[] = ['branch_id', 'find in set', $params['dep']];
+            $where[] = ['department_id', 'find in set', $params['dep']];
         }
 
         if (!empty($params['group_id'])) {
@@ -58,7 +58,7 @@ class AdminService
         $model = new Admin();
         $count = $model->where($where)->count();
         $page = ($count <= $limit) ? 1 : $page;
-        $adminList = $model->where($where)->order("id asc")->withoutField('pwd')->limit($limit)->page($page)->select()->toArray();
+        $adminList = $model->where($where)->order("id asc")->withoutField('pwd')->limit((int)$limit)->page((int)$page)->select()->toArray();
 
         $authService = AuthService::instance();
         foreach ($adminList as $key => $value) {

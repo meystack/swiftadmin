@@ -229,7 +229,7 @@ class BaseController
 
         try {
             // 实例化Excel对象
-            $fileType = IOFactory::identify($filePath);
+            $fileType = IOFactory::identify($resource);
             $reader = IOFactory::createReader($fileType);
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($resource);
@@ -243,7 +243,7 @@ class BaseController
 
         // 数据量最小为1条
         $listRows = count($listSheetData);
-        if ($listRows <= 2) {
+        if ($listRows < 2) {
             return $this->error('数据行最小为2！');
         }
 
@@ -314,7 +314,7 @@ class BaseController
      */
     public function export(): Response
     {
-        if (\request()->isAjax()) {
+//        if (\request()->isAjax()) {
 
             // 获取分页
             $page = input('page', 1);
@@ -338,9 +338,9 @@ class BaseController
 
             $downUrl = str_replace(public_path(), '', $filePath);
             return $this->success('导出成功！', $downUrl);
-        }
+//        }
 
-        return $this->error('非法请求！');
+//        return $this->error('非法请求！');
     }
 
     /**

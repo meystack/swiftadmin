@@ -63,7 +63,13 @@ class Http
     {
         try {
             $client = self::getClient($agent, $options, $header);
-            $query = $method == 'GET' ? ['query' => $params] : ['form_params' => $params];
+            $query = [];
+            if ($method == 'GET') {
+                $query_string = http_build_query($params);
+                $url = $query_string ? $url . (stripos($url, "?") !== false ? "&" : "?") . $query_string : $url;
+            } else {
+                $query['form_params'] = $params;
+            }
             $response = $client->request($method, $url, $query);
             $content = $response->getBody()->getContents();
             $header = $response->getHeaders();

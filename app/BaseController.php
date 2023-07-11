@@ -314,7 +314,7 @@ class BaseController
      */
     public function export(): Response
     {
-//        if (\request()->isAjax()) {
+        if (\request()->isAjax()) {
 
             // 获取分页
             $page = input('page', 1);
@@ -338,9 +338,9 @@ class BaseController
 
             $downUrl = str_replace(public_path(), '', $filePath);
             return $this->success('导出成功！', $downUrl);
-//        }
+        }
 
-//        return $this->error('非法请求！');
+        return $this->error('非法请求！');
     }
 
     /**

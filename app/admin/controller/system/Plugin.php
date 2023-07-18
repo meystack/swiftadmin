@@ -354,7 +354,7 @@ class Plugin extends AdminController
                 $url = $body['data']['url'];
             }
             if (!empty($url) && stristr($url, 'download')) {
-                $content = Http::get($url);
+                $content = file_get_contents($url);
                 $filePath = plugin_path() . $name . '.zip';
                 write_file($filePath, $content);
             } else {

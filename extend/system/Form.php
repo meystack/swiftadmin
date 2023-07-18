@@ -394,7 +394,7 @@ class FormBuilder
      */
     public function switch(array $data = []): string
     {
-        $value = $this->formtype ? 'value="{$data.' . $data['name'] . '}"' : '';
+        $value = $this->formtype ? '{$data.' . $data['name'] . '}' : '';
         $param = '$data.' . $data['name'];
         if ($this->formtype) {
             return <<<Eof

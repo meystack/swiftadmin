@@ -36,8 +36,8 @@ class AdminGroupService
      */
     public static function dataList(array $params = []): array
     {
-        $page = $params['page'] ?? 1;
-        $limit = $params['limit'] ?? 10;
+        $page = (int)$params['page'] ?? 1;
+        $limit = (int)$params['limit'] ?? 10;
         $where = [];
         if (!empty($param['title'])) {
             $where[] = ['title', 'like', '%' . $param['title'] . '%'];

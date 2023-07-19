@@ -394,12 +394,11 @@ class FormBuilder
      */
     public function switch(array $data = []): string
     {
-        $value = $this->formtype ? '{$data.' . $data['name'] . '}' : '';
         $param = '$data.' . $data['name'];
         if ($this->formtype) {
             return <<<Eof
             <input  type="hidden" type="checkbox" name="{$data['name']}" value="0" />
-            <input type="checkbox" name="{$data['name']}" value="$value" <eq name="{$param}" value="1" > checked </eq> lay-skin="switch" />
+            <input type="checkbox" name="{$data['name']}" value="1" <eq name="{$param}" value="1" > checked </eq> lay-skin="switch" />
         Eof;
         }
         return <<<Eof

@@ -461,12 +461,12 @@ class AdminController extends BaseController
                                 continue 2;
                             }
 
-                            $exp = '=';
+                            $exp = 'between';
                             if ($arr[0] === '') {
-                                $exp = '<= TIME';
+                                $exp = '<=';
                                 $arr = $arr[1];
                             } elseif ($arr[1] === '') {
-                                $exp = '>= TIME';
+                                $exp = '>=';
                                 $arr = $arr[0];
                             }
 

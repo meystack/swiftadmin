@@ -11,7 +11,7 @@ use Webman\Http\Response;
 use Webman\Http\Request;
 
 /**
- * 管理员权限
+ * 前端权限
  * @package app\admin\middleware\system
  * @author meystack <
  */
@@ -64,7 +64,7 @@ class IndexPermissions implements MiddlewareInterface
 
         // 是否验证登录器
         $userInfo = UserTokenService::isLogin();
-        if (!empty($userInfo)) {
+        if (!empty($userInfo) && isset($userInfo['id'])) {
             if (in_array($action, $this->repeatLogin)) {
                 return redirect($this->JumpUrl);
             }

@@ -44,30 +44,27 @@ body{font-family: '微软雅黑',serif; color: #CCC; font-size: 16px;background:
     </div>
 </body>
 <!-- 公共js部分 -->
-
 <script type="text/javascript">
     let wait = document.getElementById('wait'),
         href = document.getElementById('href').href,
         target = document.getElementById('href').target;
     let interval = setInterval(function(){
         let time = --wait.innerHTML;
-            if(time <= 0) {
-                if (window.top !== window.self) {
-                    if ('_parent' === target) {
-                        parent.location.href = href;
-                    } else {
-                        location.href = href;
-                    }
-                }
-                else {
-                    if ('_parent' === target) {
-                        parent.location.href = href;
-                    } else {
-                        location.href = href;
-                    }
-                }
-                clearInterval(interval);
+        if(time <= 0) {
+            let host = window.location.host;
+            let protocol = window.location.protocol;
+            let domain = href.replace(protocol+ '//', '').replace('/', '').replace(/(^\s*)|(\s*$)/g, "");
+            if (window.top !== window.self && host === domain) {
+                let id = window.frameElement.getAttribute('id');
+                parent.layui.layer.close(id);
             }
-        }, 1000);
+            if ('_parent' === target) {
+                parent.location.href = href;
+            } else {
+                location.href = href;
+            }
+            clearInterval(interval);
+        }
+    }, 1000);
 </script>
 </html>

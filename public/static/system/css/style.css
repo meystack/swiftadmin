@@ -2156,8 +2156,8 @@ a {
 }
 
 .layui-btn-xs {
-    height: 28px;
-    line-height: 28px;
+    height: 22px;
+    line-height: 22px;
     padding: 0 5px;
     font-size: 12px;
 }
@@ -2279,7 +2279,6 @@ a {
 
 /* 多文件上传 */
 .layui-imagesbox {
-    max-width: 810px;
     overflow: hidden;
 }
 
@@ -2886,6 +2885,11 @@ xm-select > .xm-body .xm-tree-icon:hover {
     border-color: #FE232D!important;
 }
 
+#firered .layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #FE232D;
+    color: #fff;
+    background-color: #FE232D;
+}
 
 /* 皮肤设置 */
 #orange .layui-btn-normal {
@@ -3115,6 +3119,12 @@ xm-select > .xm-body .xm-tree-icon:hover {
 
 #orange .layui-layout-admin .layui-layout-left .layui-nav-head li.layui-this a {
     color: #FAAD14;
+}
+
+#orange .layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #faad14;
+    color: #fff;
+    background-color: #faad14;
 }
 
 /* 皮肤设置 */
@@ -3347,6 +3357,12 @@ xm-select > .xm-body .xm-tree-icon:hover {
     color: #52C41A;
 }
 
+#green .layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #52c41a;
+    color: #fff;
+    background-color: #52c41a;
+}
+
 /* 皮肤设置 */
 #cyan .layui-btn-normal {
     background-color: #2F4056;
@@ -3577,6 +3593,12 @@ xm-select > .xm-body .xm-tree-icon:hover {
     color: #2F4056;
 }
 
+#cyan .layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #2F4056;
+    color: #fff;
+    background-color: #2F4056;
+}
+
 /* 皮肤设置 */
 #geek .layui-btn-normal {
     background-color: #32A2D4;
@@ -3805,6 +3827,12 @@ xm-select > .xm-body .xm-tree-icon:hover {
 
 #geek .layui-layout-admin .layui-layout-left .layui-nav-head li.layui-this a {
     color: #32A2D4;
+}
+
+#geek .layui-form-checkbox[lay-skin="primary"] > .layui-icon-indeterminate {
+    border-color: #32A2D4;
+    color: #fff;
+    background-color: #32A2D4;
 }
 
 .layui-nav-tree .layui-nav-child dd.layui-this,

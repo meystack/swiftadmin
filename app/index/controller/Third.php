@@ -13,7 +13,6 @@ declare (strict_types=1);
 namespace app\index\controller;
 
 use app\common\exception\OperateException;
-use app\common\library\ResultCode;
 use app\common\service\user\UserService;
 use app\common\service\user\UserTokenService;
 use app\HomeController;
@@ -45,9 +44,10 @@ class Third extends HomeController
     public mixed $oauth;
 
     /**
+     * 禁止登录重复
      * @var array
      */
-    public array $repeatLogin = [];
+    public array $repeatLogin = ['register'];
 
     /**
      * 初始化构造函数

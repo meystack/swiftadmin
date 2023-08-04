@@ -8,8 +8,7 @@
         <div class="layui-card-header layadmin-card-header-auto ">
             <blockquote class="layui-elem-quote pluginCenter"> 插件管理：
                 <span style="margin-left: 12px">在线安装、卸载、禁用、启用、配置、升级插件，插件升级前请做好备份并确保服务器读写权限正确</span>
-                <span class="fr"><i class="layui-icon fa-user" onclick="layui.plugin.clearLogin();"
-                                    title="退出登录"></i></span>
+                <span class="fr"><i class="layui-icon fa-sign-out" onclick="layui.plugin.clearLogin();" title="退出登录"></i></span>
             </blockquote>
             <div class="layui-form">
                 <div class="layui-form-item">
@@ -83,19 +82,20 @@
     {{# } }}
     {{# if(d.version > item.version) { }}
     <span class="layui-upgrade-elem">
-			<a class="layui-table-text upgrade"
-               data-url="{:url('/system/plugin/config')}?name={{d.name}}">{:__('升级')} <span
-                    class="layui-badge-dot"></span></a>
-			<div class="layui-divider layui-divider-vertical"></div>
-			</span>
+        <a class="layui-table-text upgrade"
+           data-url="{:url('/system/plugin/config')}?name={{d.name}}">{:__('升级')} <span
+                class="layui-badge-dot"></span></a>
+        <div class="layui-divider layui-divider-vertical"></div>
+    </span>
     {{# } }}
     <a class="layui-table-text uninstall" style="color:red"
        data-url="{:url('/system/plugin/uninstall')}?name={{d.name}}">{:__('卸载')}</a>
     {{# } else { }}
-    <a class="layui-table-text install" data-url="{:url('/system/plugin/install')}?name={{d.name}}">{:__('安装')}</a>
-    {{# if(d.demourl) { }}
+    <a class="layui-table-text install" data-url="{:url('/system/plugin/install')}?name={{d.name}}">
+        {:__('安装')} <i class="layui-icon layui-icon-down layui-hide"></i></a>
+    {{# if(d.demo_url) { }}
     <div class="layui-divider layui-divider-vertical"></div>
-    <a class="layui-table-text" target="_blank" href="{{d.demourl}}">{:__('演示')}</a>
+    <a class="layui-table-text" target="_blank" href="{{d.demo_url}}">{:__('演示')}</a>
     {{# } }}
     {{# } }}
 </script>
@@ -104,11 +104,10 @@
 <script>
     layui.use(['admin', 'table', 'plugin', 'dropdown', 'jquery'], function () {
 
-        let plugin = layui.plugin;
         let $ = layui.jquery;
+        let plugin = layui.plugin;
         let table = layui.table;
         let dropdown = layui.dropdown;
-        window.framework = "{:config('app.version')}";
         window.plugins = {$plugin|raw};
         /*
          * 初始化表格
@@ -136,7 +135,7 @@
                 },
                 {
                     field: 'title', align: 'left', width: 200, templet: function (d) {
-                        let html = '<a target="_blank" href="' + d.readurl + '">' + d.title + '</a>';
+                        let html = '<a target="_blank" href="' + d.read_url + '">' + d.title + '</a>';
                         if (d.album) {
                             html += '<i class="layui-icon layui-icon-picture"></i>';
                         }
@@ -189,38 +188,59 @@
             , done: function (res, curr, count) {
 
                 let data = res.data;
-                for (const dataKey in data) {
-                    let dropArray = [];
-                    let item = plugins[data[dataKey].name];
-                    if (typeof item == 'undefined') {
-                        continue;
-                    }
-
-                    let verInfo = data[dataKey].verInfo;
-                    for (const verInfoKey in verInfo) {
-                        let v1 = item.version.replaceAll('.', '');
-                        let v2 = verInfo[verInfoKey].version.replaceAll('.', '');
-                        if (v2 > v1) {
-                            dropArray.push({
-                                name: data[dataKey].name,
-                                title: verInfo[verInfoKey].version,
-                                v: verInfo[verInfoKey].version,
-                                pluginName: data[dataKey].title,
+                for (const index in data) {
+                    let value = data[index];
+                    let item = plugins[value.name];
+                    let dropList = [];
+                    let versionList = value.versions;
+                    if (typeof item == 'undefined' && versionList.length) {
+                        if (versionList.length === 1) {
+                            continue;
+                        }
+                        for (const key in versionList) {
+                            dropList.push({
+                                name: value.name,
+                                title: versionList[key].version,
+                                version: versionList[key].version
                             });
                         }
-                    }
-
-                    if (dropArray.length >= 1) {
+                        let elem = $('tr[data-index="' + index + '"]').find('.install');
+                        $(elem).find('i').removeClass('layui-hide');
                         dropdown.render({
-                            elem: $('tr[data-index="' + dataKey + '"]').find('.upgrade')
+                            elem: elem
                             , trigger: 'hover'
                             , align: 'center'
-                            , data: dropArray
+                            , data: dropList
+                            , className: 'install-version'
                             , click: function (data) {
-                                plugin.upgrade(data);
+                                plugin.install(data.name, data.version);
                             }
-                            , className: 'upgrade-version'
                         });
+                    } else {
+                        for (const key in versionList) {
+                            let v1 = item.version.replaceAll('.', '');
+                            let v2 = versionList[key].version.replaceAll('.', '');
+                            if (v2 > v1) {
+                                dropList.push({
+                                    name: value.name,
+                                    pluginName: value.title,
+                                    title: versionList[key].version,
+                                    version: versionList[key].version
+                                });
+                            }
+                        }
+                        if (dropList.length) {
+                            dropdown.render({
+                                elem: $('tr[data-index="' + index + '"]').find('.upgrade')
+                                , trigger: 'hover'
+                                , align: 'center'
+                                , data: dropList
+                                , className: 'upgrade-version'
+                                , click: function (data) {
+                                    plugin.upgrade(data); // 传递给升级按钮即可
+                                }
+                            });
+                        }
                     }
                 }
             }

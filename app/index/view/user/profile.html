@@ -1,29 +1,15 @@
 <layout name="layout:layout"/>
 <!-- 内容主体区域 -->
 <style>
-
-    .red {
-        color: red;
-    }
-    .mt30 {
-        margin-top: 30px;
-    }
-
-    .layui-form {
-        padding-top: 10px;
-    }
-
-    @media screen and (min-width: 1024px) {
-
-        .layui-input-inline {
-            min-width: 260px!important;
-        }
-
-        .address {
-            min-width: 639px!important;
-        }
-    }
-
+.red{color:red}
+.mt30{margin-top:30px}
+.layui-form{padding-top:10px}
+.layui-form-item{padding:8px 0}
+.layui-form-item:nth-child(odd){background-color:#f8f8f8}
+.layui-form-item .layui-input-inline{width:25% !important}
+@media screen and (min-width:1024px){.layui-input-inline{min-width:260px!important}
+    .address{min-width:639px!important}
+}
 </style>
 <div id="content">
     <div class="layui-row">
@@ -130,7 +116,7 @@
                     $('.avatar').attr('src', res.url + '?' + parseInt(100 * Math.random()));
                     return layer.msg(res.msg);
                 }
-                layer.msg(res.msg, 'error');
+                layer.msg(res.msg);
             }
         })
 
@@ -147,7 +133,7 @@
                         top.layer.msg(res.msg);
                     }
                     else {
-                        top.layer.msg(res.msg,'error');
+                        top.layer.msg(res.msg);
                     }
                 }
             });

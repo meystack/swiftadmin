@@ -186,9 +186,9 @@
 
 <!-- // 列表编辑框 -->
 <script type="text/html" id="tableBar">
-    <if (check_admin_auth(url("/system/admin/edit")))>
-    <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="690px,500px" lay-event="edit" >{:__('编辑')}</a>
-    <div class="layui-divider layui-divider-vertical"></div>
+    <if (has_admin_auth(url("/system/admin/edit")))>
+        <a class="layui-table-text" data-title="{:__('编辑')} {{d.name}}" callback="edits" data-url="#adminforms" data-area="690px,500px" lay-event="edit" >{:__('编辑')}</a>
+        <div class="layui-divider layui-divider-vertical"></div>
     </if>
     <a class="layui-table-text" data-title="{:__('访问权限')}"
         callback="rulecates" data-url="#authForms" data-area="300px,80%" lay-event="rules" >{:__('权限')}</a>
@@ -343,7 +343,7 @@
                             pageThat.attr("disabled",true);
                         }
                         else {
-                            layer.error(res.msg);
+                            layui.show.error(res.msg);
                         }
 
                 }, 'json');
@@ -373,8 +373,6 @@
                         showCheckbox: true,
                     })
 
-                    // tree.setChecked('authTree', tableThis.data[event].length ? tableThis.data[event].map(Number): []);
-
                     // 监听权限提交
                     form.on("submit(submitPage)", function (post) {
 
@@ -396,7 +394,7 @@
                                     layer.close(colletction.index);
                                     clickthis.attr("disabled", true);
                                 } else {
-                                    layer.error(res.msg);
+                                    layui.show.error(res.msg);
                                 }
                             }, 'json');
 

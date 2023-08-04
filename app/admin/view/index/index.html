@@ -28,14 +28,15 @@
     }
 </style>
 <script>
-    let _global_ = {
+    let app_Config = {
         app: "{$app|default='admin.php'}",
         controller: "{$controller|default='index'}",
         action: "{$action|default='index'}",
-        api: "{:config('app.api_url')}"
+        api: "{:config('app.api_url')}",
+        version: "{:config('app.version')}",
     };
 
-    let _upload_chunkSize =  {:saenv('upload_chunk_size')};
+    let upload_chunkSize = {:saenv('upload_chunk_size')};
 </script>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">

@@ -1,0 +1,164 @@
+<include file="/public/header"/>
+<div class="layui-fluid">
+    <form class="layui-form layui-form-fixed">
+        <input type="text" name="id" value="{$data.id|default=0}" hidden="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:__('上级菜单')}</label>
+            <div class="layui-input-inline">
+                <div id="treeNode" name="pid" lay-filter="treeNode" data-pid="{$data.pid|default=0}"></div>
+            </div>
+            <label class="layui-form-label">{:__('排序号')}</label>
+            <div class="layui-input-inline">
+                <input name="sort" placeholder="{:__('默认自动生成')}" type="number" value="{$data.sort}" class="layui-input"/>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red; ">* </span>{:__('菜单名称')}</label>
+            <div class="layui-input-inline">
+                <input name="title" placeholder="{:__('请输入菜单名称')}" type="text" class="layui-input"
+                          value="{$data.title}"
+                       lay-verify="required"/>
+            </div>
+            <label class="layui-form-label">{:__('菜单图标')}</label>
+            <div class="layui-input-inline">
+                <input name="icon" placeholder="{:__('请选择菜单图标')}" id="iconPicker" type="text"
+                       value="{$data.icon}"
+                       class="layui-input"/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+
+            <label class="layui-form-label"><span style="color: red; ">* </span>{:__('路由地址')}</label>
+            <div class="layui-input-inline">
+                <input name="router" placeholder="{:__('/system/Target/index')}" type="text" class="layui-input router"
+                       value="{$data.router}"
+                       lay-verify="required"/>
+            </div>
+            <label class="layui-form-label"><font color="red">* </font>{:__('菜单类型')}</label>
+            <div class="layui-input-inline" style="white-space: nowrap;">
+                <input name="type" type="radio" value="0" title="{:__('菜单')}"
+                       <if condition="$data.type eq 0">checked</if>
+                       lay-tips="* 菜单默认就是路由地址！"/>
+                <input name="type" type="radio" value="1" title="{:__('按钮')}"
+                          <if condition="$data.type eq 1">checked</if>
+                       lay-tips="* 按钮不会当作菜单显示！" >
+                <input name="type" type="radio" value="2" title="{:__('接口')}"
+                            <if condition="$data.type eq 2">checked</if>
+                       lay-tips="* 接口用户上传等API场景！"/>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+
+            <label class="layui-form-label">{:__('权限标识')}</label>
+            <div class="layui-input-inline">
+                <input name="alias" placeholder="{:__('system:Target:index')}" type="text" disabled
+                       value="{$data.alias}"
+                       class="layui-input alias layui-disabled" lay-verify="required"/>
+            </div>
+            <label class="layui-form-label"><span style="color: red; ">* </span>{:__('是否鉴权')}</label>
+            <div class="layui-input-inline">
+                <input name="auth" type="radio" value="1" title="{:__('开启')}"
+                          <if condition="$data.auth eq 1">checked</if> />
+                <input name="auth" type="radio" value="0" title="{:__('关闭')}"
+                            <if condition="$data.auth eq 0">checked</if> />
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red; ">* </span>{:__('正则模式')}</label>
+            <div class="layui-input-inline" style="width: 500px">
+                <input name="condition" placeholder="{:__('请输入正则表达式，适合通配符校验')}" type="text"
+                          value="{$data.condition}"
+                       class="layui-input"/>
+            </div>
+        </div>
+
+        <div class="layui-footer layui-form-item layui-center ">
+            <button class="layui-btn layui-btn-primary" type="button" sa-event="closePageDialog">{:__('取消')}</button>
+            <button class="layui-btn" lay-filter="submit" lay-submit >{:__('提交')}</button>
+        </div>
+    </form>
+</div>
+<script src="__STATICADMIN__module/xmselect/xmselect.js?v={:release()}"></script>
+<include file="/public/footer"/>
+
+<script>
+    layui.use(['jquery', 'iconPicker','form'],function() {
+        let $ = layui.jquery;
+        let show = layui.show;
+        let form = layui.form;
+        let iconPicker = layui.iconPicker;
+        let data = {$rules|raw};
+
+        // 提交参数
+        form.on("submit(submit)",function(data){
+            $.post("{:Url('/system/AdminRules/')}"+app_Config.action,data.field,function(res){
+                if(res.code === 200){
+                    show.msg(res.msg);
+                    parent.layui.table.reloadData('lay-tableList');
+                    parent.layer.closeAll();
+                    // 调用接口更新菜单
+                    top.layui.admin.reloadLayout();
+                }else{
+                    show.error(res.msg);
+                }
+            });
+            return false;
+        })
+
+        xmSelect.render({
+            el: '#treeNode',
+            tips: '请选择上级菜单',
+            name: 'pid',
+            height: '260px',
+            data: data,
+            radio: true,
+            clickClose: true,
+            initValue:[$('#treeNode').data('pid')],
+            prop: {
+                value: 'id',
+                name:'title'
+            },
+            tree: {
+                show: true,
+                strict: false,
+                showLine: false,
+                clickExpand: false,
+            },
+            model: {
+                icon: 'hidden',
+                label: {
+                    type: 'text'
+                }
+            },
+            theme: {
+                color: '#1890FF'
+            }
+        })
+
+        iconPicker.render({
+            elem: '#iconPicker',
+            type: 'fontClass',
+            search: true,
+            cellWidth: "19%",
+            page: true,
+            limit: 12,
+            // 点击回调
+            click: function(data) { // 点击回调
+                $('#iconPicker').val(data.icon);
+            },
+            success: function(d) {  // 渲染成功后的回调
+            }
+        });
+
+        $('.router').bind('input change',function(data){
+            let router = $('.router').val();
+            router = router.substring(1);
+            $('.alias').val(router.replaceAll('/',':'));
+        })
+    })
+</script>

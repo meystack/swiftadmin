@@ -103,21 +103,21 @@
 </script>
 
 <!-- // 列表工具栏 -->
-<script type="text/html" id="tableBar"> 
-    <a class="layui-table-text" data-title="{:__('编辑会员')}"  data-url="#editforms" lay-event="edit">{:__('编辑')}</a>
+<script type="text/html" id="tableBar">
+    <a class="layui-table-text" data-title="{:__('编辑会员')}" lay-auth data-url="#editforms" lay-event="edit">{:__('编辑')}</a>
     <div class="layui-divider layui-divider-vertical"></div>
     <a class="layui-table-text" data-url="{:url('/system/User/del')}?id={{d.id}}" lay-event="del">{:__('删除')}</a>
 </script>
 
 <include file="/public/footer" />
 <script>
-    layui.use(['table'], function () {
+    layui.use(['table', 'show', 'notice'], function () {
 
-        var table = layui.table;
+        let table = layui.table;
         /*
          * 初始化表格
         */
-        var isTable = table.render({
+        let isTable = table.render({
             elem: "#lay-tableList"
             ,url: "{:url('/system/User/index')}"
             ,page: true

@@ -192,10 +192,11 @@
 <script src="__STATICADMIN__js/common.js?v={:release()}"></script>
 <script>
     window.sessionStorage.clear();
-    layui.use(['layer','form'],function() {
+    layui.use(['layer','form','show'],function() {
         var $ = layui.jquery,
             layer = layui.layer,
             form = layui.form,
+            show = layui.show,
             captchaUrl = '{:captcha_src()}';
 
         // 登录操作
@@ -223,11 +224,11 @@
                 email = $('input[name="email"]').val();
 
             if (pass !== repass) {
-                layer.msg("{:__('两次输入密码不同')}",'error');
+                show.error('两次输入密码不同');
                 return false;
             }
 
-            layer.msg("{:__('数据提交中...')}",'warning');
+            show.info('数据提交中...');
             that.prop('disabled', true);
             $_ajax(that,{name: name, pwd: pass, email:email,captcha: captcha});
             return false;
@@ -310,7 +311,7 @@
                 valicode = $('input[name="valicode"]').val();
 
             if (pass != repass) {
-                layer.msg("{:__('两次输入密码不同')}",'error')
+                show.error('两次输入密码不同');
                 return false;
             }
 
@@ -319,12 +320,12 @@
                 url: "{:url('/login/setpwd')}",
                 data: {name:name,pass:pass,valicode:valicode},
                 success: function (res) {
-                    if(res.code == 200){
+                    if(res.code === 200){
                         layer.msg(res.msg,function(){
                             location.reload();
                         });
                     }else {
-                        layer.error(res.msg);
+                        show.error(res.msg);
                     }
                 }
             })
@@ -352,7 +353,7 @@
                         }
 
                     }else {
-                        layer.error(res.msg);
+                        layui.show.error(res.msg);
                         that.prop('disabled', false);
                         $("#captchaImg,#captchaImg2,#captchaImg3").attr('src',captchaUrl+'?rand='+Math.random()).parents('.layui-form-item').show();
                         return false;

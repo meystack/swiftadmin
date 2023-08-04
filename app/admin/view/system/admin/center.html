@@ -297,7 +297,7 @@
                     layer.msg("{:__('上传成功')}");
                 })
             } else {
-                layer.error(res.msg);
+                layui.show.error(res.msg);
             }
         }
 
@@ -348,7 +348,7 @@
                     elem += '</span>';
                     $('.layui-badge-list').append(elem);
                 } else {
-                    layer.error(res.msg);
+                    layui.show.error(res.msg);
                 }
             })
         })
@@ -365,7 +365,7 @@
                 if (res.code === 200) {
                     that.parent('span').remove();
                 } else {
-                    layer.error(res.msg);
+                    layui.show.error(res.msg);
                 }
             })
         })

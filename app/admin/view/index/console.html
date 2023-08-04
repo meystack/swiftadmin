@@ -33,22 +33,22 @@
                         <div class="layui-col-md4">
                             <div class="layui-admin-workplace">
                                 <div class="workplace-header">
-                                    <span><i class="layui-icon layui-icon-list"></i>文章数</span>
+                                    <span><i class="layui-icon layui-icon-list"></i>通知</span>
                                 </div>
-                                <div class="workplace-content">{$workplace.article|default=26}</div>
+                                <div class="workplace-content">{$workplace.notice|default=26}</div>
                             </div>
 
                             <div class="layui-admin-workplace">
                                 <div class="workplace-header">
-                                    <span><i class="layui-icon layui-icon-date date"></i>待审核</span>
+                                    <span><i class="layui-icon layui-icon-date date"></i>待办项</span>
                                 </div>
-                                <div class="workplace-content">{$workplace.check|default="12/56"}</div>
+                                <div class="workplace-content">{$todoList}/{$workplace.todo}</div>
                             </div>
                             <div class="layui-admin-workplace">
                                 <div class="workplace-header">
-                                    <span><i class="layui-icon layui-icon-notice notice"></i>评论数</span>
+                                    <span><i class="layui-icon layui-icon-notice notice"></i>消息</span>
                                 </div>
-                                <div class="workplace-content">{$workplace.comment|default="2,352"}</div>
+                                <div class="workplace-content">{$workplace.message|default="2,352"}</div>
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                     </div>
                 </div>
                 <div class="layui-col-xs6 layui-col-sm6">
-                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/analysis')}"
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/Index/analysis')}"
                          data-title="{:__('分析页')}">
                         <div class="layui-card-body">
                             <div class="layui-small-block">
@@ -114,7 +114,7 @@
         <div class="layui-col-md4">
             <div class="layui-row layui-col-space10" style="margin-bottom: 5px;">
                 <div class="layui-col-xs6 layui-col-sm6">
-                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/monitor')}"
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/Index/monitor')}"
                          data-title="{:__('监控页')}">
                         <div class="layui-card-body">
                             <div class="layui-small-block">
@@ -151,7 +151,7 @@
                     </div>
                 </div>
                 <div class="layui-col-xs6 layui-col-sm6">
-                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/index/baseCfg')}"
+                    <div class="layui-card smallblock" sa-event="tabs" data-url="{:url('/Index/baseCfg')}"
                          data-title="{:__('基本设置')}">
                         <div class="layui-card-body">
                             <div class="layui-small-block">
@@ -290,7 +290,6 @@
             </div>
         </div>
     </div>
-    <table class="layui-hide" id="ID-treeTable-demo"></table>
 </div>
 <script src="__STATICADMIN__module/echarts/echarts.js"></script>
 <script src="__STATICADMIN__module/echarts/echarts-wordcloud.js"></script>
@@ -299,36 +298,11 @@
 <include file="/public/footer"/>
 
 <script>
-    layui.use(['jquery','layer','treeTable'], function () {
+    layui.use(['jquery','show'], function () {
 
         let $ = layui.jquery;
-        let layer = layui.layer;
-        let treeTable = layui.treeTable;
-
-        var inst = treeTable.render({
-            elem: '#ID-treeTable-demo',
-            url: '/static/demo-1.json?page=1&limit=10', // 此处为静态模拟数据，实际使用时需换成真实接口
-            tree: {
-                customName: {
-                    icon: 'icon2',
-                    name: 'title'
-                },
-            },
-            maxHeight: '501px',
-            toolbar: '#TPL-treeTable-demo',
-            cols: [[
-                {type: 'checkbox', fixed: 'left'},
-                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
-                {field: 'name', title: '用户名', width: 180, fixed: 'left'},
-                {field: 'experience', title: '积分', width: 90, sort: true},
-                {field: 'sex', title: '性别', width: 80, sort: true},
-                {field: 'score', title: '评分', width: 80, sort: true},
-                {field: 'city', title: '城市'},
-                { fixed: "right", title: "操作", width: 181, align: "center", toolbar: "#TPL-treeTable-demo-tools"}
-            ]],
-            page: true
-        });
-
+        let show = layui.show;
+        
         /**
          * 用户统计报表
          * @type {string}
@@ -354,7 +328,7 @@
                         $(that).addClass('active');
                     }
                     else {
-                        layer.info(res.msg);
+                        show.info(res.msg);
                     }
                 }
             })

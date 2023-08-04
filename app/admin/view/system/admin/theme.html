@@ -197,7 +197,7 @@
             let layout = admin.getStorage('layout')
             if (layout === 'top' || layout === 'hybrid') {
                 $(".moreLabel").prop("checked", true);
-                layer.msg('当前菜单布局不支持该操作！','error');
+                layer.msg('当前菜单布局不支持该操作！');
                 form.render();
                 return false;
             }

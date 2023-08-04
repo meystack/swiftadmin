@@ -228,7 +228,7 @@
                 
                 
                 if (typeof(_pageUrl) === 'undefined') { 
-                    layer.msg('按钮缺少 url 属性','info'); 
+                    layer.msg('按钮缺少 url 属性');
                     return false;
                 }
                 
@@ -242,7 +242,7 @@
                             layer.close(colletction.index);
                         }
                         else {
-                            layer.error(res.msg);                             
+                            layui.show.error(res.msg);
                         }
                 }, 'json');
 

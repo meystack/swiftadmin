@@ -33,11 +33,6 @@ p.layui-clear {
     height: 10px;
 }
 
-.layui-imagesbox {
-    width: 810px;
-    overflow: hidden;
-}
-
 .layui-imagesbox input {
     text-align: center;
 }

@@ -9,20 +9,23 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
         <div class="layui-logo layui-side-body layui-hide-xs layui-bg-black">
-        <!--// 可以增加LOGO-->
-            <img src="/static/system/images/logo.png" style="margin-bottom: 8px;margin-right: 10px" alt="logo" width="22" height="22" >
-            <span class="logo-text">会员中心</span>
+            <!--// 可以增加LOGO-->
+            <img src="/static/system/images/logo.png" style="margin-bottom: 8px;" alt="logo" width="22" height="22" >
+            <span class="logo-text">用户后台管理</span>
         </div>
         <ul class="layui-nav layui-layout-left">
             <li id="shrink" class="layui-nav-item layui-show-xs-inline-block" >
                 <i class="layui-icon layui-icon-shrink-right"></i>
+            </li>
+            <li id="refresh" class="layui-nav-item" >
+                <i class="layui-icon layui-icon-refresh"></i>
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
 
             <li class="layui-nav-item" lay-unselect="">
                 <a href="/" title="主页">
-                    <i class="layui-icon fa-home"></i>
+                    <i class="layui-icon layui-icon-home"></i>
                 </a>
             </li>
 
@@ -30,9 +33,9 @@
                 <a href="javascript:;" id="notice">
                     <div id="unread" data-count="{$unread|default='0'}"></div>
                     <empty name="$unread">
-                        <i class="layui-icon fa-bell-o"></i>
+                        <i class="layui-icon layui-icon-notice"></i>
                         <else/>
-                        <i class="layui-icon fa-bell"></i>
+                        <i class="layui-icon layui-icon-notice"></i>
                         <span class="layui-badge-dot"></span>
                     </empty>
                 </a>
@@ -68,39 +71,12 @@
         let $ = layui.jquery;
         let upload = layui.upload;
 
-        // 默认展现首个菜单栏
-        $('.layui-nav-tree .layui-nav-item').each(function (k,e) {
-            if ($(e).find('dl.layui-nav-child').length) {
-                $(e).addClass('layui-nav-itemed');
-                return false;
-            }
-        })
-
         // 点击切换页面地址
         $('body').on('click', '.layui-nav-tree a', function () {
             let href = $(this).attr('lay-href');
             if (href && href !== 'javascript:;') {
                 $('#iframe').attr('class','layui-layer-load');
                 $('#iframe').attr('src',href);
-            }
-        })
-
-        // 上传头像
-        upload.render({
-            elem: '.layui-user-avatar'
-            ,url: '/index/user/avatars'
-            ,method: 'post'
-            ,accept: 'file'
-            ,before: function(res) {
-                layer.msg('上传中');
-            },done: function(res, index, upload) {
-                // 上传成功
-                if (res.code === 200) {
-                    layer.msg(res.msg);
-                    $('#imgHead img').attr('src',res.url);
-                } else {
-                    layer.msg(res.msg,'error');
-                }
             }
         })
 
@@ -135,9 +111,11 @@
         let skin = layui.data('skin').theme || undefined;
         if (skin === 'layui-bg-white') {
             $('.layui-side-body').removeClass('layui-bg-black').addClass(skin);
-            $('#skin').removeClass('fa-moon-o').addClass('fa-sun-o');
         }
 
+        $('#refresh').click(function (e) {
+            $('#iframe').attr('src',$('#iframe').attr('src'));
+        })
         bellMessage($('#unread').data('count'));
     })
 </script>

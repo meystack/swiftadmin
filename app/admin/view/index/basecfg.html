@@ -129,10 +129,11 @@
                                     <div class="layui-input-block">
                                         <div class="layui-upload-logo">
                                             <dl>
-                                                <dt> <img class="logo" src="{$config.site_logo}" alt="{:__('站点LOGO')}">
+                                                <dt> 
+                                                    <img class="logo" src="{$config.site_logo|default='/static/images/loading/loading-form.gif'}"
+                                                         alt="{:__('站点LOGO')}">
                                                 </dt>
-                                                <dd class="layui-badge"
-                                                    onclick="javascript:layer.msg('好像没写代码！','error')">{:__('删除')}</dd>
+                                                <dd class="layui-badge" id="delLogo">{:__('删除')}</dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -1805,32 +1806,34 @@
 <include file="/public/footer" />
 
 <script>
-    layui.use(['form', 'jquery', 'admin'], function () {
+    layui.use(['jquery'], function () {
+        let $ = layui.jquery;
 
-        var form = layui.form;
-        var admin = layui.admin;
-        var jquery = layui.jquery;
+        $('#delLogo').click(function() {
+            $('input.logo').val('');
+            $('img.logo').attr('src', '/static/images/loading/loading-form.gif');
+        });
 
         // 增加变量
-        jquery('.layui-variable-add').on('click', function () {
-            var html = '<tr>';
+        $('.layui-variable-add').on('click', function () {
+            let html = '<tr>';
             html += '<td><input type="text" class="layui-input layui-variable-key"  lay-verify="required" ><\/td>';
             html += '<td><input type="text" class="layui-input layui-variable-value"><\/td>';
             html += '<td><button type="button" class="layui-btn layui-btn-primary layui-btn-sm"><i class="layui-icon layui-icon-delete"><\/i><\/button><\/td>';
             html += '<\/tr>';
-            jquery('#layui-variable-content').append(html);
+            $('#layui-variable-content').append(html);
         })
 
         // 改变表单值
-        jquery('body').on('change', '.layui-variable-key', function () {
-            var that = jquery(this),
+        $('body').on('change', '.layui-variable-key', function () {
+            let that = $(this),
                 name = 'variable[' + that.val() + ']';
-            jquery(that).parents('tr').find('.layui-variable-value').attr('name', name);
+            $(that).parents('tr').find('.layui-variable-value').attr('name', name);
         })
 
         // 删除自定义变量
-        jquery('body').on('click', '#layui-variable-content .layui-btn', function () {
-            jquery(this).parents('tr').remove();
+        $('body').on('click', '#layui-variable-content .layui-btn', function () {
+            $(this).parents('tr').remove();
         })
     });
 </script>

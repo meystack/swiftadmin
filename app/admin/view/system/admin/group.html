@@ -190,7 +190,7 @@
                             _pageUrl = _form.attr("action") || pageThat.data('url');
                         pageThat.attr("disabled",true);
                         if (typeof(_pageUrl) === 'undefined') {
-                            layer.msg('缺少URL属性','error');
+                            layer.msg('缺少URL属性');
                             return false;
                         }
 
@@ -211,7 +211,7 @@
                                     // 关闭当前窗口
                                     layer.close(colletction.index);
                                 }else{
-                                    layer.error(res.msg);
+                                    layui.show.error(res.msg);
                                 }
                             }, 'json');
 
@@ -263,7 +263,7 @@
                             _pageUrl = _form.attr("action") || pageThat.data('url');
                         pageThat.attr("disabled",true);
                         if (typeof(_pageUrl) === 'undefined') {
-                            layer.msg('缺少URL属性','error');
+                            layer.msg('缺少URL属性');
                             return false;
                         }
 
@@ -284,7 +284,7 @@
                                     // 关闭当前窗口
                                     layer.close(colletction.index);
                                 }else{
-                                    layer.error(res.msg);
+                                    layui.show.error(res.msg);
                                 }
                             }, 'json');
 

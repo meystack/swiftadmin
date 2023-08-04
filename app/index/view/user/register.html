@@ -19,7 +19,7 @@
 <div id="content" class="userLogin layui-fluid">
 
     <div class="form-header">
-        <i class="layui-icon fa-user-plus"></i>
+        <i class="layui-icon layui-icon-username"></i>
         <h6>用户注册</h6>
     </div>
     <div class="formLogin active">
@@ -32,13 +32,13 @@
             <div class="layui-form-item item-input">
                 <input type="password" id="pwd" name="pwd" lay-verify="required" data-title="密码" maxlength="32"
                        placeholder="{:__('请输入密码')}" class="inputStyle" value="">
-                <span class="fr-icon visiblePwd"><i class="layui-icon fa-eye-slash"></i></span>
+                <span class="fr-icon visiblePwd"><i class="layui-icon layui-icon-eye-invisible"></i></span>
             </div>
 
             <div class="layui-form-item item-input">
                 <input type="password" id="pwd2" lay-verify="required" data-title="密码" maxlength="32"
                        placeholder="{:__('请输入确认密码')}" class="inputStyle" value="">
-                <span class="fr-icon visiblePwd"><i class="layui-icon fa-eye-slash"></i></span>
+                <span class="fr-icon visiblePwd"><i class="layui-icon layui-icon-eye-invisible"></i></span>
             </div>
             <eq name="style" value="mobile">
                 <div class="layui-form-item item-input">
@@ -84,9 +84,9 @@
         <div class="fr">
             <a class="link" href="#" target="_top">
                 <span>
-                    <i class="layui-icon fa-apple"></i>
-                    <i class="layui-icon fa-android"></i>
-                    <i class="layui-icon fa-windows"></i>
+                    <i class="layui-icon layui-icon-ios"></i>
+                    <i class="layui-icon layui-icon-android"></i>
+                    <i class="layui-icon layui-icon-windows"></i>
                     <span class="tit">下载 APP</span>
                 </span>
             </a>
@@ -114,13 +114,12 @@
             let type = $(elem).attr('type');
             if (type === 'password') {
                 $(elem).attr('type','text');
-                $(this).find('i.layui-icon').addClass('fa-eye').removeClass('fa-eye-slash');
+                $(this).find('i.layui-icon').addClass('layui-icon-eye').removeClass('layui-icon-eye-invisible');
             } else {
                 $(elem).attr('type','password');
-                $(this).find('i.layui-icon').addClass('fa-eye-slash').removeClass('fa-eye');
+                $(this).find('i.layui-icon').addClass('layui-icon-eye-invisible').removeClass('layui-icon-eye');
             }
         });
-
     });
 </script>
 </html>

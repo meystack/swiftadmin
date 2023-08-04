@@ -248,7 +248,7 @@
                             pageThat.attr("disabled",true);
                         }
                         else {
-                            layer.error(res.msg,'error');
+                            layui.show.error(res.msg);
                         }
 
                 }, 'json');

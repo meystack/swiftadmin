@@ -7,7 +7,7 @@
 </style>
 <div id="content">
   <div class="layui-row" >
-    <div id="cardInfo" class="layui-card"> <i class="layui-icon fa-bullhorn"></i> 短消息是本站系统给您发送的提醒消息，请务必阅读。如因自身未阅读导致出现的相关问题后果自负！</div>
+    <div id="cardInfo" class="layui-card"> <i class="layui-icon layui-icon-speaker"></i> 短消息是本站系统给您发送的提醒消息，请务必阅读。如因自身未阅读导致出现的相关问题后果自负！</div>
     <div class="layui-card" style="padding-top: 10px">
       <!-- // 默认操作按钮 -->
       <div class="layui-card-header layadmin-card-header-auto ">
@@ -53,11 +53,6 @@
               title += ' layui-table-text-red';
             }
             title += '" lay-open data-title="查看消息" data-url="/index/user/viewMessage?id=' + e.id + '" data-area="600px, 390px" >';
-            if (e.status === 0) {
-              title += '<i class="layui-icon fa-envelope"></i> ';
-            } else {
-              title += '<i class="layui-icon fa-envelope-o"></i> ';
-            }
             title += e.title;
             title += '</a>';
             return title;

@@ -54,7 +54,7 @@
         $('#uCode').click(function (e) {
             let name = $('#name').val();
             if (name === '') {
-                layer.msg('请输入邮箱或手机号', 'info');
+                layer.msg('请输入邮箱或手机号', {icon: 5});
                 return false;
             }
             let regUrl = '/api/ajax/smsSend';
@@ -74,9 +74,9 @@
                 success: function (res) {
 
                     if (res.code === 200) {
-                        layer.msg(res.msg, 'success');
+                        layer.msg(res.msg);
                     } else {
-                        layer.msg(res.msg, 'error');
+                        layer.msg(res.msg, {icon: 5});
                     }
                 }
             });

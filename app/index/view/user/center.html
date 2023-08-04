@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="vip-name">
-                                <span>{$user.nickname} <i class="layui-icon fa-edit" lay-open data-title="修改昵称" data-url="#nickname" data-area="398px,230px"></i></span>
+                                <span>{$user.nickname} <i class="layui-icon layui-icon-survey" lay-open data-title="修改昵称" data-url="#nickname" data-area="398px,230px"></i></span>
                                 <span>UID: {$user.id|supplement_id}</span>
                                 <span><a>已加入第 {$user.create_time|distance_day} 天</a></span>
                             </div>
@@ -73,7 +73,7 @@
                         <div class="layui-col-md3">
                             <div class="contract-title">手机</div>
                             <div class="contract-detail">+86 {$user.mobile|default='未绑定'}
-                                <i class="layui-icon fa-edit" title="编辑" lay-open data-title="修改手机"
+                                <i class="layui-icon layui-icon-survey" title="编辑" lay-open data-title="修改手机"
                                    data-url="/index/user/changeMobile" data-area="500px,300px"></i>
                             </div>
                         </div>
@@ -86,7 +86,7 @@
                         <div class="layui-col-md3">
                             <div class="contract-title">办公室邮箱</div>
                             <div class="contract-detail">{$user.email|default='member@domain.com'}
-                                <i class="layui-icon fa-edit" title="编辑" lay-open data-title="修改邮箱"
+                                <i class="layui-icon layui-icon-survey" title="编辑" lay-open data-title="修改邮箱"
                                    data-url="/index/user/changeEmail" data-area="500px,300px"></i>
                             </div>
                         </div>
@@ -153,17 +153,17 @@
                         <div class="layui-card-body layui-row layui-col-space10" style="max-height: 146px;overflow: auto">
                             <div class="layui-col-md4">
                                 <div class="speed-entry-item" data-url="/index/user/profile">
-                                    <i class="layui-icon fa-user"></i> 我的主页
+                                    <i class="layui-icon layui-icon-home"></i> 我的主页
                                 </div>
                             </div>
                             <div class="layui-col-md4">
                                 <div class="speed-entry-item" data-url="/index/user/message">
-                                    <i class="layui-icon fa-comment"></i> 站内消息
+                                    <i class="layui-icon layui-icon-notice"></i> 站内消息
                                 </div>
                             </div>
                             <div class="layui-col-md4">
                                 <div class="speed-entry-item" data-url="/index/user/security">
-                                    <i class="layui-icon fa-get-pocket"></i> 安全中心
+                                    <i class="layui-icon layui-icon-auz"></i> 安全中心
                                 </div>
                             </div>
                             {:get_plugin_menu_entry('tabs')}
@@ -191,7 +191,6 @@
             <div class="layui-card">
                 <div class="layui-card-header">🏷️ 新闻公告</div>
                 <ul id="newsList" class="news-list">
-                    {$newsHtml|raw}
                 </ul>
             </div>
             <div class="layui-card">
@@ -276,28 +275,34 @@
 
 <script>
     layui.use(['jquery', 'upload','carousel'], function () {
-        var $ = layui.jquery;
-        var upload = layui.upload;
-        var carousel = layui.carousel;
+        let $ = layui.jquery;
+        let upload = layui.upload;
+        let carousel = layui.carousel;
 
         // API请求热门插件
-        $.ajax({
-            type: 'GET',
-            url: 'https://api.swiftadmin.net/plugin/recommend',
-            data: {type: 'hot'},
-            dataType: 'json',
-            success: function (res) {
-                if (res.code === 200) {
-                    $('#appPluginList').html(res.data);
-                }
-                carousel.render({
-                    elem: '#pluginApp'
-                    ,height: '120px'
-                    ,interval: 3000
-                    ,anim: 'fade'
-                });
-            },
-            error: function () {}
+        $.get( 'https://api.swiftadmin.net/ajax/recommend',{
+            type: 'hot'
+        }, function (res) {
+            if (res.code === 200) {
+                $('#appPluginList').html(res.data);
+            }
+            carousel.render({
+                elem: '#pluginApp'
+                ,height: '120px'
+                ,interval: 3000
+                ,anim: 'fade'
+            });
+        })
+
+        // 请求新闻
+        $.get('https://api.swiftadmin.net/ajax/article', function (res) {
+            if (res.code === 200) {
+                let html = '';
+                $.each(res.data, function (i, item) {
+                    html += '<li><a href="' + item.read_url + '" target="_blank">📢 ' + item.title + '</a></li>';
+                })
+                $('#newsList').html(html);
+            }
         })
 
         $('.speed-entry-item').click(function (e) {

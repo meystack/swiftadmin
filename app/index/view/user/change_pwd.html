@@ -13,7 +13,11 @@
         <div class="layui-form-item">
             <label class="layui-form-label">原密码</label>
             <div class="layui-input-block">
-                <input type="text" id="oldpwd" name="oldpwd" class="layui-input" >
+                <empty name="$user['pwd']">
+                    <input type="text" id="oldpwd" name="oldpwd" class="layui-input layui-disabled" placeholder="您的原密码为空(可不填)" disabled>
+                    <else/>
+                    <input type="text" id="oldpwd" name="oldpwd" class="layui-input" placeholder="请输入原密码">
+                </empty>
             </div>
         </div>
         <div class="layui-form-item">
@@ -66,7 +70,7 @@
                         parent.location.reload();
                     }
                     else {
-                        top.layer.msg(res.msg,'error');
+                        top.layer.msg(res.msg,{icon:2});
                     }
 
                 }

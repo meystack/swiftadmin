@@ -230,7 +230,7 @@
                     if (res.code === 200) {
                         layer.msg(res.msg);
                     } else {
-                        layer.error(res.msg);
+                        layui.show.error(res.msg);
                     }
                 }
             });
@@ -249,7 +249,7 @@
                         layer.msg(res.msg);
                         $('.layui-instant-list-item').removeClass('active_0').addClass('active_1');
                     } else {
-                        layer.error(res.msg);
+                        layui.show.error(res.msg);
                     }
                 }
             });

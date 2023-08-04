@@ -35,7 +35,7 @@
                             <input type="password" id="pwd" name="pwd" lay-verify="required" data-title="密码"
                                    maxlength="32"
                                    placeholder="{:__('密码')}" class="inputStyle" value="">
-                            <span class="fr-icon visiblePwd"><i class="layui-icon fa-eye-slash"></i></span>
+                            <span class="fr-icon visiblePwd"><i class="layui-icon layui-icon-eye-invisible"></i></span>
                         </div>
                     </form>
                 </div>
@@ -124,9 +124,9 @@
         <div class="fr">
             <a class="link" href="#" target="_top">
                 <span>
-                    <i class="layui-icon fa-apple"></i>
-                    <i class="layui-icon fa-android"></i>
-                    <i class="layui-icon fa-windows"></i>
+                    <i class="layui-icon layui-icon-ios"></i>
+                    <i class="layui-icon layui-icon-android"></i>
+                    <i class="layui-icon layui-icon-windows"></i>
                     <span class="tit">下载 APP</span>
                 </span>
             </a>
@@ -156,7 +156,7 @@
                 let name = $(item).attr('name');
                 let title = $(item).data('title');
                 if (!value) {
-                    layer.msg(title + '不能为空', 'info');
+                    layer.msg(title + '不能为空', {icon: 5});
                     $(item).focus();
                     return false;
                 }
@@ -172,7 +172,9 @@
                             window.location.href = '/index/user/index';
                         }, 1000);
                     } else {
-                        layer.msg(res.msg, 'error')
+                        layui.notice.error({
+                            message: res.msg
+                        });
                     }
                 }, 'json');
             }
@@ -183,10 +185,10 @@
             let type = $('#pwd').attr('type');
             if (type === 'password') {
                 $('#pwd').attr('type', 'text');
-                $(this).find('i.layui-icon').addClass('fa-eye').removeClass('fa-eye-slash');
+                $(this).find('i.layui-icon').addClass('layui-icon-eye').removeClass('layui-icon-eye-invisible');
             } else {
                 $('#pwd').attr('type', 'password');
-                $(this).find('i.layui-icon').addClass('fa-eye-slash').removeClass('fa-eye');
+                $(this).find('i.layui-icon').addClass('layui-icon-eye-invisible').removeClass('layui-icon-eye');
             }
         });
 
@@ -203,7 +205,9 @@
                         !queryTicket && queryRequest(res.data.ticket);
                         $('#scanCover').attr('src', res.data.qrcode || '/static/images/qrcode.png');
                     } else {
-                        layer.msg(res.msg, 'info');
+                        layui.notice.error({
+                            message: res.msg
+                        })
                     }
                 })
             } else {

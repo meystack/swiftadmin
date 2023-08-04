@@ -108,16 +108,20 @@ b.msg {
 	background: 0!important;
 }
 
-.layui-layout-admin .layui-header {
+.layui-header {
 	background-color: #fff!important;
 	box-shadow: 0 1px 2px 0 rgb(0 0 0 / 15%);
 }
 
-.layui-layout-admin .layui-header .layui-nav-item a {
+.layui-header .layui-layout-left .layui-nav-item {
+	margin: 0 10px;
+}
+
+.layui-header .layui-nav-item a {
 	color: #0C1021!important;
 }
 
-.layui-layout-admin .layui-logo {
+.layui-header .layui-logo {
 	box-shadow: 0 0px 2px 0 rgb(0 0 0 / 15%);
 }
 
@@ -126,7 +130,7 @@ b.msg {
 }
 
 .logo-text {
-	font-size: 20px;
+	font-size: 18px;
 }
 
 .layui-btn-primary {
@@ -340,7 +344,7 @@ a[lay-event="del"] {
 	background: #3464FF !important;
 }
 
-.layui-layout-admin .layui-layout-left a.flexible-btn {
+.layui-layout-left a.flexible-btn {
 	float: left;
 	margin: 18px 13px 0 0;
 	color: rgba(255, 255, 255, .6);
@@ -522,16 +526,16 @@ a[lay-event="del"] {
 }
 
 #content .setting-status i.layui-icon {
-	font-size: 30px;
-	margin-left: 20px;
+	font-size: 16px;
+	margin-left: 10px;
 	color: #999;
 }
 
-#content .setting-status i.fa-check {
+#content .setting-status i.layui-icon-ok-circle {
 	color: #0b8235;
 }
 
-#content .setting-status i.fa-warning {
+#content .setting-status i.layui-icon-question {
 	color: #ffa200;
 }
 

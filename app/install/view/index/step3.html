@@ -104,7 +104,7 @@
 				jquery('.layui-complete').show();
 				jquery.get('/install/index/clear',{},function(res){});
 			} else {
-			    layer.msg(res.msg,'error');
+			    layer.msg(res.msg);
 			}
 		});
 	})

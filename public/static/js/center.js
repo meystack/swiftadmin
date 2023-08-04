@@ -1,5 +1,5 @@
 /*!
- * CommonJS For Home - v1.0.0 - 2022-10-10
+ * center For Home - v1.0.0 - 2022-10-10
  * https://github.com/meystack/swiftadmin
  * Copyright (c) meystack
  * Licensed Apache2.0
@@ -27,7 +27,6 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
             }], ready: function (elemPanel, elem) {
             }
             , click: function (data, index) {
-                console.log(data, index);
                 let elem = $('.layui-nav-tree li [lay-href="/user/message"]');
                 $(elem).parents('.layui-nav-item').addClass('layui-nav-itemed');
                 $(elem).trigger('click');
@@ -107,6 +106,9 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
 
         // 开启节流
         that.attr("disabled", true);
+        setTimeout(function () {
+            that.attr("disabled", false);
+        }, 2000);
         $.post(_url,
             data.field, function (res) {
                 if (res.code === 200) {
@@ -133,7 +135,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                         Home.event.closeDialog(that);
                     }
                 } else {
-                    top.layui.layer.msg(res.msg, 'error');
+                    top.layui.layer.msg(res.msg, {icon: 5});
                 }
 
                 try {
@@ -144,9 +146,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                     if (typeof res.data.__token__ !== 'undefined') {
                         $('input#__token__').val(res.data.__token__);
                     }
-                } catch (e) {
-                }
-                that.attr("disabled", false);
+                } catch (e) {}
             }, 'json');
 
         return false;
@@ -232,7 +232,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                     uploadFiles[type](res, name);
                 } else {
                     // 错误消息
-                    layer.error(res.msg);
+                    layer.msg(res.msg, {icon: 5});
                 }
                 that.prop("disabled", false);
             }
@@ -312,7 +312,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                                 }
                                 layer.msg(res.msg);
                             } else {
-                                layer.msg(res.msg, 'error');
+                                layer.msg(res.msg, {icon: 5});
                             }
                             that.attr('disabled', false);
                         }, 'json');
@@ -340,7 +340,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
         }
 
         if (list.data.length === 0) {
-            layer.msg('请勾选数据', 'error');
+            layer.msg('请勾选数据');
             return false;
         }
 
@@ -366,7 +366,7 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                         layer.msg(res.msg);
                         table.reload(tableId);
                     } else {
-                        layer.msg(res.msg, 'error');
+                        layer.msg(res.msg, {icon: 5});
                     }
                 }
             })
@@ -468,11 +468,11 @@ layui.use(['jquery', 'form', 'upload', 'table', 'dropdown'], function () {
                         }
 
                     } else {
-                        layer.msg(res.msg, 'error');
+                        layer.msg(res.msg, {icon: 5});
                     }
                 },
                 error: function (res) {
-                    layer.msg('Access methods failure', 'error');
+                    layer.msg('Access methods failure', {icon: 5});
                 }
             })
         }

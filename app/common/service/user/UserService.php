@@ -72,14 +72,12 @@ class UserService
         }
 
         try {
-            // 加密盐值
-            $salt = Random::alpha();
+
             $userInfo = [
                 'nickname'  => $post['nickname'],
                 'email'     => $post['email'] ?? '',
                 'mobile'    => $post['mobile'] ?? '',
-                'salt'      => $salt,
-                'pwd'       => encryptPwd($post['pwd'], $salt),
+                'pwd'       => $post['pwd'],
                 'invite_id' => input('inviter', request()->cookie('inviter')),
             ];
             $userInfo = self::createUser($userInfo);
@@ -95,7 +93,7 @@ class UserService
      * @param string $nickname
      * @param string $pwd
      * @return array
-     * @throws InvalidArgumentException|OperateException
+     * @throws OperateException
      */
     public static function accountLogin(string $nickname, string $pwd): array
     {
@@ -134,7 +132,6 @@ class UserService
      * @return array
      * @throws DataNotFoundException
      * @throws DbException
-     * @throws InvalidArgumentException
      * @throws ModelNotFoundException|OperateException
      */
     public static function mobileLogin(string $mobile, string $captcha): array
@@ -170,15 +167,15 @@ class UserService
      */
     public static function createUser(array $userInfo): array
     {
-        if (isset($userInfo['nickname']) && UserModel::getByNickname($userInfo['nickname'])) {
+        if (UserModel::getByNickname($userInfo['nickname'])) {
             throw new OperateException('当前用户名已被占用！');
         }
 
-        if (isset($userInfo['email']) && UserModel::getByEmail($userInfo['email'])) {
+        if (!empty($userInfo['email']) && UserModel::getByEmail($userInfo['email'])) {
             throw new OperateException('当前邮箱已被占用！');
         }
 
-        if (isset($userInfo['mobile']) && UserModel::getByMobile($userInfo['mobile'])) {
+        if (!empty($userInfo['mobile']) && UserModel::getByMobile($userInfo['mobile'])) {
             throw new OperateException('当前手机号已被占用！');
         }
 
@@ -215,7 +212,7 @@ class UserService
             ->cookie('nickname', $userInfo['nickname'], self::$keepTime, '/');
         Cache::set($userToken, $userInfo['id'], self::$keepTime);
         Cache::set('user_info_' . $userInfo['id'], $userInfo, self::$keepTime);
-        \Webman\Event\Event::emit("userLoginSuccess", $userInfo);
+        Event::emit("userLoginSuccess", $userInfo);
         return ['token' => $userToken, 'id' => $userInfo['id'], 'response' => $response];
     }
 
@@ -231,7 +228,6 @@ class UserService
         $data['update_time'] = time();
         UserModel::update($data, ['id' => $userInfo['id']]);
         UserLog::write('登录成功', $userInfo['nickname'], $userInfo['id'], 1);
-        Event::emit('userLoginSuccess', $userInfo);
     }
 
     /**

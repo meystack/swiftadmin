@@ -57,13 +57,13 @@ class UserService
         $qqWry = new IpLocation();
         foreach ($list as $key => $value) {
             $value->hidden(['pwd', 'salt']);
-            try {
-                $region = $qqWry->getLocation($value['login_ip']);
-                $region = $region['country'] . ' ' . $region['area'];
-            } catch (\Exception $e) {
-                $region = 'unKnown';
+            $loginIp = $value['login_ip'];
+            if (!empty($loginIp)) {
+                $region = $qqWry->getLocation($loginIp);
+                $list[$key]['region'] = $region['country'] . ' ' . $region['area'];
+            } else {
+                $list[$key]['region'] = 'unKnown';
             }
-            $list[$key]['region'] = $region;
             $result = list_search($userGroup,['id'=> $value['group_id']]);
             if (!empty($result)) {
                 $list[$key]['group'] = $result['title'];
@@ -91,6 +91,7 @@ class UserService
         Db::startTrans();
         try {
             $model->create($params);
+            Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
             throw new OperateException('添加失败！');
@@ -136,6 +137,7 @@ class UserService
         Db::startTrans();
         try {
             $model->update($params);
+            Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
             throw new OperateException('添加失败！');

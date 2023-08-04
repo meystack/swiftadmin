@@ -19,7 +19,7 @@ class User extends Validate
      * @var array
      */
     protected $rule = [
-        'nickname' => 'require|min:5|max:32|checkName',
+        'nickname' => 'require|min:3|max:32|checkName',
         'pwd|密码' => 'require|min:6|max:64',
         'email'    => 'require',
         'mobile'   => 'require|mobile',
@@ -34,7 +34,7 @@ class User extends Validate
      */
     protected $message = [
         'nickname.require'     => '用户名不能为空',
-        'nickname.min'         => '用户名不能少于5个字符',
+        'nickname.min'         => '用户名不能少于3个字符',
         'nickname.max'         => '用户名不能超过32个字符',
         'nickname.checkName'   => '用户名包含禁止注册字符',
         'pwd.require'          => '密码不能为空',

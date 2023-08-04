@@ -18,14 +18,14 @@ body,.layui-fluid {
 	text-indent: 1em;
 }
 
-.pluginCenter .fa-user {
+.pluginCenter .fa-user, .fa-sign-out {
 	position: absolute;
 	right: 15px;
 	font-size: 18px;
 	top: 6px;
 }
 
-.pluginCenter .fa-user:hover {
+.pluginCenter .fa-user:hover, .fa-sign-out:hover {
 	color: #FF5722;
 }
 
@@ -43,13 +43,13 @@ body,.layui-fluid {
 	padding: 10px;
 }
 
-.layui-dropdown.upgrade-version {
+.layui-dropdown.upgrade-version,.layui-dropdown.install-version {
 	min-width: 80px!important;
 }
 
-.upgrade-version .layui-menu li {
+.upgrade-version .layui-menu li, .layui-dropdown.install-version li {
 	width: 80px;
-	line-height: 15px;
+	line-height: 20px;
 	text-align: center;
 	font-size: 12px;
 }
@@ -180,4 +180,9 @@ button[lay-filter="formSearch"] {
 	padding-top:2px;
 	padding-left: 3px;
 	display: inline-block;
+}
+
+.layui-table-cell .layui-icon-down {
+	font-size: 10px;
+	top: 0!important;
 }

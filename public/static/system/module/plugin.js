@@ -1,22 +1,20 @@
 /* 插件管理模块 */
-layui.define(['i18n'], function (exports) {
+layui.define(['admin','show'], function (exports) {
 
-    var $ = layui.jquery;
-    var table = layui.table;
-    var i18n = layui.i18n;
-    var form = layui.form;
-    var notice = layui.notice;
+    let $ = layui.jquery;
+    let table = layui.table;
+    let form = layui.form;
+    let admin = layui.admin;
+    let show = layui.show;
 
-    i18n.render(layui.admin.getStorage('language') || 'zh-CN');
-    var area = [$(window).width() > 800 ? '660px' : '85%', $(window).height() > 800 ? '680px' : '85%'];
-
-    var plugin = {
-        apiUrl: _global_.api,
-        baseUrl: _global_.app,
+    let plugin = {
+        apiUrl: app_Config.api,
+        baseUrl: app_Config.app,
+        data:{}, // 插件数据
         request: function (name, version, url) {
 
             let index = layer.load();
-            let token = layui.admin.getStorage('api_cross_token') || null;
+            let token = admin.getStorage('api_cross_token') || null;
             if (token == null || token === 'undefined') {
                 layer.close(index);
                 plugin.login();
@@ -28,49 +26,19 @@ layui.define(['i18n'], function (exports) {
                 version: version,
                 token: token,
             }, function (res) {
-
-                let data;
                 layer.closeAll();
                 if (res.code === 200) {
-
-                    layer.msg(res.msg);
-                    let index = layui.sessionData('api_install_index').index,
-                        elems = $('tr[data-index="' + index + '"]');
-                    if (url.indexOf('install') !== -1) {
-                        let c = '', h = '<input type="checkbox" lay-filter="pluginStatus" data-url="';
-                        h += plugin.baseUrl + '/system/Plugin/status" value="' + name + '" lay-skin="switch" checked="">';
-                        $(elems).find('[data-field="status"]').children('div').html(h);
-                        data = res.data || [];
-                        if (data.config) {
-                            c += '<a class="layui-table-text" data-title="' + i18n.prop('配置插件') + '"'
-                            c += 'data-area="' + data.area + '" data-maxmin="true"';
-                            c += 'data-url="' + plugin.baseUrl + '/system/Plugin/config?name=' + name + '" '
-                            c += 'lay-event="edit">' + i18n.prop('配置') + '</a>';
-                            c += '<div class="layui-divider layui-divider-vertical"></div> ';
-                        }
-                        c += '<a class="layui-table-text uninstall" style="color:red"'
-                        c += 'data-url="' + plugin.baseUrl + '/system/Plugin/uninstall/?name=' + name + '">' + i18n.prop('卸载') + '</a> ';
-                        $(elems).find('td:last').children('div').html(c);
-                        window.plugins[name] = res.data;
-                    } else {
-                        elems.find('.layui-upgrade-elem').remove();
-                        elems.find('.layui-form-switch').addClass('bubble');
-                        elems.find('.layui-form-switch').trigger('click', ['stopPropagation']);
-                    }
-
-                    form.render();
+                    show.msg(res.msg);
+                    window.plugins[name] = res.data;
+                    table.reloadData('lay-tableList');
                     top.layui.admin.reloadLayout();
-
                 } else {
-                    notice.error({
-                        message: res.msg,
-                    })
+                    show.error(res.msg);
                     // 登录超时
                     if (res.code === -101) {
                         plugin.login();
                         return false;
                     }
-
                     // 付费插件
                     if (res.code === -102) {
                         plugin.pay(res.data);
@@ -80,21 +48,22 @@ layui.define(['i18n'], function (exports) {
 
             }, 'json');
         }
-        ,upgrade: function (data, token, url) {
+        , upgrade: function (data, token, url) {
             let html = '<blockquote class="layui-elem-quote layui-elem-upgrade">温馨提示<br/>';
-            html += '<span class="upgrade-title">确认升级 《' + data.pluginName + '》 '+data.v+' 版本吗？</span><br/>';
+            html += '<span class="upgrade-title">确认升级 《' + data.pluginName + '》 ' + data.version + ' 版本吗？</span><br/>';
             html += '1、请务必做好服务器代码和数据库备份<br/>';
             html += '2、升级后如出现冗余数据，请根据需要移除即可<br/>';
             html += '3、请勿跨版本升级，如必要请参考插件使用文档<br/>';
             html += '4、已部署完成的插件，请确保服务器Web权限可读写<br/>';
             html += '5、生产环境下更新维护插件，请勿在流量高峰期操作<br/>';
             html += '</blockquote>';
-            var confirm = layer.confirm(html, {
-                title: i18n.prop('更新提示'),
+            let confirm = layer.confirm(html, {
+                title: '更新提示',
             }, function () {
                 layer.close(confirm);
-                plugin.request(data.name, data.v, plugin.getUrl('Plugin', 'upgrade'));
-            }, function () {});
+                plugin.request(data.name, data.version, plugin.getUrl('Plugin', 'upgrade'));
+            }, function () {
+            });
         }
         , login: function () {
             layer.open({
@@ -106,16 +75,13 @@ layui.define(['i18n'], function (exports) {
                 success: function (index, layero) {
                     form.on('submit(login)', function (data) {
                         $.post(plugin.apiUrl + '/user/login',
-
                             data.field, function (res) {
                                 if (res.code === 200) {
-                                    layui.admin.setStorage('api_cross_token', res.data.token);
+                                    admin.setStorage('api_cross_token', res.data.token);
                                     layer.closeAll();
                                     plugin.againClick();
                                 } else {
-                                    notice.error({
-                                        message: res.msg,
-                                    })
+                                    show.error(res.msg);
                                 }
                             }, 'json')
 
@@ -126,20 +92,19 @@ layui.define(['i18n'], function (exports) {
         }
         , clearLogin: function () {
             layer.msg('清除登录信息成功');
-            layui.admin.setStorage('api_cross_token', null);
+            admin.setStorage('api_cross_token', null);
         }
         , pay: function (data) {
             layer.open({
                 type: 2,
-                title: i18n.prop('立即支付'),
-                area: ['500px','550px'],
+                title: '立即支付',
+                area: ['500px', '550px'],
                 offset: "30px",
                 resize: false,
                 shade: 0.8,
                 shadeClose: true,
                 content: data.pay_url,
                 success: function (index, layero) {
-                    // 父类消息监听
                     window.onmessage = function (res) {
                         let data = res.data;
                         if (res.data !== null && data.code === 200) {
@@ -151,20 +116,14 @@ layui.define(['i18n'], function (exports) {
             });
         }
         , againClick: function () {
-            try {
-
-                var index = layui.sessionData('api_install_index').index,
-                    install = $('tr[data-index="' + index + '"]').children().find('.install');
-                if (install.length <= 0) {
-                    install = $('[layui-value="' + index + '"]');
-                }
-                if (install && index != null) {
-                    $(install).trigger("click");
-                }
-
-            } catch (error) {
-                console.log(error);
+            if (plugin.data == null || plugin.data === 'undefined') {
+                return false;
             }
+            plugin.request(plugin.data.name, plugin.data.version, plugin.getUrl('Plugin', 'install'));
+        }
+        , install(name, version) {
+            plugin.data = {name: name, version: version};
+            plugin.request(name, version, plugin.getUrl('Plugin', 'install'));
         }
         , uninstall: function (name, tables) {
             let appURL = plugin.baseUrl;
@@ -172,28 +131,13 @@ layui.define(['i18n'], function (exports) {
                 name: name,
                 tables: tables,
             }, function (res) {
-
                 if (res.code === 200) {
-                    layer.msg(res.msg);
-                    let index = layui.sessionData('api_install_index').index,
-                        elems = $('tr[data-index="' + index + '"]');
-                    $(elems).find('[data-field="status"]').children('div').html('--');
-                    let html = '<a class="layui-table-text install" data-url="' + appURL;
-                    html += '/system/Plugin/install/name/' + name + '">' + i18n.prop('安装') + '</a>';
-                    let plugin = table.cache['lay-tableList'][index];
-                    if (typeof plugin.demourl != 'undefined') {
-                        html += '<div class="layui-divider layui-divider-vertical"></div>';
-                        html += '<a class="layui-table-text" target="_blank" href="';
-                        html += plugin.demourl + '">' + i18n.prop('演示') + '</a>';
-                    }
+                    show.msg(res.msg);
                     delete window.plugins[name];
-                    $(elems).find('td:last').children('div').html(html);
+                    table.reloadData('lay-tableList');
                 } else {
-                    notice.error({
-                        message: res.msg,
-                    })
+                    show.error(res.msg);
                 }
-
                 layer.close(window.unIndex);
             }, 'json');
         }
@@ -206,12 +150,12 @@ layui.define(['i18n'], function (exports) {
                 return false;
             }
 
-            var index = $(that).parents('tr').attr('data-index');
+            let index = $(that).parents('tr').attr('data-index');
             index = table.cache['lay-tableList'][index];
             return index;
         }
         , getHtml: function () {
-            var html = '<form class="layui-form layui-form-fixed" style="padding-right:15px;" >';
+            let html = '<form class="layui-form layui-form-fixed" style="padding-right:15px;" >';
             html += '<blockquote class="layui-elem-quote layui-elem-plugin">';
             html += '</blockquote><div style="height:20px;"></div>';
             html += '<div class="layui-form-item">';
@@ -236,7 +180,7 @@ layui.define(['i18n'], function (exports) {
      */
     $('.layui-plugin-select').click(function () {
 
-        var that = $(this);
+        let that = $(this);
 
         if (that.hasClass('active') && !that.hasClass('first')) {
             that.removeClass('active');
@@ -246,14 +190,13 @@ layui.define(['i18n'], function (exports) {
             that.addClass('active');
         }
 
-        var data = {}, elem = $('.active');
+        let data = {}, elem = $('.active');
         elem.each(function (e, n) {
-            var value = $(n).attr('data-value') || ''
-                , type = $(n).parent().attr('name');
-            data[type] = value;
+            let type = $(n).parent().attr('name');
+            data[type] = $(n).attr('data-value') || '';
         })
 
-        var b = ['type', 'pay', 'label'];
+        let b = ['type', 'pay', 'label'];
 
         for (let i in b) {
             if (!data[b[i]]) {
@@ -274,11 +217,8 @@ layui.define(['i18n'], function (exports) {
      */
     $(document).on("click", ".install", function () {
         let name = plugin.getTableData(this)['name'];
-        layui.sessionData('api_install_index', {
-            key: 'index',
-            value: plugin.getTableData(this)['LAY_INDEX'],
-        });
-        plugin.request(name, null, plugin.getUrl('Plugin', 'install'));
+        let version = plugin.getTableData(this)['version'];
+        plugin.install(name, version);
     })
 
     /**
@@ -297,9 +237,7 @@ layui.define(['i18n'], function (exports) {
             error: function (res) {
                 $(obj.elem).prop('checked', !obj.elem.checked);
                 form.render('checkbox');
-                notice.error({
-                    message: res.msg,
-                })
+                show.msg(res.msg);
             },
             success: function (res) {
                 layer.msg(res.msg);
@@ -316,7 +254,7 @@ layui.define(['i18n'], function (exports) {
             return false;
         }
 
-        layui.admin.event.request(that, objs, options);
+        admin.event.request(that, objs, options);
     });
 
     /**
@@ -326,8 +264,8 @@ layui.define(['i18n'], function (exports) {
      */
     $(document).on("click", ".uninstall", function (obj) {
 
-        var name = plugin.getTableData(this)['name'];
-        var html = '<form class="layui-form layui-form-fixed" style="padding-right:15px;background: #f2f2f2;" >';
+        let name = plugin.getTableData(this)['name'];
+        let html = '<form class="layui-form layui-form-fixed" style="padding-right:15px;background: #f2f2f2;" >';
         html += '<blockquote class="layui-elem-quote layui-elem-uninstall">温馨提示<br/>';
         html += '确认卸载 《 ' + name + ' 》 吗？<br/>';
         html += '1、卸载前请自行备份插件数据库 ！<br/>';
@@ -341,13 +279,10 @@ layui.define(['i18n'], function (exports) {
         html += '<button type="submit" class="layui-btn layui-btn-normal" lay-submit lay-filter="start">确定</button>';
         html += '<button type="button" class="layui-btn layui-btn-primary" sa-event="closeDialog" >关闭</button>';
         html += '</div></form> ';
-        layui.sessionData('api_install_index', {
-            key: 'index',
-            value: plugin.getTableData(this)['LAY_INDEX'],
-        });
+
         layer.open({
             type: 1,
-            title: i18n.prop('卸载插件'),
+            title: '卸载插件',
             shadeClose: true,
             area: ['380px', '300px'],
             content: html,
@@ -378,7 +313,7 @@ layui.define(['i18n'], function (exports) {
      * @param that
      */
     $('#pluginInstall').click(function (res) {
-        table.reload('lay-tableList', {
+        table.reloadData('lay-tableList', {
             url: plugin.baseUrl + '/system/Plugin/index',
         });
     })
@@ -388,7 +323,7 @@ layui.define(['i18n'], function (exports) {
      * @param that
      */
     $('#pluginCache').click(function (res) {
-        var confirm = layer.confirm('确定要更新缓存吗？', {
+        let confirm = layer.confirm('确定要更新缓存吗？', {
             title: '更新提示'
         }, function () {
             $.get(plugin.baseUrl + plugin.getUrl('Admin', 'clear?type=plugin'), {}, function (res) {
@@ -396,9 +331,7 @@ layui.define(['i18n'], function (exports) {
                     layer.msg(res.msg);
                     layer.close(confirm);
                 } else {
-                    notice.error({
-                        message: res.msg,
-                    })
+                    show.error(res.msg);
                 }
             })
         });

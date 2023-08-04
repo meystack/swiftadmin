@@ -12,9 +12,12 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 
 namespace app\admin\controller\system;
+
 use app\admin\service\AuthService;
+use app\common\exception\OperateException;
 use GuzzleHttp\Exception\TransferException;
 use process\Monitor;
+use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use system\File;
 use system\Http;
@@ -23,8 +26,8 @@ use app\AdminController;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
+use think\facade\Db;
 use Throwable;
-use app\common\library\DataBase;
 use app\common\model\system\AdminRules;
 
 /**
@@ -40,11 +43,6 @@ class Plugin extends AdminController
      */
     protected mixed $limit = 500;
 
-    /**
-     * 错误信息
-     * @var mixed
-     */
-    static mixed $ServerBody = '';
 
     public function __construct()
     {
@@ -69,7 +67,7 @@ class Plugin extends AdminController
     /**
      * 安装插件
      * @return Response|void
-     * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function install()
     {
@@ -83,7 +81,13 @@ class Plugin extends AdminController
 
             try {
 
-                $pluginZip = self::downLoad($name, ['name' => $name, 'token' => input('token')]);
+                $pluginZip = self::downLoad($name, [
+                    'name'    => $name,
+                    'token'   => input('token'),
+                    'version' => input('version'),
+                    'app'     => config('app.version'),
+                ]);
+
                 ZipArchives::unzip($pluginZip, plugin_path(), '', true);
                 $listFiles = File::mutexCompare(File::getCopyDirs($name), root_path(), $pluginPath, true);
                 if (!empty($listFiles)) {
@@ -95,29 +99,31 @@ class Plugin extends AdminController
                 self::pluginMenu($name);
                 self::executeSql($name);
                 self::enabled($name);
-            } catch (\Throwable $th) {
+            } catch (OperateException $e) {
                 recursive_delete($pluginPath);
-                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
+                return $this->error($e->getMessage(), '/', $e->getData(), $e->getCode());
+            }  catch (\Throwable $th) {
+                recursive_delete($pluginPath);
+                return $this->error($th->getMessage(), '/', [], $th->getCode());
             }
 
-            return $this->success('插件安装成功', null, get_plugin_config($name, true));
+            return $this->success('插件安装成功', '/', get_plugin_config($name, true));
         }
     }
 
     /**
      * 卸载插件
      * @return Response|void
-     * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function uninstall()
     {
-
         if (request()->isAjax()) {
 
             $name = input('name');
             $config = get_plugin_config($name, true);
             if (empty($config) || $config['status']) {
-                return $this->error('插件不存在或未禁用');
+                return $this->error('请先禁用插件后再卸载');
             }
 
             try {
@@ -142,9 +148,8 @@ class Plugin extends AdminController
 
     /**
      * 插件升级
-     * @return mixed|void
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \Exception
+     * @return Response|void
+     * @throws InvalidArgumentException
      */
     public function upgrade()
     {
@@ -166,7 +171,13 @@ class Plugin extends AdminController
                 }
 
                 $pluginPath = plugin_path($name);
-                $pluginZip = self::downLoad($name, ['name' => $name, 'token' => $token, 'version' => $version]);
+                $pluginZip = self::downLoad($name, [
+                    'name'    => $name,
+                    'token'   => $token,
+                    'version' => $version,
+                    'app'     => config('app.version')
+                ]);
+
                 $formIndex = ZipArchives::unzip($pluginZip, plugin_path(), 'config.json');
                 $upgradeInfo = json_decode($formIndex, true);
 
@@ -190,8 +201,10 @@ class Plugin extends AdminController
                 self::pluginMenu($name);
                 self::executeSql($name);
                 self::enabled($name);
-            } catch (\Throwable $th) {
-                return $this->error($th->getMessage(), null, self::$ServerBody, $th->getCode());
+            } catch (OperateException $e) {
+                return $this->error($e->getMessage(), '/', $e->getData(), $e->getCode());
+            }  catch (\Throwable $th) {
+                return $this->error($th->getMessage(), '/', [], $th->getCode());
             }
 
             return $this->success('插件更新成功', null, $data);
@@ -202,7 +215,8 @@ class Plugin extends AdminController
      * 启用插件
      * @param string $name
      * @return bool
-     * @throws \Exception|\Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public static function enabled(string $name): bool
     {
@@ -232,7 +246,7 @@ class Plugin extends AdminController
      * 禁用插件
      * @param string $name
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws \Exception
      */
     public static function disabled(string $name): bool
@@ -276,7 +290,7 @@ class Plugin extends AdminController
     /**
      * 修改插件配置
      * @return Response
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function config(): Response
     {
@@ -344,26 +358,20 @@ class Plugin extends AdminController
      */
     public static function downLoad(string $name, array $extends): string
     {
-        try {
+        $query = get_plugin_query();
+        $response = Http::get($query, $extends);
+        $body = json_decode($response, true);
 
-            $query = get_plugin_query();
-            $response = Http::get($query, $extends);
-            $body = json_decode($response, true);
-            $url = '';
-            if (isset($body['data']['url'])) {
-                $url = $body['data']['url'];
-            }
-            if (!empty($url) && stristr($url, 'download')) {
-                $content = file_get_contents($url);
-                $filePath = plugin_path() . $name . '.zip';
-                write_file($filePath, $content);
-            } else {
-                self::$ServerBody = $body['data'];
-                throw new \Exception($body['msg'], $body['code']);
-            }
+        if (isset($body['data']['url'])) {
+            $url = $body['data']['url'];
+        }
 
-        } catch (TransferException $th) {
-            throw new \Exception(__("安装包下载失败"), -111);
+        if (isset($url) && stristr($url, 'download')) {
+            $content = file_get_contents($url);
+            $filePath = plugin_path() . $name . '.zip';
+            write_file($filePath, $content);
+        } else {
+            throw new OperateException($body['msg'], $body['code'], $body['data'] ?? []);
         }
 
         return $filePath;
@@ -373,12 +381,23 @@ class Plugin extends AdminController
      * 执行SQL脚本文件
      * @param string $name
      * @param string $type
+     * @throws \Exception
      */
     public static function executeSql(string $name, string $type = 'install')
     {
         $pluginPath = plugin_path($name);
         $sqlFile = $pluginPath . $type . '.sql';
-        DataBase::importSql($sqlFile);
+        $sql = file_get_contents($sqlFile);
+        $queries = explode(';', $sql);
+        $queries = str_replace("__PREFIX__", get_env('DATABASE_PREFIX'), $queries);
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (empty($query)) {
+                continue;
+            }
+            // 执行SQL语句
+            Db::execute($query);
+        }
     }
 
     /**

@@ -15,7 +15,9 @@ use app\admin\service\AdminRuleService;
 use app\AdminController;
 use app\common\model\system\AdminRules as AdminRuleModel;
 use support\Response;
+use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use Webman\Http\Request;
 
 /**
@@ -60,15 +62,29 @@ class AdminRules extends AdminController
                 return $this->success('添加菜单成功！');
             }
         }
-        return $this->error('添加菜单失败！');
+
+        $data = $this->getTableFields();
+        $data['pid'] = input('pid', 0);
+        $data['auth'] = 1;
+        $data['type'] = 1;
+        list($count, $list) = AdminRuleService::dataList(request()->all());
+        return view('/system/admin/rules_edit', [
+            'data' => $data,
+            'rules' => json_encode( list_to_tree($list), JSON_UNESCAPED_UNICODE),
+        ]);
 	}
 
-	/**
-	 * 编辑节点数据
+    /**
+     * 编辑节点数据
      * @return Response
-	 */
+     * @throws DbException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
+     */
 	public function edit(): Response
     {
+        $id = input('id', 0);
+        $data = $this->model->find($id);
         if (request()->isPost()) {
             $post = \request()->post();
             validate(\app\common\validate\system\AdminRules::class . '.edit')->check($post);
@@ -76,7 +92,12 @@ class AdminRules extends AdminController
                 return $this->success('更新菜单成功！');
             }
         }
-        return $this->error('更新菜单失败');
+
+        list($count, $list) = AdminRuleService::dataList(request()->all());
+        return view('/system/admin/rules_edit', [
+            'data'  => $data,
+            'rules' => json_encode( list_to_tree($list), JSON_UNESCAPED_UNICODE),
+        ]);
 	}
 
     /**

@@ -62,7 +62,7 @@ class ApiPermissions implements MiddlewareInterface
 
         // 是否验证登录器
         $userInfo = UserTokenService::isLogin();
-        if (!empty($userInfo)) {
+        if (!empty($userInfo) && isset($userInfo['id'])) {
             $request->userId = $userInfo['id'];
             $request->userInfo = $userInfo;
             // 是否验证API权限

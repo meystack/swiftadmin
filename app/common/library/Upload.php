@@ -405,9 +405,22 @@ class Upload
      */
     public function fileFilter($file): bool
     {
+        $this->fileClass = null;
+        $mineType = $file->getUploadMineType();
+        if (in_array($mineType, ['text/x-php', 'text/html'])) {
+            $this->_error = '禁止上传的文件类型';
+            return false;
+        }
+
         $validate = new UploadFile();
         $rules = get_object_vars($validate)['rule'];
-        $fileExt = $this->getFileExt($file);
+        $fileExt = $file->getUploadExtension() ?: input('fileExt');
+
+        if (empty($fileExt)) {
+            $this->fileClass = 'file';
+            return true;
+        }
+
         foreach ($rules as $key => $value) {
             $fileExtArr = explode(',', $value['fileExt']);
             if (in_array(strtolower($fileExt), $fileExtArr)) {
@@ -419,15 +432,13 @@ class Upload
                 break;
             }
         }
-        if (in_array($file->getUploadMineType(), ['text/x-php', 'text/html'])) {
-            $this->fileClass = null;
-        }
+
         if (is_empty($this->fileClass)) {
             $this->_error = '禁止上传的文件类型';
             return false;
         }
-        // 未找到类型或验证文件失败
-        return !empty($this->fileClass);
+
+        return true;
     }
 
     /**
@@ -447,7 +458,10 @@ class Upload
      * @param string $filePath
      * @param array $extend
      * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
      * @throws InvalidArgumentException
+     * @throws ModelNotFoundException
      */
     public function success(string $msg, string $filePath, array $extend = []): array
     {

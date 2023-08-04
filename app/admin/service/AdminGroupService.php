@@ -53,7 +53,7 @@ class AdminGroupService
         // 查询数据
         $count = $model->where($where)->count();
         $page = ($count <= $limit) ? 1 : $page;
-        $list = $model->where($where)->order("id asc")->limit($limit)->page($page)->select()->toArray();
+        $list = $model->where($where)->order("id asc")->limit((int)$limit)->page((int)$page)->select()->toArray();
         return [$count, $list];
     }
 

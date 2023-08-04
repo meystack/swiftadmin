@@ -1109,14 +1109,16 @@ if (!function_exists('check_user_third')) {
     }
 }
 
-if (!function_exists('check_admin_auth')) {
+if (!function_exists('has_admin_auth')) {
     /**
      * 检查admin权限
      * @param $method
      * @return bool
      */
-    function check_admin_auth($method): bool
+
+    function has_admin_auth($method): bool
     {
+
         if (\app\admin\service\AuthService::instance()->SuperAdmin()) {
             return true;
         }

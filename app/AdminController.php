@@ -419,6 +419,7 @@ class AdminController extends BaseController
                     case 'year':
                         $value = str_replace(',', '-', $value);
                         if (strpos($value, '-')) {
+
                             $arr = explode(' - ', $value);
                             if (empty($arr)) {
                                 continue 2;
@@ -454,27 +455,23 @@ class AdminController extends BaseController
                     case 'time';
                     case 'datetime';
                         $value = str_replace(',', '-', $value);
-
                         if (strpos($value, '-')) {
                             $arr = explode(' - ', $value);
                             if (!array_filter($arr)) {
                                 continue 2;
                             }
-
-                            $exp = '=';
+                            $exp = 'between';
                             if ($arr[0] === '') {
-                                $exp = '<= TIME';
+                                $exp = '<=';
                                 $arr = $arr[1];
                             } elseif ($arr[1] === '') {
-                                $exp = '>= TIME';
+                                $exp = '>=';
                                 $arr = $arr[0];
                             }
-
                             $where[] = [$field, $exp, $arr];
                         } else {
                             $where[] = [$field, '=', $value];
                         }
-
                         break;
                     case 'blob';
                         break;

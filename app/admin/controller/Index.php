@@ -12,6 +12,7 @@ declare(strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
+use app\admin\enums\AdminNoticeEnum;
 use app\common\service\notice\EmailService;
 use app\common\service\utils\FtpService;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -185,9 +186,25 @@ class Index extends AdminController
             UserThird::count('id'),
         ];
 
+
+        $workplace = [];
+        foreach (AdminNoticeEnum::COLLECTION as $item) {
+            $workplace[$item] = AdminNotice::where([
+                'admin_id' => get_admin_id(),
+                'type'     => $item
+            ])->count('id');
+        }
+
+        $todoList = AdminNotice::where([
+            'admin_id' => get_admin_id(),
+            'type'     => AdminNoticeEnum::TODO,
+            'status'   => 0
+        ])->count('id');
+
         return view('/index/console', [
             'assetsInfo'            => $assetsInfo,
-            'workplace'             => [],
+            'workplace'             => $workplace,
+            'todoList'              => $todoList,
             'devOpsData'            => json_encode($devOpsData, JSON_UNESCAPED_UNICODE),
             'searchWords'           => json_encode($searchWords, JSON_UNESCAPED_UNICODE),
             'userGroupData'         => json_encode($userGroupData, JSON_UNESCAPED_UNICODE),

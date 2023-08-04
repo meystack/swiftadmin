@@ -24,4 +24,13 @@ class OperateException extends \Exception
         $this->message  = $message ?: ResultCode::UNKNOWN['msg'];
         parent::__construct($this->message, $this->code, $previous);
     }
+
+    /**
+     * 获取附加数据
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
 }

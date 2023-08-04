@@ -57,6 +57,11 @@ class ExceptionHandle extends ExceptionHandler
     {
         switch (true) {
             case $exception instanceof OperateException:
+                return json([
+                    'code' => $exception->getCode() ?? 101,
+                    'msg'  => $exception->getMessage(),
+                    'data' => $exception->getData()
+                ]);
             case $exception instanceof ValidateException:
                 return json(['code' => $exception->getCode() ?? 101, 'msg' => $exception->getMessage()]);
             case $exception instanceof DumpException:

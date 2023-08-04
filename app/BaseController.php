@@ -158,7 +158,7 @@ class BaseController
      * @param string $app
      * @return Response
      */
-    protected function retResponseError(string $msg = '404 not found', int $code = 404, string $app = 'index'): Response
+    protected function responseError(string $msg = '404 not found', int $code = 404, string $app = 'index'): Response
     {
         if (\request()->expectsJson()) {
             return json(['code' => 404, 'msg' => $msg]);

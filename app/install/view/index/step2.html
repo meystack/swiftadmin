@@ -138,6 +138,13 @@
 		var form = layui.form;
 
 		form.on('submit(step)',function(data){
+
+			// 管理员密码最小长度为6
+			if (data.field.pwd.length < 6) {
+				layer.msg('管理员密码最小长度为6');
+				return false;
+			}
+
 			if (data.field.pwd != data.field.repwd) {
 				layer.msg('两次输入的密码不同！');
 				return false;

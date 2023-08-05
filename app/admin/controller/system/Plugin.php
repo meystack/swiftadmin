@@ -388,15 +388,20 @@ class Plugin extends AdminController
         $pluginPath = plugin_path($name);
         $sqlFile = $pluginPath . $type . '.sql';
         $sql = file_get_contents($sqlFile);
-        $queries = explode(';', $sql);
+        $queries = str_ireplace("\r", "\n", $sql);
+        $queries = explode(";\n", $queries);
         $queries = str_replace("__PREFIX__", get_env('DATABASE_PREFIX'), $queries);
         foreach ($queries as $query) {
             $query = trim($query);
             if (empty($query)) {
                 continue;
             }
-            // 执行SQL语句
-            Db::execute($query);
+            try {
+                // 执行SQL语句
+                Db::execute($query);
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage(). $query);
+            }
         }
     }
 

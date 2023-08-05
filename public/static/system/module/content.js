@@ -4,6 +4,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
     var $ = layui.jquery;
     var form = layui.form;
     var layer = layui.layer;
+    let show = layui.show;
     var content = {
         tinymce: function (elem) {
             elem = elem || 'content';
@@ -21,7 +22,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
                 relative_urls: false,
                 remove_script_host: false,
                 // 图片本地化
-                download: _global_.app + '/Ajax/getImage',
+                download: app_Config.app + '/Ajax/getImage',
                 images_upload_handler: function (block, success, failure) {
                     var file = block.blob();
                     var reader = new FileReader();
@@ -31,7 +32,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
                         formData.append('file', file);
                         $.ajax({
                             type: 'post',
-                            url: _global_.app + '/Ajax/upload',
+                            url: app_Config.app + '/Ajax/upload',
                             data: formData,
                             async: false,
                             cache: false,
@@ -40,7 +41,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
                             success: function (res) {
                                 if (res.code === 200) {
                                     success(res.url);
-                                    layer.msg(res.msg);
+                                    show.msg(res.msg);
                                 } else {
                                     failure(res.msg);
                                     return;
@@ -108,7 +109,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
                     let formData = new FormData();
                     formData.append('file', file, file.name);
                     $.ajax({
-                        url: _global_.app + '/ajax/upload'
+                        url: app_Config.app + '/ajax/upload'
                         , type: 'post'
                         , data: formData
                         , contentType: false
@@ -118,14 +119,14 @@ layui.define(['jquery','form', 'layer'], function (exports) {
                         , success: function (res) {
                             if (res.code === 200) {
                                 callback(res.url);
-                                layer.msg(res.msg);
+                                show.msg(res.msg);
                             }else {
-                                layer.msg(res.msg, 'error');
+                                show.error(res.msg);
                             }
                         }
                         //异常回调
                         , error: function () {
-                            layer.msg('服务器异常','info');
+                            show.error('服务器异常');
                         }
                     });
                 },
@@ -145,7 +146,7 @@ layui.define(['jquery','form', 'layer'], function (exports) {
         xmselect: function (elem, data, initvalue, group = true, category = false) // 下拉菜单
         {
             if (!elem) {
-                layer.msg('elem error', 'error');
+                show.error('elem error');
                 return false;
             }
 

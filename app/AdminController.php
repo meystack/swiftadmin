@@ -97,6 +97,12 @@ class AdminController extends BaseController
     protected array $converTime = ['create_time', 'update_time', 'delete_time'];
 
     /**
+     * 定义关联模型
+     * @var array
+     */
+    protected array $relationModel = [];
+
+    /**
      * 跳转URL地址
      * @var string
      */
@@ -125,34 +131,20 @@ class AdminController extends BaseController
             $page = $count <= $limit ? 1 : $page;
             $fieldList = $this->model->getFields();
             $order = !array_key_exists('sort', $fieldList) ? 'id' : 'sort';
-            $relation = [];
-            $relListKey = [];
-            try {
-                $refClass = new \ReflectionClass($this->model);
-                foreach ($refClass->getMethods() as $method) {
-                    $doc = $method->getDocComment();
-                    preg_match('/@localKey\s+(\w+)/', $doc, $localKey);
-                    preg_match('/@bind\s+(\w+)/', $doc, $bind);
-                    if (!empty($localKey) && !empty($bind)) {
-                        $relation[] = $method->getName();
-                        $expBind = explode(',', $bind[1]);
-                        $relListKey[] = ['key' => $localKey[1], 'value' => $expBind[0]];
-                    }
-                }
-            } catch (\Throwable $th) {
-                Log::info($th->getMessage());
-            }
             $subQuery = $this->model->field('id')->where($where)->order($order, 'desc')->limit($limit)->page($page)->buildSql();
             $subQuery = '( SELECT object.id FROM ' . $subQuery . ' AS object )';
-            $list = $this->model->with($relation)->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
+            $list = $this->model->with($this->relationModel)->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
+
             foreach ($list as $key => $value) {
-                foreach ($relation as $index => $item) {
-                    if (isset($value[$relListKey[$index]['key']])) {
-                        $list[$key][$relListKey[$index]['key']] = $value[$relListKey[$index]['value']];
-                    }
+                if (isset($value['user_id'])) {
+                    $list[$key]['user_id'] = $value['user']['nickname'] ?? $value['user_id'];
+                }
+                if (isset($value['admin_id'])) {
+                    $list[$key]['admin_id'] = $value['admin']['nickname'] ?? $value['admin_id'];
                 }
             }
-            return $this->success('查询成功', null, $list, $count);
+
+            return $this->success('查询成功', '/', $list, $count);
         }
 
         return $this->view();

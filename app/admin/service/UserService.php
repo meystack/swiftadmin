@@ -87,6 +87,9 @@ class UserService
         if(!empty($data)) {
             throw new OperateException('该用户ID或邮箱已经存在！');
         }
+        // 密码加密
+        $params['salt'] = Random::alpha();
+        $params['pwd'] = encryptPwd($params['pwd'],$params['salt']);
 
         Db::startTrans();
         try {

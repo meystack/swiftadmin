@@ -134,16 +134,6 @@ class AdminController extends BaseController
             $subQuery = $this->model->field('id')->where($where)->order($order, 'desc')->limit($limit)->page($page)->buildSql();
             $subQuery = '( SELECT object.id FROM ' . $subQuery . ' AS object )';
             $list = $this->model->with($this->relationModel)->where('id in' . $subQuery)->order($order, 'desc')->select()->toArray();
-
-            foreach ($list as $key => $value) {
-                if (isset($value['user_id'])) {
-                    $list[$key]['user_id'] = $value['user']['nickname'] ?? $value['user_id'];
-                }
-                if (isset($value['admin_id'])) {
-                    $list[$key]['admin_id'] = $value['admin']['nickname'] ?? $value['admin_id'];
-                }
-            }
-
             return $this->success('查询成功', '/', $list, $count);
         }
 

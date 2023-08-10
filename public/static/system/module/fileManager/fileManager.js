@@ -327,7 +327,7 @@ layui.define(['laypage','dropdown'], function (exports) {
             field = $('#_fileFiled').val(),
             type = $('#_fileType').val();
         if (!field || !type) {
-            return layer.info('请先配置选择参数');
+            return layer.msg('请先配置选择参数');
         }
 
         if (type === 'images') {

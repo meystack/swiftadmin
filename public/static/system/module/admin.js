@@ -8,7 +8,7 @@
 // | Author: meystack <coolsec@foxmail.com> Apache 2.0 License Code
 // +----------------------------------------------------------------------
 
-layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'table', 'slider', 'cascader', 'content','dropdown','upload'], function (exports) {
+layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'table', 'slider', 'cascader', 'content','dropdown','upload', 'tags'], function (exports) {
 
     "use strict";
     let $ = layui.jquery;
@@ -20,14 +20,13 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
     let slider = layui.slider;
     let element = layui.element;
     let cascader = layui.cascader;
+    let tags = layui.tags;
     let content = layui.content;
     let upload = layui.upload;
     let dropdown = layui.dropdown;
 
     // 自定义消息通知
     let show = layui.show;
-    window.top.show = show;
-
 
     // 系统常量
     let TABFILTER = 'swiftadmin-tabs', BODY = '.layui-body', LAYOUTBODY = ".layui-layout-body",
@@ -869,14 +868,14 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
                                 admin.event.closeDialog(clickObject);
                             }
 
-                            top.show.msg(res.msg);
+                            show.msg(res.msg);
                         } else {
                             if (typeof callback !== 'undefined'
                                 && typeof callback.error === 'function') {
                                 return callback.error(res);
                             }
 
-                            top.show.error(res.msg);
+                            show.error(res.msg);
                         }
                     },
                     error: function (res) {
@@ -1448,7 +1447,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
             })
             layui.each($('*[lay-tags]'), function (index, elem) {
                 let url = $(elem).data('url') || '';
-                let isTags = layui.tags.render({
+                let isTags = tags.render({
                     elem: elem,
                     url: url,
                     done: function (key, all) {
@@ -1603,7 +1602,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
         $.post(_url, data.field, function (res) {
 
             if (res.code === 200) {
-                top.show.msg(res.msg);
+                show.msg(res.msg);
                 if (_close === undefined) {
                     admin.event.closeDialog(that);
                 }
@@ -1615,7 +1614,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
                     }
                 }
             } else {
-                top.show.error(res.msg);
+                show.error(res.msg);
             }
 
             try {

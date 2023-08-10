@@ -128,7 +128,7 @@ layui.define(function(exports){
       element = element.replace(/(^\s*)|(\s*$)/g, "");
       if(!(/[a-zA-Z0-9]+$/.test(element))) {
           if (element.length >= this.config.length) {
-            return layui.layer.msg('超出最大长度','error');
+            return layui.layer.msg('超出最大长度');
           }
       }
 

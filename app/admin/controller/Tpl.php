@@ -42,9 +42,19 @@ class Tpl extends AdminController
      */
     public function editTpl(): Response
     {
+        $tplPath = base_path() . '/extend/conf/tpl/';
+        $files = glob($tplPath . '*.tpl');
+        $files = array_map(function ($file) {
+            return basename($file);
+        }, $files);
+
         if (request()->isPost()) {
             $post = request()->post();
-            $tpl = base_path().'/extend/conf/tpl/'.$post['tpl'];
+            $file = $post['tpl'];
+            if (!in_array($file, $files)) {
+                return $this->error('模板文件不存在！');
+            }
+            $tpl = $tplPath . $file;
             if (write_file($tpl,$post['content'])) {
                 return $this->success('修改邮件模板成功！');
             }
@@ -54,8 +64,11 @@ class Tpl extends AdminController
 
         // 获取模板参数
         $tpl = input('p');
-        $content = read_file(base_path().'/extend/conf/tpl/'.$tpl);
-        return view('/tpl/edit_tpl',['tpl'=>$tpl,'content'=>$content]);
+        if (!in_array($tpl, $files)) {
+            return $this->error('模板文件不存在！');
+        }
+        $content = read_file($tplPath . $tpl);
+        return view('/tpl/edit_tpl', ['tpl' => $tpl, 'content' => $content]);
     }
 
 }

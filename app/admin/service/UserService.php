@@ -36,16 +36,16 @@ class UserService
     {
         $page = (int)$params['page'] ?: 1;
         $limit = (int)$params['limit'] ?: 10;
-        $status = !empty($params['status']) ? $params['status']-1:1;
-
+        if (!empty($params['status'])) {
+            $where[] = ['status', '=', $params['status'] == 1 ? 0 : 1];
+        }
         if (!empty($params['nickname'])) {
-            $where[] = ['nickname','like','%'.$params['nickname'].'%'];
+            $where[] = ['nickname', 'like', '%' . $params['nickname'] . '%'];
         }
 
         if (!empty($params['group_id'])) {
-            $where[] = ['group_id','find in set',$params['group_id']];
+            $where[] = ['group_id', 'find in set', $params['group_id']];
         }
-        $where[]=['status','=',$status];
         $conditions = array_merge($conditions, $where ?? []);
 
         $model = new User();

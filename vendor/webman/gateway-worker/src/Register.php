@@ -3,9 +3,19 @@ namespace Webman\GatewayWorker;
 
 class Register extends \GatewayWorker\Register
 {
-    public function __construct()
+    public function __construct($config = [])
     {
-        
+        $propertyMap = [
+            'secretKey',
+//            'reloadable',
+//            'user',
+//            'group',
+        ];
+        foreach ($propertyMap as $property) {
+            if (isset($config[$property])) {
+                $this->$property = $config[$property];
+            }
+        }
     }
 
     public function onWorkerstart()

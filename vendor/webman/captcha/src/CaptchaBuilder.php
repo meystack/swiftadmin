@@ -140,7 +140,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
      */
     public $tempDir = 'temp/';
 
-    public function __construct($phrase = null, PhraseBuilderInterface $builder = null)
+    public function __construct($phrase = null, ?PhraseBuilderInterface $builder = null)
     {
         if ($builder === null) {
             $this->builder = new PhraseBuilder;
@@ -422,7 +422,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
         }
 
         if ($font === null) {
-            $font = $this->getFontPath(__DIR__ . '/Font/captcha'.$this->rand(0, 5).'.ttf');
+            $font = $this->getFontPath(__DIR__ . '/Font/captcha'.$this->rand(0, 4).'.ttf');
         }
 
         if (empty($this->backgroundImages)) {
@@ -509,6 +509,12 @@ class CaptchaBuilder implements CaptchaBuilderInterface
         }
 
         $tmpPath = sys_get_temp_dir() ?: '/tmp';
+        if (function_exists('runtime_path')) {
+            $tmpPath = runtime_path('tmp');
+            if (!is_dir($tmpPath)) {
+                mkdir($tmpPath, 0777, true);
+            }
+        }
         $filePath = "$tmpPath/" . basename($font);
         clearstatcache();
         if (!isset($fontPathMap[$font]) || !is_file($filePath)) {

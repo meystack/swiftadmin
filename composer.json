@@ -13,7 +13,7 @@
     {
       "name": "meystack",
       "email": "coolsec@foxmail.com",
-      "homepage": "http://www.swiftadmin.net",
+      "homepage": "https://www.swiftadmin.net",
       "role": "Developer"
     }
   ],
@@ -25,30 +25,28 @@
     "source": "https://github.com/meystack/swiftadmin"
   },
   "require": {
-    "php": ">=8.0",
-    "psr/container": "1.1.1",
+    "php": ">=8.1",
+    "workerman/webman-framework": "^2.1",
     "monolog/monolog": "^2.0",
-    "workerman/webman-framework": "1.5.5",
-    "webman/think-orm": "^1.0",
-    "webman/redis-queue": "^1.2",
-    "webman/console": "1.2.33",
+    "webman/cache": "^2.1",
+    "webman/redis": "^2.1",
+    "illuminate/events": "^10.48",
+    "webman/think-orm": "^2.1",
+    "webman/redis-queue": "^2.1",
+    "webman/console": "^2.1",
     "webman/event": "^1.0",
     "webman/captcha": "^1.0",
     "webman/gateway-worker": "^1.0",
-    "topthink/think-validate": "^2.0",
-    "topthink/think-template": "^2.0",
+    "topthink/think-validate": "^3.0",
+    "topthink/think-template": "^3.0",
     "topthink/think-image": "^1.0",
-    "phpmailer/phpmailer": "^6.6",
-    "guzzlehttp/guzzle": "^7.4",
-    "symfony/translation": "^5.4",
-    "symfony/var-dumper": "^6.0",
-    "endroid/qr-code": "^4.3",
-    "php-di/php-di": "^6.4",
-    "yansongda/pay": "~3.1.0",
-    "overtrue/pinyin": "5.0",
-    "phpoffice/phpspreadsheet": "^1.28",
-    "illuminate/redis": "^9.52",
-    "symfony/cache": "^5.4"
+    "phpmailer/phpmailer": "^6.9",
+    "phpoffice/phpspreadsheet": "^4.1",
+    "symfony/var-dumper": "^6.4",
+    "guzzlehttp/guzzle": "^7.9",
+    "yansongda/pay": "^3.7",
+    "endroid/qr-code": "^5.1",
+    "overtrue/pinyin": "^5.3"
   },
   "suggest": {
     "ext-event": "For better performance. "
@@ -56,14 +54,16 @@
   "autoload": {
     "psr-4": {
       "": "./",
-      "app\\": "./app"
+      "app\\": "./app",
+      "App\\": "./app",
+      "app\\View\\Components\\": "./app/view/components"
     },
-    "files": [
-      "./support/helpers.php"
-    ],
     "psr-0": {
       "": "extend/"
-    }
+    },
+    "files": [
+      "support/helpers.php"
+    ]
   },
   "scripts": {
     "post-package-install": [
@@ -76,9 +76,6 @@
       "support\\Plugin::uninstall"
     ]
   },
-  "config": {
-    "allow-plugins": {
-      "easywechat-composer/easywechat-composer": true
-    }
-  }
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

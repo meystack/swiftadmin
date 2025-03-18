@@ -2,7 +2,7 @@
 
 // 以下代码是配置layui扩展模块的目录，每个页面都需要引入
 layui.config({
-    version: 'v1.1.9',
+    version: 'v1.2.0',
     base: getProjectUrl() + 'module/'
 }).extend({
     tags: 'tags/tags',

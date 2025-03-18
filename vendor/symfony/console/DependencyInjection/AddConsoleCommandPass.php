@@ -29,6 +29,9 @@ use Symfony\Component\DependencyInjection\TypedReference;
  */
 class AddConsoleCommandPass implements CompilerPassInterface
 {
+    /**
+     * @return void
+     */
     public function process(ContainerBuilder $container)
     {
         $commandServices = $container->findTaggedServiceIds('console.command', true);
@@ -87,7 +90,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
                     $lazyCommandMap[$tag['command']] = $id;
                 }
 
-                $description = $description ?? $tag['description'] ?? null;
+                $description ??= $tag['description'] ?? null;
             }
 
             $definition->addMethodCall('setName', [$commandName]);

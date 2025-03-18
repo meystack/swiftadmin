@@ -3,21 +3,25 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\model\concern;
 
+use BackedEnum;
 use Closure;
 use InvalidArgumentException;
 use Stringable;
+use think\db\Express;
 use think\db\Raw;
 use think\helper\Str;
+use think\model\contract\EnumTransform;
+use think\model\contract\FieldTypeTransform;
 use think\model\Relation;
 
 /**
@@ -31,6 +35,13 @@ trait Attribute
      * @var string|array
      */
     protected $pk = 'id';
+
+    /**
+     * 数据表主键自增.
+     *
+     * @var bool|null|string
+     */
+    protected $autoInc;
 
     /**
      * 数据表字段信息 留空则自动获取.
@@ -103,6 +114,20 @@ trait Attribute
     protected $jsonAssoc = false;
 
     /**
+     * Enum数据取出自动转换为name.
+     *
+     * @var bool|string
+     */
+    protected $enumReadName = false;
+
+    /**
+     * 严格检查Enum数据类型.
+     *
+     * @var bool
+     */
+    protected $enumStrict = false;
+
+    /**
      * 是否严格字段大小写.
      *
      * @var bool
@@ -124,11 +149,18 @@ trait Attribute
     private $withAttr = [];
 
     /**
-     * 数据表延迟写入的字段
+     * 自动写入字段.
      *
      * @var array
      */
-    protected $lazyFields = [];
+    protected $insert = [];
+
+    /**
+     * 主键值.
+     *
+     * @var int|string
+     */
+    protected $key;
 
     /**
      * 获取模型对象的主键.
@@ -138,6 +170,28 @@ trait Attribute
     public function getPk()
     {
         return $this->pk;
+    }
+
+    /**
+     * 设置模型的字段信息.
+     *
+     * @param array $schema
+     * @return $this
+     */
+    public function schema(array $schema)
+    {
+        $this->schema = $schema;
+        return $this;
+    }
+
+    public function isJsonAssoc(): bool
+    {
+        return $this->jsonAssoc;
+    }
+
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -160,6 +214,16 @@ trait Attribute
         return false;
     }
 
+    public function setKey($value)
+    {
+        $pk = $this->getPk();
+
+        $this->key    = $value;
+        $this->exists = true;
+
+        return $this;
+    }
+
     /**
      * 获取模型对象的主键值
      *
@@ -167,11 +231,24 @@ trait Attribute
      */
     public function getKey()
     {
+        if ($this->key) {
+            return $this->key;
+        }
+
         $pk = $this->getPk();
 
         if (is_string($pk) && array_key_exists($pk, $this->data)) {
-            return $this->data[$pk];
+            $this->key = $this->data[$pk];
+        } elseif (is_array($pk)) {
+            $data = [];
+            foreach ($pk as $name) {
+                if (array_key_exists($name, $this->data)) {
+                    $data[$name] = $this->data[$name];
+                }
+            }
+            $this->key = $data;
         }
+        return $this->key ?? null;
     }
 
     /**
@@ -195,7 +272,7 @@ trait Attribute
      *
      * @return $this
      */
-    public function readOnly(array $field)
+    public function readonly(array $field)
     {
         $this->readonly = $field;
 
@@ -209,7 +286,7 @@ trait Attribute
      *
      * @return string
      */
-    protected function getRealFieldName(string $name): string
+    public function getRealFieldName(string $name): string
     {
         if ($this->convertNameToCamel || !$this->strict) {
             return Str::snake($name);
@@ -221,18 +298,24 @@ trait Attribute
     /**
      * 设置数据对象值
      *
-     * @param array|Model $data  数据
+     * @param array|object $data  数据
      * @param bool  $set   是否调用修改器
      * @param array $allow 允许的字段名
      *
      * @return $this
      */
-    public function data(array|Model $data, bool $set = false, array $allow = [])
+    public function data(array | object $data, bool $set = false, array $allow = [])
     {
-        if ($data instanceof Model) {
+        if ($data instanceof self) {
             $data = $data->getData();
+        } elseif (is_object($data)) {
+            $data = get_object_vars($data);
         }
-                
+
+        if (empty($data)) {
+            return $this;
+        }
+
         // 清空数据
         $this->data = [];
 
@@ -296,7 +379,7 @@ trait Attribute
      *
      * @return mixed
      */
-    public function getOrigin(string $name = null)
+    public function getOrigin(?string $name = null)
     {
         if (is_null($name)) {
             return $this->origin;
@@ -305,6 +388,12 @@ trait Attribute
         $fieldName = $this->getRealFieldName($name);
 
         return array_key_exists($fieldName, $this->origin) ? $this->origin[$fieldName] : null;
+    }
+
+    public function origin(array $origin)
+    {
+        $this->origin = $origin;
+        return $this;
     }
 
     /**
@@ -316,7 +405,7 @@ trait Attribute
      *
      * @return mixed
      */
-    public function getData(string $name = null)
+    public function getData(?string $name = null)
     {
         if (is_null($name)) {
             return $this->data;
@@ -340,18 +429,22 @@ trait Attribute
      *
      * @return array
      */
-    public function getChangedData(): array
+    public function getChangedData(array $data = []): array
     {
-        $data = $this->force ? $this->data : array_udiff_assoc($this->data, $this->origin, function ($a, $b) {
+        $data = $this->force ? $data : array_udiff_assoc($data, $this->origin, function ($a, $b) {
             if ((empty($a) || empty($b)) && $a !== $b) {
                 return 1;
+            }
+
+            if ($b instanceof Raw || $b instanceof Express) {
+                return 0;
             }
 
             return is_object($a) || $a != $b ? 1 : 0;
         });
 
         // 只读字段不允许更新
-        foreach ($this->readonly as $key => $field) {
+        foreach ($this->readonly as $field) {
             if (array_key_exists($field, $data)) {
                 unset($data[$field]);
             }
@@ -402,6 +495,10 @@ trait Attribute
      */
     public function setAttr(string $name, $value, array $data = []): void
     {
+        if ($this->mapping) {
+            $name = array_search($name, $this->mapping) ?: $name;
+        }
+
         $name = $this->getRealFieldName($name);
 
         // 检测修改器
@@ -414,12 +511,16 @@ trait Attribute
             if (is_null($value) && $array !== $this->data) {
                 return;
             }
-        } elseif (isset($this->type[$name])) {
+        } elseif (!in_array($name, $this->json) && isset($this->type[$name])) {
             // 类型转换
+            if ($this->enumStrict && is_subclass_of($this->type[$name], BackedEnum::class) && !($value instanceof BackedEnum)) {
+                throw new InvalidArgumentException('data type error: ' . $name . ' => ' . $this->type[$name]);
+            }
             $value = $this->writeTransform($value, $this->type[$name]);
         } elseif ($this->isRelationAttr($name)) {
             // 关联属性
             $this->relation[$name] = $value;
+            $this->with[$name]     = true;
         } elseif ((array_key_exists($name, $this->origin) || empty($this->origin)) && $value instanceof Stringable) {
             // 对象类型
             $value = $value->__toString();
@@ -438,9 +539,9 @@ trait Attribute
      *
      * @return mixed
      */
-    protected function writeTransform($value, string|array $type)
+    protected function writeTransform($value, string | array $type)
     {
-        if (is_null($value)) {
+        if (null === $value) {
             return;
         }
 
@@ -454,17 +555,32 @@ trait Attribute
             [$type, $param] = explode(':', $type, 2);
         }
 
+        $typeTransform = static function (string $type, $value, $model) {
+            if (str_contains($type, '\\') && class_exists($type)) {
+                if (is_subclass_of($type, FieldTypeTransform::class)) {
+                    $value = $type::set($value, $model);
+                } elseif ($value instanceof BackedEnum) {
+                    $value = $value->value;
+                } elseif ($value instanceof Stringable) {
+                    $value = $value->__toString();
+                }
+            }
+
+            return $value;
+        };
+
         return match ($type) {
-            'integer'   =>  (int) $value,
-            'float'     =>  empty($param) ? (float) $value : (float) number_format($value, (int) $param, '.', ''),
-            'boolean'   =>  (bool) $value,
-            'timestamp' =>  !is_numeric($value) ? strtotime($value) : $value,
-            'datetime'  =>  $this->formatDateTime('Y-m-d H:i:s.u', $value, true),
-            'object'    =>  is_object($value) ? json_encode($value, JSON_FORCE_OBJECT) : $value,
-            'array'     =>  (array) $value,
-            'json'      =>  json_encode((array) $value, !empty($param) ? (int) $param : JSON_UNESCAPED_UNICODE),
-            'serialize' =>  serialize($value),
-            default     =>  $value instanceof Stringable && str_contains($type, '\\') ? $value->__toString() : $value,
+            'string' => (string) $value,
+            'integer' => (int) $value,
+            'float' => empty($param) ? (float) $value : (float) number_format($value, (int) $param, '.', ''),
+            'boolean' => (bool) $value,
+            'timestamp' => !is_numeric($value) ? strtotime($value) : $value,
+            'datetime' => $this->formatDateTime('Y-m-d H:i:s.u', $value, true),
+            'object' => is_object($value) ? json_encode($value, JSON_FORCE_OBJECT) : $value,
+            'array' => json_encode((array) $value, !empty($param) ? (int) $param : JSON_UNESCAPED_UNICODE),
+            'json' => json_encode($value, !empty($param) ? (int) $param : JSON_UNESCAPED_UNICODE),
+            'serialize' => serialize($value),
+            default => $typeTransform($type, $value, $this),
         };
     }
 
@@ -480,11 +596,14 @@ trait Attribute
     public function getAttr(string $name)
     {
         try {
-            $relation   = false;
-            $value      = $this->getData($name);
+            $relation = false;
+            if ($this->mapping) {
+                $name = array_search($name, $this->mapping) ?: $name;
+            }
+            $value = $this->getData($name);
         } catch (InvalidArgumentException $e) {
-            $relation   = $this->isRelationAttr($name);
-            $value      = null;
+            $relation = $this->isRelationAttr($name);
+            $value    = null;
         }
 
         return $this->getValue($name, $value, $relation);
@@ -501,7 +620,7 @@ trait Attribute
      *
      * @return mixed
      */
-    protected function getValue(string $name, $value, bool|string $relation = false)
+    protected function getValue(string $name, $value, bool | string $relation = false)
     {
         // 检测属性获取器
         $fieldName = $this->getRealFieldName($name);
@@ -520,8 +639,8 @@ trait Attribute
                 $value = $this->getJsonValue($fieldName, $value);
             } else {
                 $closure = $this->withAttr[$fieldName];
-                if ($closure instanceof \Closure) {
-                    $value = $closure($value, $this->data);
+                if ($closure instanceof Closure) {
+                    $value = $closure($value, $this->data, $this);
                 }
             }
         } elseif (method_exists($this, $method)) {
@@ -530,7 +649,7 @@ trait Attribute
             }
 
             $value = $this->$method($value, $this->data);
-        } elseif (isset($this->type[$fieldName])) {
+        } elseif (!in_array($fieldName, $this->json) && isset($this->type[$fieldName])) {
             // 类型转换
             $value = $this->readTransform($value, $this->type[$fieldName]);
         } elseif ($this->autoWriteTimestamp && in_array($fieldName, [$this->createTime, $this->updateTime])) {
@@ -562,9 +681,9 @@ trait Attribute
 
         foreach ($this->withAttr[$name] as $key => $closure) {
             if ($this->jsonAssoc) {
-                $value[$key] = $closure($value[$key], $value);
+                $value[$key] = $closure($value[$key] ?? '', $value);
             } else {
-                $value->$key = $closure($value->$key, $value);
+                $value->$key = $closure($value->$key ?? '', $value);
             }
         }
 
@@ -593,7 +712,7 @@ trait Attribute
      *
      * @return mixed
      */
-    protected function readTransform($value, string|array $type)
+    protected function readTransform($value, string | array $type)
     {
         if (is_null($value)) {
             return;
@@ -614,17 +733,39 @@ trait Attribute
             return $value;
         };
 
+        $typeTransform = static function (string $type, $value, $model) {
+            if (str_contains($type, '\\') && class_exists($type)) {
+                if (is_subclass_of($type, FieldTypeTransform::class)) {
+                    $value = $type::get($value, $model);
+                } elseif (is_subclass_of($type, BackedEnum::class)) {
+                    $value = $type::from($value);
+                    if (is_subclass_of($type, EnumTransform::class)) {
+                        $value = $value->value();
+                    } elseif ($model->enumReadName) {
+                        $method = $model->enumReadName;
+                        $value  = is_string($method) ? $value->$method() : $value->name;
+                    }
+                } else {
+                    // 对象类型
+                    $value = new $type($value);
+                }
+            }
+
+            return $value;
+        };
+
         return match ($type) {
-            'integer'   =>  (int) $value,
-            'float'     =>  empty($param) ? (float) $value : (float) number_format($value, (int) $param, '.', ''),
-            'boolean'   =>  (bool) $value,
-            'timestamp' =>  !is_null($value) ? $this->formatDateTime(!empty($param) ? $param : $this->dateFormat, $value, true) : null,
-            'datetime'  =>  !is_null($value) ? $this->formatDateTime(!empty($param) ? $param : $this->dateFormat, $value) : null,
-            'json'      =>  json_decode($value, true),
-            'array'     =>  empty($value) ? [] : json_decode($value, true),
-            'object'    =>  empty($value) ? new \stdClass() : json_decode($value),
-            'serialize' =>  $call($value),
-            default     =>  str_contains($type, '\\') ? new $type($value) : $value,
+            'string' => (string) $value,
+            'integer' => (int) $value,
+            'float' => empty($param) ? (float) $value : (float) number_format($value, (int) $param, '.', ''),
+            'boolean' => (bool) $value,
+            'timestamp' => !is_null($value) ? $this->formatDateTime(!empty($param) ? $param : $this->dateFormat, $value, true) : null,
+            'datetime' => !is_null($value) ? $this->formatDateTime(!empty($param) ? $param : $this->dateFormat, $value) : null,
+            'json' => json_decode($value, true),
+            'array' => empty($value) ? [] : json_decode($value, true),
+            'object' => empty($value) ? new \stdClass() : json_decode($value),
+            'serialize' => $call($value),
+            default => $typeTransform($type, $value, $this),
         };
     }
 
@@ -636,14 +777,15 @@ trait Attribute
      *
      * @return $this
      */
-    public function withAttr(string|array $name, Closure $callback = null)
+    public function withFieldAttr(string | array $name, ?Closure $callback = null)
     {
         if (is_array($name)) {
             foreach ($name as $key => $val) {
-                $this->withAttr($key, $val);
+                $this->withFieldAttr($key, $val);
             }
         } else {
             $name = $this->getRealFieldName($name);
+            $this->append([$name], true);
 
             if (str_contains($name, '.')) {
                 [$name, $key] = explode('.', $name);
@@ -653,6 +795,20 @@ trait Attribute
                 $this->withAttr[$name] = $callback;
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * 设置枚举类型自动读取数据方式
+     * true 表示使用name值返回
+     * 字符串 表示使用枚举类的方法返回
+     *
+     * @return $this
+     */
+    public function withEnumRead(bool | string $method = true)
+    {
+        $this->enumReadName = $method;
 
         return $this;
     }

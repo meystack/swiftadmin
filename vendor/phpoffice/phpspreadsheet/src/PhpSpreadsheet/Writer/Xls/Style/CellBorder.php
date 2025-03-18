@@ -9,7 +9,7 @@ class CellBorder
     /**
      * @var array<string, int>
      */
-    protected static $styleMap = [
+    protected static array $styleMap = [
         Border::BORDER_NONE => 0x00,
         Border::BORDER_THIN => 0x01,
         Border::BORDER_MEDIUM => 0x02,
@@ -31,7 +31,7 @@ class CellBorder
     {
         $borderStyle = $border->getBorderStyle();
 
-        if (is_string($borderStyle) && array_key_exists($borderStyle, self::$styleMap)) {
+        if (array_key_exists($borderStyle, self::$styleMap)) {
             return self::$styleMap[$borderStyle];
         }
 

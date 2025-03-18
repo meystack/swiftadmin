@@ -12,27 +12,51 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use support\Log;
+use support\Request;
+
+global $argv;
 
 return [
+    'webman' => [
+        'handler' => process\Http::class,
+        'listen' => 'http://0.0.0.0:8787',
+        'count' => cpu_count() * 4,
+        'user' => '',
+        'group' => '',
+        'reusePort' => false,
+        'eventLoop' => '',
+        'context' => [],
+        'constructor' => [
+            'requestClass' => Request::class,
+            'logger' => Log::channel('default'),
+            'appPath' => app_path(),
+            'publicPath' => public_path()
+        ]
+    ],
     // File update detection and automatic reload
     'monitor' => [
-        'handler'     => process\Monitor::class,
-        'reloadable'  => false,
+        'handler' => process\Monitor::class,
+        'reloadable' => false,
         'constructor' => [
             // Monitor these directories
-            'monitor_dir'        => [
+            'monitorDir' => array_merge([
                 app_path(),
                 config_path(),
                 // 插件开发者请开启此项
-//                base_path() . '/plugin',
+//              base_path() . '/plugin',
                 base_path() . '/process',
                 base_path() . '/support',
                 base_path() . '/resource',
                 base_path() . '/.env',
-            ],
+            ], glob(base_path() . '/plugin/*/app'), glob(base_path() . '/plugin/*/config'), glob(base_path() . '/plugin/*/api')),
             // Files with these suffixes will be monitored
-            'monitor_extensions' => [
+            'monitorExtensions' => [
                 'php', 'html', 'htm', 'env'
+            ],
+            'options' => [
+                'enable_file_monitor' => !in_array('-d', $argv) && DIRECTORY_SEPARATOR === '/',
+                'enable_memory_monitor' => DIRECTORY_SEPARATOR === '/',
             ]
         ]
     ]

@@ -57,7 +57,6 @@ class Attachment extends AdminController
     public function index(): Response
     {
         if (request()->isAjax()) {
-
             $params = request()->post();
             list($count, $list) = AttachmentService::dataList($params);
             return $this->success('查询成功', "/", $list, $count);

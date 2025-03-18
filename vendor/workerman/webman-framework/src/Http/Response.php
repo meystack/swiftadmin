@@ -66,7 +66,7 @@ class Response extends \Workerman\Protocols\Http\Response
     protected function notModifiedSince(string $file): bool
     {
         $ifModifiedSince = App::request()->header('if-modified-since');
-        if ($ifModifiedSince === null || !($mtime = filemtime($file))) {
+        if ($ifModifiedSince === null || !is_file($file) || !($mtime = filemtime($file))) {
             return false;
         }
         return $ifModifiedSince === gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
@@ -77,7 +77,7 @@ class Response extends \Workerman\Protocols\Http\Response
      * @param Throwable|null $exception
      * @return Throwable|null
      */
-    public function exception(Throwable $exception = null): ?Throwable
+    public function exception(?Throwable $exception = null): ?Throwable
     {
         if ($exception) {
             $this->exception = $exception;

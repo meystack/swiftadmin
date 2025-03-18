@@ -3,11 +3,11 @@
  * by meystack to www.swiftadmin.net
  * Apache2.0 Licensed
  */
-layui.define(['laypage','dropdown'], function (exports) {
+layui.define(['laypage','dropdown','show'], function (exports) {
     "use strict";
 
     var $ = layui.$
-
+        , show = layui.show
         , laypage = layui.laypage
         , dropdown = layui.dropdown
         //模块名
@@ -177,11 +177,11 @@ layui.define(['laypage','dropdown'], function (exports) {
                 if (res.code === 200) {
                     that.renderData(res);
                 } else {
-                    layer.error(res.msg);
+                   show.error(res.msg);
                 }
             },
             error: function (err) {
-                layer.error('请求失败');
+                show.error('请求失败');
             }
         })
     };
@@ -226,7 +226,7 @@ layui.define(['laypage','dropdown'], function (exports) {
                     , id: $(item).data('index')
                 }
                 , {
-                    title: '<span style="color: red; ">删除</span>'
+                    title: '删除'
                     , type: 'delete'
                     , id: $(item).data('index')
                 }];

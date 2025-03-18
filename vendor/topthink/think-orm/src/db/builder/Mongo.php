@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
@@ -11,6 +10,7 @@ declare(strict_types=1);
 
 namespace think\db\builder;
 
+use Closure;
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
@@ -116,8 +116,6 @@ class Mongo
                 $result[$item] = $val;
             } elseif (isset($val[0]) && 'exp' == $val[0]) {
                 $result[$item] = $val[1];
-            } elseif (is_null($val)) {
-                $result[$item] = 'NULL';
             } else {
                 $result[$item] = $this->parseValue($query, $val, $key);
             }
@@ -178,11 +176,11 @@ class Mongo
                         throw new Exception('where express error:'.var_export($value, true));
                     }
                     $field = array_shift($value);
-                } elseif (!($value instanceof \Closure)) {
+                } elseif (!($value instanceof Closure)) {
                     throw new Exception('where express error:'.var_export($value, true));
                 }
 
-                if ($value instanceof \Closure) {
+                if ($value instanceof Closure) {
                     // 使用闭包查询
                     $query = new Query($this->connection);
                     call_user_func_array($value, [&$query]);

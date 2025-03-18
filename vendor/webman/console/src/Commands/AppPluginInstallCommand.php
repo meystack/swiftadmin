@@ -11,6 +11,7 @@ use Webman\Console\Util;
 
 class AppPluginInstallCommand extends Command
 {
+
     protected static $defaultName = 'app-plugin:install';
     protected static $defaultDescription = 'App Plugin Install';
 
@@ -19,6 +20,7 @@ class AppPluginInstallCommand extends Command
      */
     protected function configure()
     {
+        $this->setName(static::$defaultName)->setDescription(static::$defaultDescription);
         $this->addArgument('name', InputArgument::REQUIRED, 'App plugin name');
     }
 

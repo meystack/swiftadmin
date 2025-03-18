@@ -17,9 +17,9 @@
  */
 return [
     // Default language
-    'locale' => get_env('LANG_DEFAULT_LANG') ?? 'zh-CN',
+    'locale' => 'zh_CN',
     // Fallback language
-    'fallback_locale' => ['zh-CN', 'en-US'],
+    'fallback_locale' => ['zh_CN', 'en'],
     // Folder where language files are stored
     'path' => base_path() . '/resource/translations',
 ];

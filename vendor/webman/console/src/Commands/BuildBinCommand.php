@@ -39,18 +39,20 @@ class BuildBinCommand extends BuildPharCommand
         if (!$version) {
             $version = (float)PHP_VERSION;
         }
-        $version = $version >= 8.0 ? $version : 8.1;
+        $version = max($version, 8.1);
         $supportZip = class_exists(ZipArchive::class);
         $microZipFileName = $supportZip ? "php$version.micro.sfx.zip" : "php$version.micro.sfx";
         $pharFileName = config('plugin.webman.console.app.phar_filename', 'webman.phar');
         $binFileName = config('plugin.webman.console.app.bin_filename', 'webman.bin');
         $this->buildDir = config('plugin.webman.console.app.build_dir', base_path() . '/build');
+        $customIni = config('plugin.webman.console.app.custom_ini', '');
 
         $binFile = "$this->buildDir/$binFileName";
         $pharFile = "$this->buildDir/$pharFileName";
         $zipFile = "$this->buildDir/$microZipFileName";
         $sfxFile = "$this->buildDir/php$version.micro.sfx";
-        
+        $customIniHeaderFile = "$this->buildDir/custominiheader.bin";
+
         // 打包
         $command = new BuildPharCommand();
         $command->execute($input, $output);
@@ -60,12 +62,18 @@ class BuildBinCommand extends BuildPharCommand
             $domain = 'download.workerman.net';
             $output->writeln("\r\nDownloading PHP$version ...");
             if (extension_loaded('openssl')) {
-                $client = stream_socket_client("ssl://$domain:443");
+                $context = stream_context_create([
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                    ]
+                ]);
+                $client = stream_socket_client("ssl://$domain:443", $context);
             } else {
                 $client = stream_socket_client("tcp://$domain:80");
             }
 
-            fwrite($client, "GET /php/$microZipFileName HTTP/1.0\r\nAccept: text/html\r\nHost: $domain\r\nUser-Agent: webman/console\r\n\r\n");
+            fwrite($client, "GET /php/$microZipFileName HTTP/1.1\r\nAccept: text/html\r\nHost: $domain\r\nUser-Agent: webman/console\r\n\r\n");
             $bodyLength = 0;
             $bodyBuffer = '';
             $lastPercent = 0;
@@ -116,6 +124,19 @@ class BuildBinCommand extends BuildPharCommand
 
         // 生成二进制文件
         file_put_contents($binFile, file_get_contents($sfxFile));
+        // 自定义INI
+        if (!empty($customIni)) {
+            if (file_exists($customIniHeaderFile)) {
+                unlink($customIniHeaderFile);
+            }
+            $f = fopen($customIniHeaderFile, 'wb');
+            fwrite($f, "\xfd\xf6\x69\xe6");
+            fwrite($f, pack('N', strlen($customIni)));
+            fwrite($f, $customIni);
+            fclose($f);
+            file_put_contents($binFile, file_get_contents($customIniHeaderFile),FILE_APPEND);
+            unlink($customIniHeaderFile);
+        }
         file_put_contents($binFile, file_get_contents($pharFile), FILE_APPEND);
 
         // 添加执行权限

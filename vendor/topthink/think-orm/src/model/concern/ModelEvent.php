@@ -3,16 +3,17 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\model\concern;
 
+use ReflectionClass;
 use think\db\exception\ModelEventException;
 use think\helper\Str;
 
@@ -34,6 +35,13 @@ trait ModelEvent
      * @var bool
      */
     protected $withEvent = true;
+
+    /**
+     * 事件观察者.
+     *
+     * @var string
+     */
+    protected $eventObserver;
 
     /**
      * 设置Event对象
@@ -74,19 +82,27 @@ trait ModelEvent
             return true;
         }
 
-        $call = 'on' . Str::studly($event);
+        $call  = 'on' . Str::studly($event);
+        $model = $this->entity ?: $this;
 
         try {
-            if (method_exists(static::class, $call)) {
-                $result = call_user_func([static::class, $call], $this);
+            if ($this->eventObserver) {
+                $reflect  = new ReflectionClass($this->eventObserver);
+                $observer = $reflect->newinstance();
+            } else {
+                $observer = static::class;
+            }
+
+            if (method_exists($observer, $call)) {
+                $result = $this->invoke([$observer, $call], [$model]);
             } elseif (is_object(self::$event) && method_exists(self::$event, 'trigger')) {
-                $result = self::$event->trigger('model.' . static::class . '.' . $event, $this);
+                $result = self::$event->trigger(static::class . '.' . $event, $model);
                 $result = empty($result) ? true : end($result);
             } else {
                 $result = true;
             }
 
-            return false === $result ? false : true;
+            return !(false === $result);
         } catch (ModelEventException $e) {
             return false;
         }

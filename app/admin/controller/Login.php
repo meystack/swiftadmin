@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\admin\enums\AdminEnum;
 use app\admin\service\LoginService;
 use app\common\exception\OperateException;
 use support\Response;
@@ -54,6 +55,7 @@ class Login extends AdminController
             return $this->success('登录成功！', $this->JumpUrl);
         }
 
+        $session = request()->session()->get(AdminEnum::ADMIN_SESSION);
         return view('login/index', [
             'captcha' => $session['isCaptcha'] ?? false,
         ]);

@@ -8,14 +8,22 @@ class Install
     /**
      * @var array
      */
-    protected static $pathRelation = [];
+    protected static array $pathRelation = [];
 
     /**
      * Install
      * @return void
      */
-    public static function install()
+    public static function install(): void
     {
+        $thinkorm_file = config_path('think-orm.php');
+        $thinkorm_file_old = config_path('thinkorm.php');
+        if (!is_file($thinkorm_file) && !is_file($thinkorm_file_old)) {
+            echo 'Create config/think-orm.php' . PHP_EOL;
+            copy(__DIR__ . '/config/think-orm.php', $thinkorm_file);
+        }
+        static::installByRelation();
+
         $config_file = config_path() . '/bootstrap.php';
         $config = include $config_file;
         if(!in_array(ThinkOrm::class , $config ?? [])) {
@@ -23,19 +31,20 @@ class Install
             $config_file_content = preg_replace('/\];/', "    Webman\ThinkOrm\ThinkOrm::class,\n];", $config_file_content);
             file_put_contents($config_file, $config_file_content);
         }
-        $thinkorm_file = config_path() . '/thinkorm.php';
-        if (!is_file($thinkorm_file)) {
-            copy(__DIR__ . '/config/thinkorm.php', $thinkorm_file);
-        }
-        static::installByRelation();
     }
 
     /**
      * Uninstall
      * @return void
      */
-    public static function uninstall()
+    public static function uninstall(): void
     {
+        foreach ([config_path('think-orm.php'), config_path('thinkorm.php')] as $thinkorm_file) {
+            if (is_file($thinkorm_file)) {
+                echo 'Remove think-orm.php' . PHP_EOL;
+                unlink($thinkorm_file);
+            }
+        }
         $config_file = config_path() . '/bootstrap.php';
         $config = include $config_file;
         if(in_array(ThinkOrm::class, $config ?? [])) {
@@ -44,10 +53,6 @@ class Install
             $config_file_content = preg_replace('/ {0,4}Webman\\\\ThinkOrm\\\\ThinkOrm::class,?\r?\n?/', '', $config_file_content);
             file_put_contents($config_file, $config_file_content);
         }
-        $thinkorm_file = config_path() . '/thinkorm.php';
-        if (is_file($thinkorm_file)) {
-            unlink($thinkorm_file);
-        }
         self::uninstallByRelation();
     }
 
@@ -55,7 +60,7 @@ class Install
      * installByRelation
      * @return void
      */
-    public static function installByRelation()
+    public static function installByRelation(): void
     {
         foreach (static::$pathRelation as $source => $dest) {
             if ($pos = strrpos($dest, '/')) {
@@ -64,7 +69,6 @@ class Install
                     mkdir($parent_dir, 0777, true);
                 }
             }
-            //symlink(__DIR__ . "/$source", base_path()."/$dest");
             copy_dir(__DIR__ . "/$source", base_path()."/$dest");
         }
     }
@@ -73,7 +77,7 @@ class Install
      * uninstallByRelation
      * @return void
      */
-    public static function uninstallByRelation()
+    public static function uninstallByRelation(): void
     {
         foreach (static::$pathRelation as $source => $dest) {
             $path = base_path()."/$dest";

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -17,12 +17,9 @@ use Throwable;
 
 class ClassNotFoundException extends RuntimeException implements NotFoundExceptionInterface
 {
-    protected $class;
-
-    public function __construct(string $message, string $class = '', Throwable $previous = null)
+    public function __construct(string $message, protected string $class = '', ?Throwable $previous = null)
     {
         $this->message = $message;
-        $this->class   = $class;
 
         parent::__construct($message, 0, $previous);
     }

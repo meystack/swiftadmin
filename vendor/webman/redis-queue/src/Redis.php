@@ -13,44 +13,81 @@
  */
 namespace Webman\RedisQueue;
 
-use Workerman\Timer;
+use RedisException;
+use Webman\Context;
+use Workerman\Coroutine\Pool;
 
 /**
  * Class RedisQueue
  * @package support
  *
  * Strings methods
- * @method static void send($queue, $data, $delay=0)
+ * @method static bool send($queue, $data, $delay=0)
  */
 class Redis
 {
+
     /**
-     * @var RedisConnection[]
+     * @var Pool[]
      */
-    protected static $_connections = [];
+    protected static array $pools = [];
 
     /**
      * @param string $name
      * @return RedisConnection
      */
     public static function connection($name = 'default') {
-        if (!isset(static::$_connections[$name])) {
-            $configs = config('redis_queue', config('plugin.webman.redis-queue.redis', []));
-            if (!isset($configs[$name])) {
-                throw new \RuntimeException("RedisQueue connection $name not found");
+        $name = $name ?: 'default';
+        $key = "redis-queue.connections.$name";
+        $connection = Context::get($key);
+        if (!$connection) {
+            if (!isset(static::$pools[$name])) {
+                $configs = config('redis_queue', config('plugin.webman.redis-queue.redis', []));
+                if (!isset($configs[$name])) {
+                    throw new \RuntimeException("RedisQueue connection $name not found");
+                }
+                $config = $configs[$name];
+                $pool = new Pool($config['pool']['max_connections'] ?? 10, $config['pool'] ?? []);
+                $pool->setConnectionCreator(function () use ($config) {
+                    return static::connect($config);
+                });
+                $pool->setConnectionCloser(function ($connection) {
+                    $connection->close();
+                });
+                $pool->setHeartbeatChecker(function ($connection) {
+                    return $connection->ping();
+                });
+                static::$pools[$name] = $pool;
             }
-            $config = $configs[$name];
-            static::$_connections[$name] = static::connect($config);
+
+            try {
+                $connection = static::$pools[$name]->get();
+                Context::set($key, $connection);
+            } finally {
+                Context::onDestroy(function () use ($connection, $name) {
+                    try {
+                        $connection && static::$pools[$name]->put($connection);
+                    } catch (Throwable) {
+                        // ignore
+                    }
+                });
+            }
         }
-        return static::$_connections[$name];
+        return $connection;
     }
 
-    protected static function connect($config)
+    /**
+     * Connect to redis.
+     *
+     * @param $config
+     * @return RedisConnection
+     * @throws RedisException
+     */
+    protected static function connect($config): RedisConnection
     {
         if (!extension_loaded('redis')) {
             throw new \RuntimeException('Please make sure the PHP Redis extension is installed and enabled.');
         }
-
         $redis = new RedisConnection();
         $address = $config['host'];
         $config = [

@@ -351,6 +351,17 @@ a[lay-event="del"] {
 	padding: 0 10px;
 }
 
+.layui-card-header.layadmin-card-header-auto {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	height: auto;
+	line-height: unset;
+}
+
+.layadmin-card-header-auto .layui-form-item:last-child {
+	margin-bottom: 0;
+}
+
 /* 内容开始 */
 #content {
 	padding: 15px;

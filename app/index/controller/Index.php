@@ -13,6 +13,7 @@ namespace app\index\controller;
 
 use app\HomeController;
 use Psr\SimpleCache\InvalidArgumentException;
+use support\Cache;
 use support\Response;
 
 class Index extends HomeController
@@ -24,7 +25,15 @@ class Index extends HomeController
      */
     public function index(): Response
     {
+        // 测试redis缓存 存储一个数据
+        Cache::set('test', 'test');
+
         return $this->view('index/index', ['name' => 'meystack']);
+    }
+
+    public function query(): Response
+    {
+        return $this->view('index/test', ['name' => 'meystack']);
     }
 }
 

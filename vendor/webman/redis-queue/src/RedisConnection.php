@@ -13,23 +13,23 @@
  */
 namespace Webman\RedisQueue;
 
-use Workerman\Timer;
-use Workerman\Worker;
+use RedisException;
+use Throwable;
 
 class RedisConnection extends \Redis
 {
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * @param array $config
      * @return void
+     * @throws RedisException
      */
-    public function connectWithConfig(array $config = [])
+    public function connectWithConfig(array $config = []): void
     {
-        static $timer;
         if ($config) {
             $this->config = $config;
         }
@@ -45,24 +45,19 @@ class RedisConnection extends \Redis
         if (!empty($this->config['prefix'])) {
             $this->setOption(\Redis::OPT_PREFIX, $this->config['prefix']);
         }
-        if (Worker::getAllWorkers() && !$timer) {
-            $timer = Timer::add($this->config['ping'] ?? 55, function ()  {
-                $this->execCommand('ping');
-            });
-        }
     }
 
     /**
      * @param $command
      * @param ...$args
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function execCommand($command, ...$args)
     {
         try {
             return $this->{$command}(...$args);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $msg = strtolower($e->getMessage());
             if ($msg === 'connection lost' || strpos($msg, 'went away')) {
                 $this->connectWithConfig();
@@ -75,10 +70,11 @@ class RedisConnection extends \Redis
     /**
      * @param $queue
      * @param $data
-     * @param $delay
+     * @param int $delay
      * @return bool
+     * @throws Throwable
      */
-    public function send($queue, $data, $delay = 0)
+    public function send($queue, $data, int $delay = 0): bool
     {
         $queue_waiting = '{redis-queue}-waiting';
         $queue_delay = '{redis-queue}-delayed';

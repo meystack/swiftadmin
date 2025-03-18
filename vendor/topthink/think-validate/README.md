@@ -1,6 +1,17 @@
 # think-validate
 
-基于PHP7.1+ 的Validate实现
+基于PHP8.0+ 的Validate实现
+
+## 主要特性
+- 基于PHP8和强类型实现
+- 内置丰富的验证规则
+- 支持验证器类、数组和链式方法定义验证规则
+- 支持验证场景和验证分组
+- 支持独立数据验证
+- 支持枚举验证
+- 支持批量验证
+- 支持抛出异常
+
 
 ## 安装
 ~~~
@@ -66,4 +77,6 @@ if (!$validate->check($data)) {
 }
 ~~~
 
-更多用法可以参考6.0完全开发手册的[验证](https://www.kancloud.cn/manual/thinkphp6_0/1037623)章节
+## 文档
+
+详细使用请参考 [ThinkValidate开发指南](https://doc.thinkphp.cn/@think-validate)

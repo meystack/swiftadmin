@@ -22,10 +22,6 @@ class Template extends ThinkPHP
      * @param string|null $app
      * @param string|null $plugin
      * @return string
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws InvalidArgumentException
-     * @throws ModelNotFoundException
      */
     public static function render(string $template, array $vars, string $app = null, string $plugin = null): string
     {
@@ -51,15 +47,24 @@ class Template extends ThinkPHP
                 $options['taglib_pre_load'] .= ',plugin\\' . $name . '\\taglib\\' . $tag;
             }
         }
+
         $views = new \think\Template($options);
+//        ob_start();
+//        $vars = array_merge($options, $vars);
+//        $views->fetch($template, $vars);
+//        $content = ob_get_clean();
+//        static::$vars = [];
+//        if (saenv('minify_page') && strtolower($app) == 'index') {
+//            $content = preg_replace('/\s+/i', ' ', $content);
+//        }
+//        return $content;
+
         ob_start();
-        $vars = array_merge(static::$vars, $vars);
-        $views->fetch($template, $vars);
-        $content = ob_get_clean();
-        static::$vars = [];
-        if (saenv('minify_page') && strtolower($app) == 'index') {
-            $content = preg_replace('/\s+/i', ' ', $content);
+        if(isset($request->_view_vars)) {
+            $vars = array_merge((array)$request->_view_vars, $vars);
         }
-        return $content;
+        $views->fetch($template, $vars);
+        return ob_get_clean();
+
     }
 }

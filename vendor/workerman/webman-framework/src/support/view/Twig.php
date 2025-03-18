@@ -34,18 +34,14 @@ use function request;
 class Twig implements View
 {
     /**
-     * @var array
-     */
-    protected static $vars = [];
-
-    /**
      * Assign.
      * @param string|array $name
      * @param mixed $value
      */
-    public static function assign($name, $value = null)
+    public static function assign(string|array $name, mixed $value = null): void
     {
-        static::$vars = array_merge(static::$vars, is_array($name) ? $name : [$name => $value]);
+        $request = request();
+        $request->_view_vars = array_merge((array) $request->_view_vars, is_array($name) ? $name : [$name => $value]);
     }
 
     /**
@@ -56,27 +52,36 @@ class Twig implements View
      * @param string|null $plugin
      * @return string
      */
-    public static function render(string $template, array $vars, string $app = null, string $plugin = null): string
+    public static function render(string $template, array $vars, ?string $app = null, ?string $plugin = null): string
     {
         static $views = [];
         $request = request();
         $plugin = $plugin === null ? ($request->plugin ?? '') : $plugin;
-        $app = $app === null ? $request->app : $app;
+        $app = $app === null ? ($request->app ?? '') : $app;
         $configPrefix = $plugin ? "plugin.$plugin." : '';
         $viewSuffix = config("{$configPrefix}view.options.view_suffix", 'html');
-        $key = "$plugin-$app";
-        if (!isset($views[$key])) {
-            $baseViewPath = $plugin ? base_path() . "/plugin/$plugin/app" : app_path();
+        $baseViewPath = $plugin ? base_path() . "/plugin/$plugin/app" : app_path();
+        if ($template[0] === '/') {
+            $template = ltrim($template, '/');
+            if (strpos($template, '/view/') !== false) {
+                [$viewPath, $template] = explode('/view/', $template, 2);
+                $viewPath = base_path("$viewPath/view");
+            } else {
+                $viewPath = base_path();
+            }
+        } else {
             $viewPath = $app === '' ? "$baseViewPath/view/" : "$baseViewPath/$app/view/";
-            $views[$key] = new Environment(new FilesystemLoader($viewPath), config("{$configPrefix}view.options", []));
+        }
+        if (!isset($views[$viewPath])) {
+            $views[$viewPath] = new Environment(new FilesystemLoader($viewPath), config("{$configPrefix}view.options", []));
             $extension = config("{$configPrefix}view.extension");
             if ($extension) {
-                $extension($views[$key]);
+                $extension($views[$viewPath]);
             }
         }
-        $vars = array_merge(static::$vars, $vars);
-        $content = $views[$key]->render("$template.$viewSuffix", $vars);
-        static::$vars = [];
-        return $content;
+        if(isset($request->_view_vars)) {
+            $vars = array_merge((array)$request->_view_vars, $vars);
+        }
+        return $views[$viewPath]->render("$template.$viewSuffix", $vars);
     }
 }

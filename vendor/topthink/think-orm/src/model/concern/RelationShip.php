@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\model\concern;
 
@@ -17,8 +17,9 @@ use Closure;
 use think\Collection;
 use think\db\BaseQuery as Query;
 use think\db\exception\DbException as Exception;
+use think\db\exception\InvalidArgumentException;
 use think\helper\Str;
-use think\Model;
+use think\model\contract\Modelable as Model;
 use think\model\Relation;
 use think\model\relation\BelongsTo;
 use think\model\relation\BelongsToMany;
@@ -50,6 +51,13 @@ trait RelationShip
      * @var array
      */
     private $relation = [];
+
+    /**
+     * 预载入关联模型
+     *
+     * @var array
+     */
+    protected $with = [];
 
     /**
      * 关联写入定义信息.
@@ -97,10 +105,14 @@ trait RelationShip
      *
      * @return mixed
      */
-    public function getRelation(string $name = null, bool $auto = false)
+    public function getRelation(?string $name = null, bool $auto = false)
     {
         if (is_null($name)) {
             return $this->relation;
+        }
+
+        if ($this->entity) {
+            return $this->entity->$name;
         }
 
         if (array_key_exists($name, $this->relation)) {
@@ -123,14 +135,21 @@ trait RelationShip
      */
     public function setRelation(string $name, $value, array $data = [])
     {
-        // 检测修改器
-        $method = 'set' . Str::studly($name) . 'Attr';
+        if ($this->entity) {
+            $this->entity->$name = $value;
+        } else {
+            // 检测修改器
+            $method = 'set' . Str::studly($name) . 'Attr';
 
-        if (method_exists($this, $method)) {
-            $value = $this->$method($value, array_merge($this->data, $data));
+            if (method_exists($this, $method)) {
+                $value = $this->$method($value, array_merge($this->data, $data));
+            }
+
+            $name = $this->getRealFieldName($name);
+
+            $this->relation[$name] = $value;
+            $this->with[$name]     = true;            
         }
-
-        $this->relation[$this->getRealFieldName($name)] = $value;
 
         return $this;
     }
@@ -147,17 +166,17 @@ trait RelationShip
     {
         foreach ($relations as $key => $relation) {
             $subRelation = [];
-            $closure = null;
+            $closure     = null;
 
             if ($relation instanceof Closure) {
                 // 支持闭包查询过滤关联条件
-                $closure    = $relation;
-                $relation   = $key;
+                $closure  = $relation;
+                $relation = $key;
             }
 
             if (is_array($relation)) {
-                $subRelation    = $relation;
-                $relation       = $key;
+                $subRelation = $relation;
+                $relation    = $key;
             } elseif (str_contains($relation, '.')) {
                 [$relation, $subRelation] = explode('.', $relation, 2);
             }
@@ -170,7 +189,7 @@ trait RelationShip
                 $relationResult->withAttr($withRelationAttr[$relationName]);
             }
 
-            $this->relation[$relation] = $relationResult->getRelation((array) $subRelation, $closure);
+            $this->setRelation($relation, $relationResult->getRelation((array) $subRelation, $closure));
         }
     }
 
@@ -202,7 +221,7 @@ trait RelationShip
      *
      * @return Query
      */
-    public static function has(string $relation, string $operator = '>=', int $count = 1, string $id = '*', string $joinType = '', Query $query = null): Query
+    public static function has(string $relation, string $operator = '>=', int $count = 1, string $id = '*', string $joinType = '', ?Query $query = null): Query
     {
         return (new static())
             ->$relation()
@@ -220,7 +239,7 @@ trait RelationShip
      *
      * @return Query
      */
-    public static function hasWhere(string $relation, $where = [], string $fields = '*', string $joinType = '', Query $query = null): Query
+    public static function hasWhere(string $relation, $where = [], string $fields = '*', string $joinType = '', ?Query $query = null): Query
     {
         return (new static())
             ->$relation()
@@ -239,10 +258,10 @@ trait RelationShip
      *
      * @return bool
      */
-    public function eagerly(Query $query, string $relation, $field, string $joinType = '', Closure $closure = null, bool $first = false): bool
+    public function eagerly(Query $query, string $relation, $field, string $joinType = '', ?Closure $closure = null, bool $first = false): bool
     {
-        $relation   = Str::camel($relation);
-        $class      = $this->$relation();
+        $relation = Str::camel($relation);
+        $class    = $this->$relation();
 
         if ($class instanceof OneToOne) {
             $class->eagerly($query, $relation, $field, $joinType, $closure, $first);
@@ -257,27 +276,27 @@ trait RelationShip
      * 预载入关联查询 返回数据集.
      *
      * @param array  $resultSet        数据集
-     * @param string $relation         关联名
+     * @param array  $relations        关联名
      * @param array  $withRelationAttr 关联获取器
      * @param bool   $join             是否为JOIN方式
      * @param mixed  $cache            关联缓存
      *
      * @return void
      */
-    public function eagerlyResultSet(array &$resultSet, array $relations, array $withRelationAttr = [], bool $join = false, $cache = false): void
+    public function eagerlyResultSet(array $resultSet, array $relations, array $withRelationAttr = [], bool $join = false, $cache = false): void
     {
         foreach ($relations as $key => $relation) {
-            $subRelation    = [];
-            $closure        = null;
+            $subRelation = [];
+            $closure     = null;
 
             if ($relation instanceof Closure) {
-                $closure    = $relation;
-                $relation   = $key;
+                $closure  = $relation;
+                $relation = $key;
             }
 
             if (is_array($relation)) {
-                $subRelation    = $relation;
-                $relation       = $key;
+                $subRelation = $relation;
+                $relation    = $key;
             } elseif (str_contains($relation, '.')) {
                 [$relation, $subRelation] = explode('.', $relation, 2);
 
@@ -299,12 +318,15 @@ trait RelationShip
             }
 
             $relationResult->eagerlyResultSet($resultSet, $relationName, $subRelation, $closure, $relationCache, $join);
+
+            $this->with[$relationName] = true;
         }
     }
 
     /**
      * 预载入关联查询 返回模型对象
      *
+     * @param Model $result           模型对象
      * @param array $relations        关联
      * @param array $withRelationAttr 关联获取器
      * @param bool  $join             是否为JOIN方式
@@ -312,20 +334,20 @@ trait RelationShip
      *
      * @return void
      */
-    public function eagerlyResult(array $relations, array $withRelationAttr = [], bool $join = false, $cache = false): void
+    public function eagerlyResult(Model $result, array $relations, array $withRelationAttr = [], bool $join = false, $cache = false): void
     {
         foreach ($relations as $key => $relation) {
-            $subRelation    = [];
-            $closure        = null;
+            $subRelation = [];
+            $closure     = null;
 
             if ($relation instanceof Closure) {
-                $closure    = $relation;
-                $relation   = $key;
+                $closure  = $relation;
+                $relation = $key;
             }
 
             if (is_array($relation)) {
-                $subRelation    = $relation;
-                $relation       = $key;
+                $subRelation = $relation;
+                $relation    = $key;
             } elseif (str_contains($relation, '.')) {
                 [$relation, $subRelation] = explode('.', $relation, 2);
 
@@ -346,7 +368,7 @@ trait RelationShip
                 $relationCache = $cache[$relationName] ?? [];
             }
 
-            $relationResult->eagerlyResult($this, $relationName, $subRelation, $closure, $relationCache, $join);
+            $relationResult->eagerlyResult($result, $relationName, $subRelation, $closure, $relationCache, $join);
         }
     }
 
@@ -365,14 +387,25 @@ trait RelationShip
         $relation = $this->getRelation($relation, true);
 
         foreach ($attrs as $key => $attr) {
-            $key    = is_numeric($key) ? $attr : $key;
-            $value  = $this->getOrigin($key);
+            if (is_numeric($key)) {
+                if (!is_string($attr)) {
+                    throw new InvalidArgumentException('bind attr must be string:' . $key);
+                }
 
-            if (!is_null($value)) {
+                $key = $attr;
+            }
+
+            if (null !== $this->getOrigin($key)) {
                 throw new Exception('bind attr has exists:' . $key);
             }
 
-            $this->set($key, $relation ? $relation->$attr : null);
+            if ($attr instanceof Closure) {
+                $value = $attr($relation, $key, $this);
+            } else {
+                $value = $relation?->getAttr($attr);
+            }
+
+            $this->set($key, $value);
         }
 
         return $this;
@@ -395,11 +428,11 @@ trait RelationShip
             $closure = $name = null;
 
             if ($relation instanceof Closure) {
-                $closure    = $relation;
-                $relation   = $key;
+                $closure  = $relation;
+                $relation = $key;
             } elseif (is_string($key)) {
-                $name       = $relation;
-                $relation   = $key;
+                $name     = $relation;
+                $relation = $key;
             }
 
             $relation = Str::camel($relation);
@@ -562,7 +595,7 @@ trait RelationShip
      *
      * @return MorphOne
      */
-    public function morphOne(string $model, string|array $morph = null, string $type = ''): MorphOne
+    public function morphOne(string $model, string | array | null $morph = null, string $type = ''): MorphOne
     {
         // 记录当前关联信息
         $model = $this->parseModel($model);
@@ -588,7 +621,7 @@ trait RelationShip
      *
      * @return MorphMany
      */
-    public function morphMany(string $model, string|array $morph = null, string $type = ''): MorphMany
+    public function morphMany(string $model, string | array | null $morph = null, string $type = ''): MorphMany
     {
         // 记录当前关联信息
         $model = $this->parseModel($model);
@@ -613,13 +646,13 @@ trait RelationShip
      *
      * @return MorphTo
      */
-    public function morphTo(string|array $morph = null, array $alias = []): MorphTo
+    public function morphTo(string | array | null $morph = null, array $alias = []): MorphTo
     {
-        $trace      = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $relation   = Str::snake($trace[1]['function']);
+        $trace    = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $relation = Str::snake($trace[1]['function']);
 
         if (is_null($morph)) {
-            $morph  = $relation;
+            $morph = $relation;
         }
 
         [$morphType, $foreignKey] = $this->parseMorph($morph);
@@ -637,7 +670,7 @@ trait RelationShip
      *
      * @return MorphToMany
      */
-    public function morphToMany(string $model, string $middle, string|array $morph = null, string $localKey = null): MorphToMany
+    public function morphToMany(string $model, string $middle, string | array | null $morph = null, ?string $localKey = null): MorphToMany
     {
         if (is_null($morph)) {
             $morph = $middle;
@@ -645,9 +678,9 @@ trait RelationShip
 
         [$morphType, $morphKey] = $this->parseMorph($morph);
 
-        $model      = $this->parseModel($model);
-        $name       = Str::snake(class_basename($model));
-        $localKey   = $localKey ?: $this->getForeignKey($name);
+        $model    = $this->parseModel($model);
+        $name     = Str::snake(class_basename($model));
+        $localKey = $localKey ?: $this->getForeignKey($name);
 
         return new MorphToMany($this, $model, $middle, $morphType, $morphKey, $localKey);
     }
@@ -662,7 +695,7 @@ trait RelationShip
      *
      * @return MorphToMany
      */
-    public function morphByMany(string $model, string $middle, string|array $morph = null, string $foreignKey = null): MorphToMany
+    public function morphByMany(string $model, string $middle, string | array | null $morph = null, ?string $foreignKey = null): MorphToMany
     {
         if (is_null($morph)) {
             $morph = $middle;
@@ -683,7 +716,7 @@ trait RelationShip
      *
      * @return array
      */
-    protected function parseMorph(string|array $morph): array
+    protected function parseMorph(string | array $morph): array
     {
         if (is_array($morph)) {
             [$morphType, $foreignKey] = $morph;
@@ -760,8 +793,12 @@ trait RelationShip
         if (
             $this->parent && !$modelRelation->isSelfRelation()
             && get_class($this->parent) == get_class($modelRelation->getModel())
-            && $modelRelation instanceof OneToOne
+            && ($modelRelation instanceof OneToOne || $modelRelation instanceof HasOneThrough || $modelRelation instanceof MorphTo || $modelRelation instanceof MorphOne)
         ) {
+            if (empty($this->parent->parent)) {
+                $this->parent->parent = $this;
+            }
+
             return $this->parent;
         }
 

@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\db;
 
@@ -21,6 +21,11 @@ use think\DbManager;
  */
 abstract class Connection implements ConnectionInterface
 {
+    const PARAM_INT   = 1;
+    const PARAM_STR   = 2;
+    const PARAM_BOOL  = 5;
+    const PARAM_FLOAT = 21;
+
     /**
      * 当前SQL指令.
      *
@@ -277,7 +282,7 @@ abstract class Connection implements ConnectionInterface
         }
 
         $runtime = number_format((microtime(true) - $this->queryStartTime), 6);
-        $sql = $sql ?: $this->getLastsql();
+        $sql     = $sql ?: $this->getLastsql();
 
         if (empty($this->config['deploy'])) {
             $master = null;
@@ -315,7 +320,7 @@ abstract class Connection implements ConnectionInterface
     protected function getCacheKey(BaseQuery $query, string $method = ''): string
     {
         if (!empty($query->getOptions('key')) && empty($method)) {
-            $key = 'think_' . $this->getConfig('database') . '.' . $query->getTable() . '|' . $query->getOptions('key');
+            $key = 'think_' . $this->getConfig('database') . '.' . var_export($query->getTable(), true) . '|' . var_export($query->getOptions('key'), true);
         } else {
             $key = $query->getQueryGuid();
         }
@@ -359,6 +364,38 @@ abstract class Connection implements ConnectionInterface
     public function getNumRows(): int
     {
         return $this->numRows;
+    }
+
+    /**
+     * 获取最终的SQL语句.
+     *
+     * @param string $sql  带参数绑定的sql语句
+     * @param array  $bind 参数绑定列表
+     *
+     * @return string
+     */
+    public function getRealSql(string $sql, array $bind = []): string
+    {
+        foreach ($bind as $key => $val) {
+            $value = strval(is_array($val) ? $val[0] : $val);
+            $type  = is_array($val) ? $val[1] : self::PARAM_STR;
+
+            if (self::PARAM_FLOAT == $type || self::PARAM_STR == $type) {
+                $value = '\'' . addslashes($value) . '\'';
+            } elseif (self::PARAM_INT == $type && '' === $value) {
+                $value = '0';
+            }
+
+            // 判断占位符
+            $sql = is_numeric($key) ?
+            substr_replace($sql, $value, strpos($sql, '?'), 1) :
+            str_replace(
+                [':' . $key . ' ', ':' . $key . ',', ':' . $key . ')'],
+                [$value . ' ', $value . ',', $value . ')'],
+                $sql);
+        }
+
+        return rtrim($sql);
     }
 
     /**

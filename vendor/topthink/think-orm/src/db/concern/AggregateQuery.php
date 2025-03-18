@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\db\concern;
 
@@ -30,7 +30,7 @@ trait AggregateQuery
      *
      * @return mixed
      */
-    protected function aggregate(string $aggregate, string|Raw $field, bool $force = false)
+    protected function aggregate(string $aggregate, string | Raw $field, bool $force = false)
     {
         return $this->connection->aggregate($this, $aggregate, $field, $force);
     }
@@ -45,26 +45,38 @@ trait AggregateQuery
     public function count(string $field = '*'): int
     {
         if (!empty($this->options['group'])) {
-            // 支持GROUP
-
-            if (!preg_match('/^[\w\.\*]+$/', $field)) {
-                throw new DbException('not support data:' . $field);
-            }
-
-            $options = $this->getOptions();
-            $subSql = $this->options($options)
-                ->field('count(' . $field . ') AS think_count')
-                ->bind($this->bind)
-                ->buildSql();
-
-            $query = $this->newQuery()->table([$subSql => '_group_count_']);
-
-            $count = $query->aggregate('COUNT', '*');
-        } else {
-            $count = $this->aggregate('COUNT', $field);
+            return $this->countWithGroup($field);
         }
 
-        return (int) $count;
+        return (int) $this->aggregate('COUNT', $field);
+    }
+
+    protected function countWithGroup(string $field): int
+    {
+        if (!preg_match('/^[\w\.\*]+$/', $field)) {
+            throw new DbException('Not supported data: ' . $field);
+        }
+
+        $options = $this->getOptions();
+        $cache   = $options['cache'] ?? null;
+
+        if (isset($options['cache'])) {
+            unset($options['cache']);
+        }
+
+        $subSql = $this->options($options)
+            ->field('count(' . $field . ') AS think_count')
+            ->bind($this->bind)
+            ->buildSql();
+
+        $query = $this->newQuery();
+        if ($cache) {
+            $query->setOption('cache', $cache);
+        }
+
+        $query->table([$subSql => '_group_count_']);
+
+        return (int) $query->aggregate('COUNT', '*');
     }
 
     /**
@@ -74,7 +86,7 @@ trait AggregateQuery
      *
      * @return float
      */
-    public function sum(string|Raw $field): float
+    public function sum(string | Raw $field): float
     {
         return $this->aggregate('SUM', $field, true);
     }
@@ -87,7 +99,7 @@ trait AggregateQuery
      *
      * @return mixed
      */
-    public function min(string|Raw $field, bool $force = true)
+    public function min(string | Raw $field, bool $force = true)
     {
         return $this->aggregate('MIN', $field, $force);
     }
@@ -100,7 +112,7 @@ trait AggregateQuery
      *
      * @return mixed
      */
-    public function max(string|Raw $field, bool $force = true)
+    public function max(string | Raw $field, bool $force = true)
     {
         return $this->aggregate('MAX', $field, $force);
     }
@@ -112,7 +124,7 @@ trait AggregateQuery
      *
      * @return float
      */
-    public function avg(string|Raw $field): float
+    public function avg(string | Raw $field): float
     {
         return $this->aggregate('AVG', $field, true);
     }

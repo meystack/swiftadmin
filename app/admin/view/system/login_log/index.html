@@ -52,7 +52,7 @@
                         <div class="layui-form-label">{:__('更新时间')}</div>
                         <div class="layui-input-inline ">
                             <input name="update_time" lay-datetime data-range="true" data-type="date"
-                                   data-dateformat="yyyy/MM/dd" class="layui-input" type="text"
+                                   data-format="yyyy/MM/dd" class="layui-input" type="text"
                                    placeholder="{:__('更新时间')}"/>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                         <div class="layui-form-label">{:__('登录时间')}</div>
                         <div class="layui-input-inline ">
                             <input name="create_time" lay-datetime data-range="true" data-type="date"
-                                   data-dateformat="yyyy/MM/dd" class="layui-input" type="text"
+                                   data-format="yyyy/MM/dd" class="layui-input" type="text"
                                    placeholder="{:__('登录时间')}"/>
                         </div>
                     </div>
@@ -110,7 +110,7 @@
 
 <include file="/public/footer"/>
 <script>
-    layui.use(['admin', 'table'], function () {
+    layui.use([ 'table'], function () {
 
         var table = layui.table;
 

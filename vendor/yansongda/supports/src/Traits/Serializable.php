@@ -30,24 +30,17 @@ trait Serializable
         return serialize($this);
     }
 
-    public function unserialize($data): void
+    public function unserialize(string $data): void
     {
         unserialize($data);
     }
 
-    /**
-     * toJson.
-     */
     public function toJson(int $option = JSON_UNESCAPED_UNICODE): string
     {
         return json_encode($this->__serialize(), $option);
     }
 
-    /**
-     * @return mixed
-     */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->__serialize();
     }
@@ -56,7 +49,7 @@ trait Serializable
     {
         foreach ($data as $key => $item) {
             if (method_exists($this, 'set')) {
-                $this->set($key, $item);
+                $this->set(strval($key), $item);
             }
         }
 

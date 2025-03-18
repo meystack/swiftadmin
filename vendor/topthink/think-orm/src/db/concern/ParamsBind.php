@@ -3,17 +3,17 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\db\concern;
 
-use PDO;
+use think\db\Connection;
 
 /**
  * 参数绑定支持
@@ -50,11 +50,11 @@ trait ParamsBind
      *
      * @return string
      */
-    public function bindValue($value, int $type = null, string $name = null)
+    public function bindValue($value, ?int $type = null, ?string $name = null)
     {
         $name = $name ?: 'ThinkBind_' . (count($this->bind) + 1) . '_' . mt_rand() . '_';
 
-        $this->bind[$name] = [$value, $type ?: PDO::PARAM_STR];
+        $this->bind[$name] = [$value, $type ?: Connection::PARAM_STR];
 
         return $name;
     }
@@ -119,8 +119,13 @@ trait ParamsBind
 
             if (is_numeric($key)) {
                 $sql = substr_replace($sql, ':' . $name, strpos($sql, '?'), 1);
+            } elseif (str_ends_with($sql, ':' . $key)) {
+                $sql = substr_replace($sql, ':' . $name . ' ', strrpos($sql, ':' . $key), strlen(':' . $key));
             } else {
-                $sql = str_replace(':' . $key, ':' . $name, $sql);
+                $sql = str_replace(
+                    [':' . $key . ' ', ':' . $key . ',', ':' . $key . ')'],
+                    [':' . $name . ' ', ':' . $name . ',', ':' . $name . ')'],
+                    $sql);
             }
         }
     }

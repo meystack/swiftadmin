@@ -19,6 +19,7 @@ Route::any('/captcha', [app\BaseController::class, 'captcha']);
  * @var string $manage
  */
 Route::any('/manage', function () {
+//    var_dump(request()->buildToken());
     request()->session()->set('AdminLogin', ['_security' => request()->buildToken()]);
     return redirect('/admin/login');
 });
@@ -48,7 +49,7 @@ Route::any('/static/system/js/plugin.js', function () {
  * @var array $request
  * @var array $response
  */
-Route::fallback(function ($request) {
+Route::fallback(function () {
 
     $pathInfo = parse_url(request()->url());
     if (!isset($pathInfo['path'])) {
@@ -61,7 +62,7 @@ Route::fallback(function ($request) {
     }
 
     // 判断是否为API接口
-    if ($request->expectsJson()) {
+    if (request()->expectsJson()) {
         return json(['code' => 404, 'msg' => '404 not found']);
     }
 

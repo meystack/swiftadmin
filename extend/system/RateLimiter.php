@@ -1,6 +1,6 @@
 <?php
 
-namespace system;
+namespace extend\system;
 
 use support\Cache;
 

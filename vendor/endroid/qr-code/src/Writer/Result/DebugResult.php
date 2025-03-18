@@ -15,11 +15,11 @@ final class DebugResult extends AbstractResult
 
     public function __construct(
         MatrixInterface $matrix,
-        private QrCodeInterface $qrCode,
-        private LogoInterface|null $logo = null,
-        private LabelInterface|null $label = null,
+        private readonly QrCodeInterface $qrCode,
+        private readonly LogoInterface|null $logo = null,
+        private readonly LabelInterface|null $label = null,
         /** @var array<string, mixed> $options */
-        private array $options = []
+        private readonly array $options = []
     ) {
         parent::__construct($matrix);
     }
@@ -50,6 +50,7 @@ final class DebugResult extends AbstractResult
             $debugLines[] = 'Logo path: '.$this->logo->getPath();
             $debugLines[] = 'Logo resize to width: '.$this->logo->getResizeToWidth();
             $debugLines[] = 'Logo resize to height: '.$this->logo->getResizeToHeight();
+            $debugLines[] = 'Logo punchout background: '.($this->logo->getPunchoutBackground() ? 'true' : 'false');
         }
 
         if (isset($this->label)) {

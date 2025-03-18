@@ -16,5 +16,9 @@ return [
 
     'exclude_files'     => [
         '.env', 'LICENSE', 'composer.json', 'composer.lock', 'start.php', 'webman.phar', 'webman.bin'
-    ]
+    ],
+
+    'custom_ini' => '
+memory_limit = 256M
+    ',
 ];

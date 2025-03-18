@@ -12,25 +12,31 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use Webman\Session\FileSessionHandler;
+use Webman\Session\RedisSessionHandler;
+use Webman\Session\RedisClusterSessionHandler;
+
 return [
-    'type'                  => get_env('CACHE_DRIVER') ?: 'file',    // or redis or redis_cluster
-    'handler'               => get_env('CACHE_DRIVER') == 'redis' ? Webman\Session\RedisSessionHandler::class : Webman\Session\FileSessionHandler::class,
+
+    'type' => get_env('CACHE_DRIVER') ?: 'file',    // or redis or redis_cluster
+    'handler' => get_env('CACHE_DRIVER') == 'redis' ? Webman\Session\RedisSessionHandler::class : Webman\Session\FileSessionHandler::class,
     'config'                => [
         'file'          => [
             'save_path' => runtime_path() . '/sessions',
         ],
         'redis'         => [
-            'host'     => get_env('CACHE_HOSTNAME') ?: '127.0.0.1',
-            'port'     => get_env('CACHE_HOSTPORT') ?: 6379,
-            'database' => get_env('CACHE_SELECT') ?: 0,
-            'auth'     => get_env('CACHE_PASSWORD') ?: '',
-            'prefix'   => '', // session key prefix
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
+            'auth'     => '',
+            'timeout'  => 2,
+            'database' => '',
+            'prefix'   => 'redis_session_',
         ],
         'redis_cluster' => [
             'host'    => ['127.0.0.1:7000', '127.0.0.1:7001', '127.0.0.1:7001'],
             'timeout' => 2,
             'auth'    => '',
-            'prefix'  => '',
+            'prefix'  => 'redis_session_',
         ]
     ],
     'session_name'          => 'SESSION_ID',
@@ -43,5 +49,4 @@ return [
     'secure'                => false,
     'same_site'             => '',
     'gc_probability'        => [1, 1000],
-
 ];

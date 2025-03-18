@@ -5,25 +5,37 @@ namespace Overtrue\Pinyin;
 class Converter
 {
     private const SEGMENTS_COUNT = 10;
+
     private const WORDS_PATH = __DIR__.'/../data/words-%s.php';
+
     private const CHARS_PATH = __DIR__.'/../data/chars.php';
+
     private const SURNAMES_PATH = __DIR__.'/../data/surnames.php';
 
     public const TONE_STYLE_SYMBOL = 'symbol';
+
     public const TONE_STYLE_NUMBER = 'number';
+
     public const TONE_STYLE_NONE = 'none';
 
-    protected bool $polyphonic = false;
+    protected bool $heteronym = false;
+
+    protected bool $heteronymAsList = false;
+
     protected bool $asSurname = false;
+
     protected bool $noWords = false;
 
-    protected string $yuTo = 'yu';
+    protected bool $cleanup = true;
+
+    protected string $yuTo = 'v';
+
     protected string $toneStyle = self::TONE_STYLE_SYMBOL;
 
     protected array $regexps = [
         'separator' => '\p{Z}',
         'mark' => '\p{M}',
-        'tab' => "\t"
+        'tab' => "\t",
     ];
 
     public const REGEXPS = [
@@ -42,14 +54,24 @@ class Converter
 
     public static function make(): static
     {
-        return new static();
+        return new static;
     }
 
-    public function polyphonic(): static
+    public function heteronym(bool $asList = false): static
     {
-        $this->polyphonic = true;
+        $this->heteronym = true;
+        $this->heteronymAsList = $asList;
 
         return $this;
+    }
+
+    /**
+     * @deprecated Use `heteronym` instead.
+     *             This method will be removed in the next major version.
+     */
+    public function polyphonic(bool $asList = false): static
+    {
+        return $this->heteronym($asList);
     }
 
     public function surname(): static
@@ -62,6 +84,13 @@ class Converter
     public function noWords(): static
     {
         $this->noWords = true;
+
+        return $this;
+    }
+
+    public function noCleanup(): static
+    {
+        $this->cleanup = false;
 
         return $this;
     }
@@ -116,6 +145,13 @@ class Converter
         return $this;
     }
 
+    public function yuToYu(): static
+    {
+        $this->yuTo = 'yu';
+
+        return $this;
+    }
+
     public function yuToV(): static
     {
         $this->yuTo = 'v';
@@ -139,18 +175,20 @@ class Converter
         return $this;
     }
 
-    public function convert(string $string, callable $beforeSplit = null): Collection
+    public function convert(string $string, ?callable $beforeSplit = null): Collection
     {
         // 把原有的数字和汉字分离，避免拼音转换时被误作声调
         $string = preg_replace_callback('~[a-z0-9_-]+~i', function ($matches) {
-            return "\t" . $matches[0];
+            return "\t".$matches[0];
         }, $string);
 
         // 过滤掉不保留的字符
-        $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+        if ($this->cleanup) {
+            $string = \preg_replace(\sprintf('~[^%s]~u', \implode($this->regexps)), '', $string);
+        }
 
         // 多音字
-        if ($this->polyphonic) {
+        if ($this->heteronym) {
             return $this->convertAsChars($string, true);
         }
 
@@ -181,7 +219,13 @@ class Converter
         foreach ($chars as $char) {
             if (isset($map[$char])) {
                 if ($polyphonic) {
-                    $items[$char] = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    $pinyin = \array_map(fn ($pinyin) => $this->formatTone($pinyin, $this->toneStyle), $map[$char]);
+                    if ($this->heteronymAsList) {
+                        $items[] = [$char => $pinyin];
+                    } else {
+                        $items[$char] = $pinyin;
+                    }
+
                 } else {
                     $items[$char] = $this->formatTone($map[$char][0], $this->toneStyle);
                 }
@@ -198,7 +242,7 @@ class Converter
 
         foreach ($surnames as $surname => $pinyin) {
             if (\str_starts_with($name, $surname)) {
-                return $pinyin . \mb_substr($name, \mb_strlen($surname));
+                return $pinyin.\mb_substr($name, \mb_strlen($surname));
             }
         }
 
@@ -218,24 +262,26 @@ class Converter
 
     protected function formatTone(string $pinyin, string $style): string
     {
+        if ($style === self::TONE_STYLE_SYMBOL) {
+            return $pinyin;
+        }
+
         $replacements = [
+            // mb_chr(593) => 'ɑ' 轻声中除了 `ɑ` 和 `ü` 以外，其它和字母一样
+            'ɑ' => ['a', 5], 'ü' => ['v', 5],
             'üē' => ['ue', 1], 'üé' => ['ue', 2], 'üě' => ['ue', 3], 'üè' => ['ue', 4],
-            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['yu', 1],
-            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['yu', 2],
-            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['yu', 3],
-            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['yu', 4],
+            'ā' => ['a', 1], 'ē' => ['e', 1], 'ī' => ['i', 1], 'ō' => ['o', 1], 'ū' => ['u', 1], 'ǖ' => ['v', 1],
+            'á' => ['a', 2], 'é' => ['e', 2], 'í' => ['i', 2], 'ó' => ['o', 2], 'ú' => ['u', 2], 'ǘ' => ['v', 2],
+            'ǎ' => ['a', 3], 'ě' => ['e', 3], 'ǐ' => ['i', 3], 'ǒ' => ['o', 3], 'ǔ' => ['u', 3], 'ǚ' => ['v', 3],
+            'à' => ['a', 4], 'è' => ['e', 4], 'ì' => ['i', 4], 'ò' => ['o', 4], 'ù' => ['u', 4], 'ǜ' => ['v', 4],
         ];
 
         foreach ($replacements as $unicode => $replacement) {
             if (\str_contains($pinyin, $unicode)) {
                 $umlaut = $replacement[0];
 
-                if ($umlaut !== 'yu' && $style === self::TONE_STYLE_SYMBOL) {
-                    continue;
-                }
-
                 // https://zh.wikipedia.org/wiki/%C3%9C
-                if ($this->yuTo !== 'yu') {
+                if ($this->yuTo !== 'v' && $umlaut === 'v') {
                     $umlaut = $this->yuTo;
                 }
 

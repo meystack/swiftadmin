@@ -2,6 +2,7 @@
 
 namespace Webman\Console;
 
+use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as Commands;
 use support\Container;
@@ -35,7 +36,19 @@ class Command extends Application
             if (!class_exists($class_name) || !is_a($class_name, Commands::class, true)) {
                 continue;
             }
-            $this->add(Container::get($class_name));
+            $reflection = new \ReflectionClass($class_name);
+            if ($reflection->isAbstract()) {
+                continue;
+            }
+            $properties = $reflection->getStaticProperties();
+            $name = $properties['defaultName'] ?? null;
+            if (!$name) {
+                throw new RuntimeException("Command {$class_name} has no defaultName");
+            }
+            $description = $properties['defaultDescription'] ?? '';
+            $command = Container::get($class_name);
+            $command->setName($name)->setDescription($description);
+            $this->add($command);
         }
     }
 }

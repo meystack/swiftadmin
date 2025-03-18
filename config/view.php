@@ -12,13 +12,16 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use support\Template;
 use support\view\Raw;
 use support\view\Twig;
 use support\view\Blade;
 use support\view\ThinkPHP;
 
 return [
-    'handler' => \support\Template::class,
+    // 重载模板 方便加载框架插件使用
+    'handler' => Template::class,
+//    'handler' => ThinkPHP::class,
     'options' => [
         'tpl_cache'          => true,
         'taglib_begin'       => '<',

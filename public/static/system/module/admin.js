@@ -8,7 +8,7 @@
 // | Author: meystack <coolsec@foxmail.com> Apache 2.0 License Code
 // +----------------------------------------------------------------------
 
-layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'table', 'slider', 'cascader', 'content','dropdown','upload', 'tags'], function (exports) {
+layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'table', 'slider', 'cascader', 'content','dropdown','upload', 'tags','laydate'], function (exports) {
 
     "use strict";
     let $ = layui.jquery;
@@ -18,6 +18,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
     let rate = layui.rate;
     let table = layui.table;
     let slider = layui.slider;
+    let laydate = layui.laydate;
     let element = layui.element;
     let cascader = layui.cascader;
     let tags = layui.tags;
@@ -41,7 +42,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
     // 对象初始化
     let admin = {
         options: {
-            tplName: 'swiftadmin',      // 数据标识
+            tplName: window.location.hostname, // 数据标识
             version: '1.x',             // 版本
             moreLabel: true,            // 是否开启多标签
             cacheTab: true,             // 缓存多标签
@@ -995,21 +996,21 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
              */
             var datetime = $('*[lay-datetime]');
             datetime.each(function (key, obj) {
-                var t = $(obj).data('datetype') || 'datetime',
-                    f = $(obj).data('dateformat') || 'yyyy-MM-dd HH:mm:ss',
+                var type = $(obj).data('type') || 'datetime',
+                    format = $(obj).data('format') || 'yyyy-MM-dd HH:mm:ss',
                     val = $(obj).val() || '',//获取value值
-                    r = $(obj).data('range') || false,
-                    max = $(obj).data('maxvalue') || '2222-12-31',
-                    min = $(obj).data('minvalue') || '1930-01-01';
+                    range = $(obj).data('range') || false,
+                    max = $(obj).data('max') || '2222-12-31',
+                    min = $(obj).data('min') || '1930-01-01';
 
-                layui.laydate.render({
+                laydate.render({
                     elem: this
-                    , type: t
-                    , range: r
+                    , type: type
+                    , range: range
                     , max: max
                     , min: min
                     , value: val
-                    , format: f
+                    , format: format
                     , done: function (value, date, end_date) {
                         // console.log(value, date, end_date);
                     }
@@ -1143,7 +1144,7 @@ layui.define(['jquery', 'i18n', 'element', 'show','layer', 'form', 'rate', 'tabl
                     url = $(elem).data('url') || app_Config.app + '/Ajax/upload',
                     type = $(elem).data('type') || 'normal',
                     size = $(elem).data('size') || 102400,
-                    accept = $(elem).data('accept') || 'images/file/video/audio',
+                    accept = $(elem).data('accept') || 'file',
                     chunk = $(elem).data('chunk') || false,
                     multiple = $(elem).data('multiple') || false,
                     chunkSize = typeof upload_chunkSize != 'undefined' ? upload_chunkSize : '2097152',

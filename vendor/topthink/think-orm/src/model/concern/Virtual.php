@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -15,6 +15,7 @@ namespace think\model\concern;
 
 use think\db\BaseQuery as Query;
 use think\db\exception\DbException as Exception;
+use think\Model;
 
 /**
  * 虚拟模型.
@@ -47,13 +48,19 @@ trait Virtual
     /**
      * 保存当前数据对象
      *
-     * @param array  $data     数据
+     * @param array|object  $data     数据
      * @param string $sequence 自增序列名
      *
      * @return bool
      */
-    public function save(array $data = [], string $sequence = null): bool
+    public function save(array|object $data = [], ?string $sequence = null): bool
     {
+        if ($data instanceof Model) {
+            $data = $data->getData();
+        } elseif (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+
         // 数据对象赋值
         $this->setAttrs($data);
 

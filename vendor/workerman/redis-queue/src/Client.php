@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of workerman.
  *
@@ -17,6 +18,7 @@ namespace Workerman\RedisQueue;
 use RuntimeException;
 use Workerman\Timer;
 use Workerman\Redis\Client as Redis;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Client
@@ -55,6 +57,16 @@ class Client
      */
     protected $_subscribeQueues = [];
 
+    /**
+     * @var LoggerInterface
+     */
+    protected $_logger = null;
+
+    /**
+     * consume failure callback
+     * @var callable
+     */
+    protected $_consumeFailure = null;
     /**
      * @var array
      */
@@ -128,6 +140,16 @@ class Client
         } else {
             $this->_redisSend->zAdd($this->_options['prefix'] . static::QUEUE_DELAYED, $now + $delay, $package_str);
         }
+    }
+
+    /**
+     * Set the consume failure callback.
+     *
+     * @param callable $callback
+     */
+    public function onConsumeFailure(callable $callback)
+    {
+        $this->_consumeFailure = $callback;
     }
 
     /**
@@ -219,22 +241,34 @@ class Client
                         $callback = $this->_subscribeQueues[$redis_key];
                         try {
                             \call_user_func($callback, $package['data']);
-                        } catch (\Exception $e) {
-                            if (++$package['attempts'] > $this->_options['max_attempts']) {
-                                $package['error'] = (string) $e;
+                        } catch (UnretryableException $e) {
+                            $this->log((string)$e);
+                            $package['max_attempts'] = $this->_options['max_attempts'];
+                            $package['error'] = $e->getMessage();
+                            $this->fail($package);
+                        } catch (\Throwable $e) {
+                            $this->log((string)$e);
+                            $package['max_attempts'] = $this->_options['max_attempts'];
+                            $package['error'] = $e->getMessage();
+                            $package_modified = null;
+                            if ($this->_consumeFailure) {
+                                try {
+                                    $package_modified = \call_user_func($this->_consumeFailure, $e, $package);
+                                } catch (\Throwable $ta) {
+                                    $this->log((string)$ta);
+                                }
+                            }
+                            if (is_array($package_modified)) {
+                                $package['data'] = $package_modified['data'] ?? $package['data'];
+                                $package['attempts'] = $package_modified['attempts'] ?? $package['attempts'];
+                                $package['max_attempts'] = $package_modified['max_attempts'] ?? $package['max_attempts'];
+                                $package['error'] = $package_modified['error'] ?? $package['error'];
+                            }
+                            if (++$package['attempts'] > $package['max_attempts']) {
                                 $this->fail($package);
                             } else {
                                 $this->retry($package);
                             }
-                            echo $e;
-                        } catch (\Error $e) {
-                            if (++$package['attempts'] > $this->_options['max_attempts']) {
-                                $package['error'] = (string) $e;
-                                $this->fail($package);
-                            } else {
-                                $this->retry($package);
-                            }
-                            echo $e;
                         }
                     }
                 }
@@ -254,7 +288,7 @@ class Client
     protected function retry($package)
     {
         $delay = time() + $this->_options['retry_seconds'] * ($package['attempts']);
-        $this->_redisSend->zAdd($this->_options['prefix'] . static::QUEUE_DELAYED, $delay, \json_encode($package));
+        $this->_redisSend->zAdd($this->_options['prefix'] . static::QUEUE_DELAYED, $delay, \json_encode($package, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
     /**
@@ -262,6 +296,31 @@ class Client
      */
     protected function fail($package)
     {
-        $this->_redisSend->lPush($this->_options['prefix'] . static::QUEUE_FAILED, \json_encode($package));
+        $this->_redisSend->lPush($this->_options['prefix'] . static::QUEUE_FAILED, \json_encode($package, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    }
+
+    /**
+     * @param $message
+     * @return void
+     */
+    protected function log($message)
+    {
+        if ($this->_logger) {
+            $this->_logger->info($message);
+            return;
+        }
+        echo $message . PHP_EOL;
+    }
+
+    /**
+     * @param $logger
+     * @return mixed|LoggerInterface
+     */
+    public function logger($logger = null)
+    {
+        if ($logger) {
+            $this->_logger = $logger;
+        }
+        return $this->_logger;
     }
 }

@@ -26,7 +26,7 @@ $config = new Config();
 return $config->setRules([
         '@PER' => true,
         '@PER:risky' => true,
-        '@PHP81Migration' => true,
+        '@PHP82Migration' => true,
         '@PHPUnit84Migration:risky' => true,
         'array_syntax' => ['syntax' => 'short'],
         'class_attributes_separation' => true,
@@ -50,7 +50,6 @@ return $config->setRules([
         'semicolon_after_instruction' => true,
         'short_scalar_cast' => true,
         'simplified_null_return' => true,
-        'single_blank_line_before_namespace' => true,
         'single_class_element_per_statement' => true,
         'single_line_comment_style' => true,
         'single_quote' => true,

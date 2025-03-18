@@ -13,6 +13,7 @@
  */
 namespace Webman\RedisQueue;
 
+use support\Log;
 use Workerman\RedisQueue\Client as RedisClient;
 
 /**
@@ -43,6 +44,9 @@ class Client
             $host = $config[$name]['host'];
             $options = $config[$name]['options'];
             $client = new RedisClient($host, $options);
+            if (method_exists($client, 'logger')) {
+                $client->logger(Log::channel('plugin.webman.redis-queue.default'));
+            }
             static::$_connections[$name] = $client;
         }
         return static::$_connections[$name];

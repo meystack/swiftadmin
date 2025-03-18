@@ -21,6 +21,8 @@ use app\common\model\system\UserGroup  as UserGroupModel;
  */
 class UserGroup extends AdminController 
 {
+    protected array $relationModel = ['userTotal'];
+
     // 初始化函数
     public function __construct()
     {
@@ -56,7 +58,7 @@ class UserGroup extends AdminController
             $count = $this->model->where($where)->count();
             $limit = empty($param['limit']) ? 10 : $param['limit'];
             $page = ($count <= $limit) ? 1 : $param['page'];
-			$list = $this->model->where($where)->order("id asc")->limit((int)$limit)->page((int)$page)->select()->toArray();
+			$list = $this->model->with($this->relationModel)->where($where)->order("id asc")->limit((int)$limit)->page((int)$page)->select()->toArray();
 			foreach ($list as $key => $value) {
 				$list[$key]['title'] = __($value['title']);
 			}

@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\db\concern;
 
@@ -20,7 +20,7 @@ use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\db\Query;
 use think\helper\Str;
-use think\Model;
+use think\model\contract\Modelable as Model;
 
 /**
  * 查询数据处理.
@@ -35,7 +35,7 @@ trait ResultOperation
      *
      * @return $this
      */
-    public function filter(callable $filter, string $index = null)
+    public function filter(callable $filter, ?string $index = null)
     {
         if ($index) {
             $this->options['filter'][$index] = $filter;
@@ -105,6 +105,16 @@ trait ResultOperation
         if (!empty($this->options['with_attr'])) {
             $this->getResultAttr($result, $this->options['with_attr']);
         }
+
+        // 检查字段映射
+        if (!empty($this->options['mapping'])) {
+            foreach ($this->options['mapping'] as $name => $alias) {
+                if (isset($result[$name])) {
+                    $result[$alias] = $result[$name];
+                    unset($result[$name]);
+                }
+            }
+        }        
     }
 
     /**
@@ -155,17 +165,19 @@ trait ResultOperation
 
     /**
      * 处理空数据.
-     *
+     * @param Closure $closure 闭包数据
      * @throws DbException
      * @throws ModelNotFoundException
      * @throws DataNotFoundException
      *
      * @return array|Model|null|static
      */
-    protected function resultToEmpty()
+    protected function resultToEmpty(?Closure $closure = null)
     {
         if (!empty($this->options['fail'])) {
             $this->throwNotFound();
+        } elseif ($closure instanceof Closure) {
+            return $closure($this);
         } elseif (!empty($this->options['allow_empty'])) {
             return !empty($this->model) ? $this->model->newInstance() : [];
         }
@@ -214,12 +226,12 @@ trait ResultOperation
         if (!empty($this->model)) {
             $class = get_class($this->model);
 
-            throw new ModelNotFoundException('model data Not Found:'.$class, $class, $this->options);
+            throw new ModelNotFoundException('model data Not Found:' . $class, $class, $this->options);
         }
 
         $table = $this->getTable();
 
-        throw new DataNotFoundException('table data not Found:'.$table, $table, $this->options);
+        throw new DataNotFoundException('table data not Found:' . $table, $table, $this->options);
     }
 
     /**

@@ -1,0 +1,19 @@
+{
+    "name": "webman/cache",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "symfony/cache": "^6.0 || ^7.0",
+        "psr/simple-cache": "^3.0",
+        "workerman/webman-framework": "^2.1 || dev-master"
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Webman\\Cache\\": "src",
+            "support\\": "src/support"
+        }
+    }
+}

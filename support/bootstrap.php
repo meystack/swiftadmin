@@ -19,8 +19,14 @@ use Webman\Config;
 use Webman\Middleware;
 use Webman\Route;
 use Webman\Util;
+use Workerman\Events\Select;
+use Workerman\Worker;
 
 $worker = $worker ?? null;
+
+if (empty(Worker::$eventLoopClass)) {
+    Worker::$eventLoopClass = Select::class;
+}
 
 set_error_handler(function ($level, $message, $file = '', $line = 0) {
     if (error_reporting() & $level) {
@@ -36,11 +42,11 @@ if ($worker) {
     }, time());
 }
 
-if (class_exists('Dotenv\Dotenv') && file_exists(base_path() . '/.env')) {
+if (class_exists('Dotenv\Dotenv') && file_exists(base_path(false) . '/.env')) {
     if (method_exists('Dotenv\Dotenv', 'createUnsafeMutable')) {
-        Dotenv::createUnsafeMutable(base_path())->load();
+        Dotenv::createUnsafeMutable(base_path(false))->load();
     } else {
-        Dotenv::createMutable(base_path())->load();
+        Dotenv::createMutable(base_path(false))->load();
     }
 }
 

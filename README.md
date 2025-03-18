@@ -18,18 +18,25 @@
 <font color="#dd0000">为什么选择 SWIFTADMIN？</font>
 
 如果你熟悉ThinkPHP/Laravel/Yii2等框架，那么你可以很快上手 SWIFTADMIN，因为 SWIFTADMIN 是完全复用的这些框架的composer包。一样的代码写法，性能却可以提升10 倍以上。
-运行在PHPCLI模式之下，他不是类似于SWOOLE异步协程的工作模式，所以新手朋友不需要担心变量污染的问题，也不需要担心第三方扩展包异步协程的问题，只需要专注于业务开发即可。
+
+运行在PHPCLI模式之下：
+
+提供Workerman\Coroutine类，底层自动适配Swoole、Swow、Fiber协程、
+
+提供协程相关的组件，例如 Context Channel Barrier Parallel WaitGroup Locker Pool等，底层自动适配Swoole、Swow、Fiber协程
+
+<font color="#dd0000">注意事项：升级后不会自动使用协程，需要设置eventLoop才会开启协程，直接升级对业务没有影响。更多请详见下面常见问题：一定要看、一定要看、一定要看。重要的事情说三遍！！！</font>
 
 ### 软件架构
 
-|  依赖   | 版本        | 说明                          |
-|-----|-----------|:----------------------------|
-| PHP               | \>= 8.0   | 最低支持PHP8.0                  |
-| WebMan            | \>= 1.4.3 | 基于workerman强悍核心             |
-| MySQL             | \>= 5.7   | 最低 5.7,注意5.6版本无JSON字段，会报错   |
-| Layui             | \>= 2.7   | 特殊封装版，无法直接用官网替换             |
-| layui-form-design | \>= 1.0   | 表单设计器，基于Sortable专为SAPHP框架开发 |
-| Admin Theme       | \>= 1.x   | 专为本框架开发、封装超多功能、支持多种菜单布局     |
+|  依赖   | 版本       | 说明                              |
+|-----|----------|:--------------------------------|
+| PHP               | \>= 8.1  | 最低支持PHP8.1版                     |
+| WebMan            | \>= 2.1  | 基于workerman>5.1强悍核心             |
+| MySQL             | \>= 5.7  | 最低 5.7,注意5.6版本无JSON字段，会报错       |
+| Layui             | \>= 2.10 | 二次开发版，无法直接用官网替换，但提供map文件方便DEBUG |
+| layui-form-design | \>= 1.0  | 表单设计器，基于Sortable专为SAPHP框架开发     |
+| Admin Theme       | \>= 1.x  | 专为本框架开发、封装超多功能、支持多种菜单布局         |
 
 ### 软件功能
 
@@ -61,8 +68,9 @@
  * git clone https://gitee.com/meystack/swiftadmin.git
  * 请使用宝塔面板或其他PHP集成环境
  * 安装Apache或者NGINX服务器
- * 安装PHP，版本 >= 8.0
+ * 安装PHP，版本 >= 8.1
  * 安装PHP扩展fileinfo opcache redis imagemagick exif
+ * 注意：Windows环境下PHP8.1你需要自行去https://pecl.php.net/package/redis/5.3.7/windows下载redisDLL扩展
  * 开发环境下关闭禁用PHP函数exec、putenv、proc_open、proc_get_status、pcntl_signal[如果存在]
  * Linux环境下，请关闭禁用shell_exec pcntl_signal pcntl_fork pcntl_wait pcntl_alarm exec函数！
 ```
@@ -104,6 +112,15 @@ http://localhost:8787/manage        # 登录后台/生产环境下可自行修�
 然后使用命令：php -m  查看 * 已安装的PHP扩展 *，如果没有安装fileinfo opcache redis imagemagick exif，请安装<br/>
 一定要注意的是：swiftadmin框架运行在webman核心上，并且运行的时候默认调用的是当前操作系统，默认的PHP环境变量的那个版本，<br/>
 如果是windows环境，之前安装过PHP7.3，那么安装PHP8之后需要修改系统环境变量才可以执行；
+```
+4、为什么最低需要PHP8.1及以上版本？
+```
+swiftadmin框架基于workerman>5.1+webmanv2.1上，所以最低需要PHP8.1及以上版本。并需要注意的是，当前框架的v2版本不与v1版本兼容
+```
+5、升级后vendor里面的扩展包为什么变少了？
+```angular2html
+1、由于框架升级，vendor里面的扩展包变少了，但是不会影响系统运行<br/>
+2、如果你的项目需要一些常规工具扩展包，请自行使用composer安装即可。
 ```
 
 ### 反馈BUG

@@ -54,6 +54,15 @@ interface Container extends ContainerInterface
     public function bind($abstract, $concrete = null, $shared = false);
 
     /**
+     * Bind a callback to resolve with Container::call.
+     *
+     * @param  array|string  $method
+     * @param  \Closure  $callback
+     * @return void
+     */
+    public function bindMethod($method, $callback);
+
+    /**
      * Register a binding if it hasn't already been registered.
      *
      * @param  string  $abstract
@@ -188,7 +197,7 @@ interface Container extends ContainerInterface
      * @param  \Closure|null  $callback
      * @return void
      */
-    public function beforeResolving($abstract, Closure $callback = null);
+    public function beforeResolving($abstract, ?Closure $callback = null);
 
     /**
      * Register a new resolving callback.
@@ -197,7 +206,7 @@ interface Container extends ContainerInterface
      * @param  \Closure|null  $callback
      * @return void
      */
-    public function resolving($abstract, Closure $callback = null);
+    public function resolving($abstract, ?Closure $callback = null);
 
     /**
      * Register a new after resolving callback.
@@ -206,5 +215,5 @@ interface Container extends ContainerInterface
      * @param  \Closure|null  $callback
      * @return void
      */
-    public function afterResolving($abstract, Closure $callback = null);
+    public function afterResolving($abstract, ?Closure $callback = null);
 }

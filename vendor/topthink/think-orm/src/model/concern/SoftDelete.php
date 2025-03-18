@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\model\concern;
 
@@ -17,7 +17,7 @@ use think\db\BaseQuery as Query;
 use think\Model;
 
 /**
- * 数据软删除.
+ * 数据软删除
  *
  * @mixin Model
  *
@@ -50,12 +50,12 @@ trait SoftDelete
         return false;
     }
 
-    public function scopeWithTrashed(Query $query)
+    public function scopeWithTrashed(Query $query): void
     {
         $query->removeOption('soft_delete');
     }
 
-    public function scopeOnlyTrashed(Query $query)
+    public function scopeOnlyTrashed(Query $query): void
     {
         $field = $this->getDeleteTimeField(true);
 
@@ -85,14 +85,17 @@ trait SoftDelete
             return false;
         }
 
-        $name = $this->getDeleteTimeField();
+        $name  = $this->getDeleteTimeField();
         $force = $this->isForce();
 
         if ($name && !$force) {
             // 软删除
-            $this->set($name, $this->autoWriteTimestamp());
-
-            $this->exists()->withEvent(false)->save();
+            if ($this->entity) {
+                $this->exists()->withEvent(false)->save([$name => $this->autoWriteTimestamp()]);
+            } else {
+                $this->set($name, $this->autoWriteTimestamp());
+                $this->exists()->withEvent(false)->save();
+            }
 
             $this->withEvent(true);
         } else {
@@ -145,10 +148,8 @@ trait SoftDelete
             $query->where($data);
             $data = [];
         } elseif ($data instanceof \Closure) {
-            call_user_func_array($data, [&$query]);
+            call_user_func_array($data, [ &$query]);
             $data = [];
-        } elseif (is_null($data)) {
-            return false;
         }
 
         $resultSet = $query->select((array) $data);
@@ -168,7 +169,7 @@ trait SoftDelete
      *
      * @return bool
      */
-    public function restore($where = []): bool
+    public function restore(array $where = []): bool
     {
         $name = $this->getDeleteTimeField();
 
@@ -179,7 +180,7 @@ trait SoftDelete
         if (empty($where)) {
             $pk = $this->getPk();
             if (is_string($pk)) {
-                $where[] = [$pk, '=', $this->getData($pk)];
+                $where = [$pk => $this->getKey()];
             }
         }
 
@@ -201,7 +202,7 @@ trait SoftDelete
      *
      * @return string|false
      */
-    protected function getDeleteTimeField(bool $read = false)
+    public function getDeleteTimeField(bool $read = false): bool | string
     {
         $field = property_exists($this, 'deleteTime') && isset($this->deleteTime) ? $this->deleteTime : 'delete_time';
 

@@ -25,16 +25,7 @@ use Workerman\Timer;
  */
 class Register extends Worker
 {
-    /**
-     * {@inheritdoc}
-     */
-    public $name = 'Register';
 
-    /**
-     * {@inheritdoc}
-     */
-    public $reloadable = false;
-    
     /**
      * 秘钥
      * @var string
@@ -62,10 +53,18 @@ class Register extends Worker
      */
     protected $_startTime = 0;
 
+
+    public function __construct(string $socketName = '', array $contextOption = [])
+    {
+        $this->name = 'Register';
+        $this->reloadable = false;
+        parent::__construct($socketName, $contextOption);
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function run()
+    public function run(): void
     {
         // 设置 onMessage 连接回调
         $this->onConnect = array($this, 'onConnect');
@@ -161,6 +160,7 @@ class Register extends Worker
      */
     public function onClose($connection)
     {
+        // 删除定时器
         Timer::del($connection->timeout_timerid);
         if (isset($this->_gatewayConnections[$connection->id])) {
             unset($this->_gatewayConnections[$connection->id]);

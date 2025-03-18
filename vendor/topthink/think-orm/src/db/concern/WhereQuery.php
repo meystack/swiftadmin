@@ -3,13 +3,13 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2023 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2025 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace think\db\concern;
 
@@ -30,25 +30,32 @@ trait WhereQuery
      */
     public function where($field, $op = null, $condition = null)
     {
-        if ($field instanceof $this) {
+        if ($field instanceof self) {
             $this->parseQueryWhere($field);
-
             return $this;
         } elseif (true === $field || 1 === $field) {
             $this->options['where']['AND'][] = true;
-
+            return $this;
+        } elseif (empty($field)) {
             return $this;
         }
 
         $pk = $this->getPk();
-        if ((is_null($condition) || '=' == $op) && is_string($pk) && $pk == $field ) {
+        if ((is_null($condition) || '=' == $op) && is_string($pk) && $pk == $field) {
             $this->options['key'] = is_null($condition) ? $op : $condition;
         }
 
+        $logic = 'AND';
         $param = func_get_args();
         array_shift($param);
 
-        return $this->parseWhereExp('AND', $field, $op, $condition, $param);
+        if (is_array($field) && !empty($field) && array_is_list($field)) {
+            return $this->where(function ($query) use ($param, $condition, $op, $field, $logic) {
+                return $query->parseWhereExp($logic, $field, $op, $condition, $param);
+            });
+        }
+
+        return $this->parseWhereExp($logic, $field, $op, $condition, $param);
     }
 
     /**
@@ -61,8 +68,8 @@ trait WhereQuery
     protected function parseQueryWhere(BaseQuery $query): void
     {
         $this->options['where'] = $query->getOptions('where') ?? [];
-        $via = $query->getOptions('via');
 
+        $via = $query->getOptions('via');
         if ($via) {
             foreach ($this->options['where'] as $logic => &$where) {
                 foreach ($where as $key => &$val) {
@@ -87,10 +94,17 @@ trait WhereQuery
      */
     public function whereOr($field, $op = null, $condition = null)
     {
+        $logic = 'OR';
         $param = func_get_args();
         array_shift($param);
 
-        return $this->parseWhereExp('OR', $field, $op, $condition, $param);
+        if (is_array($field) && !empty($field) && array_is_list($field)) {
+            return $this->where(function ($query) use ($param, $condition, $op, $field, $logic) {
+                return $query->parseWhereExp($logic, $field, $op, $condition, $param);
+            });
+        }
+
+        return $this->parseWhereExp($logic, $field, $op, $condition, $param);
     }
 
     /**
@@ -104,10 +118,17 @@ trait WhereQuery
      */
     public function whereXor($field, $op = null, $condition = null)
     {
+        $logic = 'XOR';
         $param = func_get_args();
         array_shift($param);
 
-        return $this->parseWhereExp('XOR', $field, $op, $condition, $param);
+        if (is_array($field) && !empty($field) && array_is_list($field)) {
+            return $this->where(function ($query) use ($param, $condition, $op, $field, $logic) {
+                return $query->parseWhereExp($logic, $field, $op, $condition, $param);
+            });
+        }
+
+        return $this->parseWhereExp($logic, $field, $op, $condition, $param);
     }
 
     /**
@@ -273,6 +294,33 @@ trait WhereQuery
     }
 
     /**
+     * 指定json_contains查询条件.
+     *
+     * @param mixed  $field     查询字段
+     * @param mixed  $condition 查询条件
+     * @param string $logic     查询逻辑 and or xor
+     *
+     * @return $this
+     */
+    public function whereJsonContains(string $field, $condition, string $logic = 'AND')
+    {
+        if (str_contains($field, '->')) {
+            [$field1, $field2] = explode('->', $field);
+            $field             = 'json_extract(' . $field1 . ',\'$.' . $field2 . '\')';
+        }
+
+        $value       = is_string($condition) ? '"' . $condition . '"' : $condition;
+        $name        = $this->bindValue($value);
+        $bind[$name] = $value;
+        return $this->whereRaw('json_contains(' . $field . ',:' . $name . ')', $bind, $logic);
+    }
+
+    public function whereOrJsonContains(string $field, $condition)
+    {
+        return $this->whereJsonContains($field, $condition, 'OR');
+    }
+
+    /**
      * 比较两个字段.
      *
      * @param string $field1   查询字段
@@ -282,10 +330,10 @@ trait WhereQuery
      *
      * @return $this
      */
-    public function whereColumn(string $field1, string $operator, string $field2 = null, string $logic = 'AND')
+    public function whereColumn(string $field1, string $operator, ?string $field2 = null, string $logic = 'AND')
     {
         if (is_null($field2)) {
-            $field2 = $operator;
+            $field2   = $operator;
             $operator = '=';
         }
 
@@ -304,6 +352,20 @@ trait WhereQuery
     {
         if ($field) {
             $this->options['soft_delete'] = [$field, $condition];
+        }
+
+        return $this;
+    }
+
+    /**
+     * 包含软删除数据.
+     *
+     * @return $this
+     */
+    public function withTrashed()
+    {
+        if ($this->model) {
+            $this->options['soft_delete'] = null;
         }
 
         return $this;
@@ -340,7 +402,7 @@ trait WhereQuery
     {
         if (is_null($condition)) {
             $condition = $op;
-            $op = '=';
+            $op        = '=';
         }
 
         $this->options['where'][$logic][] = [new Raw($field), $op, $condition];
@@ -389,42 +451,57 @@ trait WhereQuery
      *
      * @return $this
      */
-    protected function parseWhereExp(string $logic, $field, $op, $condition, array $param = [], bool $strict = false)
+    protected function parseWhereExp(string $logic, $field, $op, $condition, array $param = [], bool $strict = false): self
     {
         $logic = strtoupper($logic);
 
+        // 处理 via
         if (is_string($field) && !empty($this->options['via']) && !str_contains($field, '.')) {
             $field = $this->options['via'] . '.' . $field;
         }
 
+        // 严格模式查询
         if ($strict) {
-            // 使用严格模式查询
-            if ('=' == $op) {
-                $where = $this->whereEq($field, $condition);
-            } else {
-                $where = [$field, $op, $condition, $logic];
-            }
-        } elseif (is_array($field)) {
-            // 解析数组批量查询
+            return $this->parseStrictWhere($field, $op, $condition, $logic);
+        }
+
+        // 处理批量查询
+        if (is_array($field)) {
             return $this->parseArrayWhereItems($field, $logic);
-        } elseif ($field instanceof Closure) {
+        }
+
+        // 处理闭包查询
+        if ($field instanceof Closure) {
             $where = $field;
         } elseif (is_string($field)) {
             if ($condition instanceof Raw) {
             } elseif (preg_match('/[,=\<\'\"\(\s]/', $field)) {
                 return $this->whereRaw($field, is_array($op) ? $op : [], $logic);
-            } elseif (is_string($op) && strtolower($op) == 'exp' && !is_null($condition)) {
+            } elseif (is_string($op) && strtolower($op) === 'exp' && !is_null($condition)) {
                 $bind = isset($param[2]) && is_array($param[2]) ? $param[2] : [];
-
                 return $this->whereExp($field, $condition, $bind, $logic);
             }
 
             $where = $this->parseWhereItem($logic, $field, $op, $condition, $param);
         }
 
+        // 添加条件到查询选项
         if (!empty($where)) {
             $this->options['where'][$logic][] = $where;
         }
+
+        return $this;
+    }
+
+    protected function parseStrictWhere($field, $op, $condition, string $logic): self
+    {
+        if ('=' === $op) {
+            $where = $this->whereEq($field, $condition);
+        } else {
+            $where = [$field, $op, $condition, $logic];
+        }
+
+        $this->options['where'][$logic][] = $where;
 
         return $this;
     }
@@ -445,8 +522,10 @@ trait WhereQuery
         if (is_array($op)) {
             // 同一字段多条件查询
             array_unshift($param, $field);
-            $where = $param;
-        } elseif ($field && is_null($condition)) {
+            return $param;
+        }
+
+        if ($field && is_null($condition)) {
             if (is_string($op) && in_array(strtoupper($op), ['NULL', 'NOTNULL', 'NOT NULL'], true)) {
                 // null查询
                 $where = [$field, $op, ''];
@@ -458,7 +537,10 @@ trait WhereQuery
                 // 字段相等查询
                 $where = $this->whereEq($field, $op);
             }
-        } elseif (is_string($op) && in_array(strtoupper($op), ['EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
+            return $where;
+        }
+
+        if (is_string($op) && in_array(strtoupper($op), ['EXISTS', 'NOT EXISTS', 'NOTEXISTS'], true)) {
             $where = [$field, $op, is_string($condition) ? new Raw($condition) : $condition];
         } else {
             $where = $field ? [$field, $op, $condition, $param[2] ?? null] : [];
@@ -507,7 +589,7 @@ trait WhereQuery
 
         if (!empty($where)) {
             $this->options['where'][$logic] = isset($this->options['where'][$logic]) ?
-                array_merge($this->options['where'][$logic], $where) : $where;
+            array_merge($this->options['where'][$logic], $where) : $where;
         }
 
         return $this;
@@ -545,26 +627,29 @@ trait WhereQuery
      *
      * @return $this
      */
-    public function when($condition, $query, $otherwise = null)
+    public function when($condition, Closure | array $query, Closure | array | null $otherwise = null): self
     {
+        // 处理条件为 Closure 的情况
         if ($condition instanceof Closure) {
             $condition = $condition($this);
         }
 
+        // 根据条件决定执行哪个查询
         if ($condition) {
-            if ($query instanceof Closure) {
-                $query($this, $condition);
-            } elseif (is_array($query)) {
-                $this->where($query);
-            }
+            $this->executeQuery($query, $condition);
         } elseif ($otherwise) {
-            if ($otherwise instanceof Closure) {
-                $otherwise($this, $condition);
-            } elseif (is_array($otherwise)) {
-                $this->where($otherwise);
-            }
+            $this->executeQuery($otherwise, $condition);
         }
 
         return $this;
+    }
+
+    protected function executeQuery(Closure | array $query, $condition): void
+    {
+        if ($query instanceof Closure) {
+            $query($this, $condition);
+        } elseif (is_array($query)) {
+            $this->where($query);
+        }
     }
 }

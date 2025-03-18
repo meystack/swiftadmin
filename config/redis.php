@@ -20,5 +20,12 @@ return [
         'database' => get_env('CACHE_SELECT', 0),
         'prefix'   => 'redis_',
         'expire'   => 0,
-    ],
+        'pool' => [
+            'max_connections' => 5,
+            'min_connections' => 1,
+            'wait_timeout' => 3,
+            'idle_timeout' => 60,
+            'heartbeat_interval' => 50,
+        ],
+    ]
 ];

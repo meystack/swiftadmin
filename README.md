@@ -116,11 +116,13 @@ http://localhost:8787/manage        # 登录后台/生产环境下可自行修�
 4、为什么最低需要PHP8.1及以上版本？
 ```
 swiftadmin框架基于workerman>5.1+webmanv2.1上，所以最低需要PHP8.1及以上版本。并需要注意的是，当前框架的v2版本不与v1版本兼容
+在Windows系统下，PHP8.1如果宝塔面板没有redis组件，请到http://pecl.php.net/package/redis/5.3.7/windows进行下载开启php.ini即可
 ```
 5、升级后vendor里面的扩展包为什么变少了？
 ```angular2html
 1、由于框架升级，vendor里面的扩展包变少了，但是不会影响系统运行<br/>
 2、如果你的项目需要一些常规工具扩展包，请自行使用composer安装即可。
+3、框架默认安装了一些常用的扩展包，比如支付/dumper/二维码/拼音库，是为了方便你们直接使用。
 ```
 
 ### 反馈BUG

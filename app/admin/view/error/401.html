@@ -53,7 +53,11 @@ document.getElementById("back").onclick=function(){
 		data = JSON.stringify(data);
 		sessionStorage.setItem('swiftadmin_template',data);
 	}
-	top.window.location.replace(href.substring(0,href.indexOf('.php')+4));
+	if(href.indexOf('.php')=='-1'){
+        top.window.location.replace(href.match(/^[^:]+:\/\/[^/]+/)[0]+'/admin/');
+    }else{
+        top.window.location.replace(href.substring(0,href.indexOf('.php')+4));
+    }
 }
 </script>
 </html>

@@ -11,11 +11,10 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 namespace app\common\library;
 
-use Psr\SimpleCache\InvalidArgumentException;
-use system\Http;
-
 use app\common\model\system\Attachment;
 use app\common\validate\system\UploadFile;
+use Psr\SimpleCache\InvalidArgumentException;
+use system\Http;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;

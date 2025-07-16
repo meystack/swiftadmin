@@ -2,12 +2,12 @@
 
 
 namespace app\common\model\system;
+use app\common\library\ParseData;
 use Psr\SimpleCache\InvalidArgumentException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\Model;
-use app\common\library\ParseData;
 use think\model\concern\SoftDelete;
 use think\model\relation\HasMany;
 use think\model\relation\HasOne;

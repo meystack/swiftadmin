@@ -15,9 +15,6 @@ namespace app;
 use app\common\service\user\UserService;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
 
 /**
  * 前台全局控制器基类

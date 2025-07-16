@@ -7,10 +7,10 @@ use Psr\SimpleCache\InvalidArgumentException;
 use support\exception\BusinessException;
 use think\db\exception\DataNotFoundException;
 use think\exception\ValidateException;
+use Throwable;
 use Webman\Exception\ExceptionHandler;
 use Webman\Http\Request;
 use Webman\Http\Response;
-use Throwable;
 
 class ExceptionHandle extends ExceptionHandler
 {

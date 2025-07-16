@@ -13,11 +13,11 @@ declare (strict_types=1);
 namespace app\index\controller;
 
 use app\common\exception\OperateException;
+use app\common\model\system\User;
+use app\common\model\system\UserThird;
 use app\common\service\user\UserService;
 use app\common\service\user\UserTokenService;
 use app\HomeController;
-use app\common\model\system\User;
-use app\common\model\system\UserThird;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use system\Random;

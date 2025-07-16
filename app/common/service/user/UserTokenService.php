@@ -4,8 +4,8 @@ namespace app\common\service\user;
 
 use app\common\model\system\User as UserModel;
 use Psr\SimpleCache\InvalidArgumentException;
-use system\Random;
 use support\Cache;
+use system\Random;
 
 /**
  * 用户token服务
@@ -64,8 +64,11 @@ class UserTokenService
      */
     public static function getToken(): string
     {
-        $token = request()->header('Authorization') ?: request()->header('token');
-        return $token ?? input('token', request()->cookie('token')) ?: 'undefined';
+        $authorToken = request()->header('Authorization') ?: request()->header('token');
+        if ($authorToken && str_starts_with($authorToken, 'Bearer ')) {
+            $authorToken = substr($authorToken, 7);
+        }
+        return $authorToken ?? input('token', request()->cookie('token')) ?: 'undefined';
     }
 
     /**

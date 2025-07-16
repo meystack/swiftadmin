@@ -12,8 +12,8 @@ declare (strict_types=1);
 namespace app\queue\redis;
 
 use support\Log;
-use Webman\RedisQueue\Redis;
 use Webman\RedisQueue\Client;
+use Webman\RedisQueue\Redis;
 
 /**
  * 队列任务

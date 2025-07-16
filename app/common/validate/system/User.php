@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace app\common\validate\system;
 
 use Psr\SimpleCache\InvalidArgumentException;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
 use think\Validate;
 
 class User extends Validate

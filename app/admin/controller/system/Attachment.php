@@ -14,13 +14,11 @@ namespace app\admin\controller\system;
 
 use app\admin\service\AttachmentService;
 use app\AdminController;
-
 use app\common\model\system\Attachment as AttachmentModel;
 use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use Webman\Http\Request;
 
 /**
  * 附件管理

@@ -11,19 +11,17 @@ declare (strict_types=1);
 // +----------------------------------------------------------------------
 namespace app;
 
-use support\Log;
-use support\Response;
-use think\db\exception\BindParamException;
-use think\facade\Db;
-use think\helper\Str;
-use think\Validate;
-use Webman\Http\Request;
-use Webman\Captcha\CaptchaBuilder;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use support\Log;
+use support\Response;
+use think\db\exception\BindParamException;
+use think\facade\Db;
+use Webman\Captcha\CaptchaBuilder;
+use Webman\Http\Request;
 
 class BaseController
 {

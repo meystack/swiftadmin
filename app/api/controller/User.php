@@ -9,8 +9,8 @@ use app\common\exception\user\UserException;
 use app\common\library\ResultCode;
 use app\common\library\Upload;
 use app\common\model\system\User as UserModel;
-use app\common\validate\system\User as UserValidate;
 use app\common\service\user\UserService;
+use app\common\validate\system\User as UserValidate;
 use PHPMailer\PHPMailer\Exception;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Request;
@@ -35,7 +35,7 @@ class User extends ApiController
      * 非鉴权方法
      * @var array
      */
-    public array $noNeedLogin = ['register', 'login', 'mobileLogin', 'mnpLogin', 'forgot'];
+    public array $noNeedLogin = ['register', 'login', 'mobileLogin', 'forgot'];
 
     /**
      * 构造方法

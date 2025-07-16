@@ -14,21 +14,20 @@ declare (strict_types=1);
 namespace app\admin\controller\system;
 
 use app\admin\service\AuthService;
+use app\AdminController;
 use app\common\exception\OperateException;
-use GuzzleHttp\Exception\TransferException;
+use app\common\model\system\AdminRules;
 use process\Monitor;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Response;
 use system\File;
 use system\Http;
 use system\ZipArchives;
-use app\AdminController;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use think\facade\Db;
 use Throwable;
-use app\common\model\system\AdminRules;
 
 /**
  * 插件市场

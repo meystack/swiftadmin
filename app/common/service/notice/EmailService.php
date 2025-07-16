@@ -17,11 +17,7 @@ use app\common\model\system\User;
 use app\common\model\system\UserValidate;
 use PHPMailer\PHPMailer\Exception;
 use Psr\SimpleCache\InvalidArgumentException;
-use support\App;
 use system\Random;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
 
 class EmailService
 {

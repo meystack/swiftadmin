@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace app\common\model\system;
 
-use think\Collection;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use think\db\Query;
 use think\Model;
 use think\model\concern\SoftDelete;
 

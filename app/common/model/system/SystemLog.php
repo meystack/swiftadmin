@@ -4,7 +4,6 @@
 namespace app\common\model\system;
 
 use think\Model;
-use app\common\library\ParseData;
 
 /**
  * @mixin \think\Model

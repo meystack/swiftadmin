@@ -56,12 +56,12 @@ class LoginService
             $adminInfo['count'] = isset($adminInfo['count']) ? $adminInfo['count'] + 1 : 1;
             request()->session()->set(AdminEnum::ADMIN_SESSION, $adminInfo);
             Event::emit(AdminEnum::ADMIN_LOGIN_ERROR, request()->all());
-            self::writeAdminLogs($name, ResultCode::USPWDERROR['msg']);
-            throw new OperateException(ResultCode::USPWDERROR['msg'], ResultCode::USPWDERROR['code']);
+            self::writeAdminLogs($name, ResultCode::USER_PASS_ERROR['msg']);
+            throw new OperateException(ResultCode::USER_PASS_ERROR['msg'], ResultCode::USER_PASS_ERROR['code']);
         }
 
         if ($result['status'] !== 1) {
-            throw new OperateException(ResultCode::STATUSEXCEPTION['msg'], ResultCode::STATUSEXCEPTION['code']);
+            throw new OperateException(ResultCode::STATUS_EXCEPTION['msg'], ResultCode::STATUS_EXCEPTION['code']);
         }
 
         try {
@@ -71,7 +71,7 @@ class LoginService
             Admin::update($data, ['id' => $result['id']]);
             $adminInfo = array_merge($adminInfo, $result->toArray());
             request()->session()->set(AdminEnum::ADMIN_SESSION, $adminInfo);
-            self::writeAdminLogs($name, ResultCode::LOGINSUCCESS['msg'], 1);
+            self::writeAdminLogs($name, ResultCode::LOGIN_SUCCESS['msg'], 1);
             Event::emit(AdminEnum::ADMIN_LOGIN_SUCCESS, $adminInfo);
         } catch (\Throwable $th) {
             throw new OperateException($th->getMessage());

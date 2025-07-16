@@ -15,12 +15,13 @@ namespace app\index\controller;
 use app\common\exception\OperateException;
 use app\common\exception\user\UserException;
 use app\common\library\ResultCode;
+use app\common\library\Upload;
+use app\common\model\system\User as UserModel;
 use app\common\model\system\UserLog;
 use app\common\model\system\UserNotice;
 use app\common\service\user\UserService;
+use app\common\validate\system\User as UserValidate;
 use app\HomeController;
-use app\common\library\Upload;
-use app\common\model\system\User as UserModel;
 use PHPMailer\PHPMailer\Exception;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\Request;
@@ -30,7 +31,6 @@ use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
 use Webman\Event\Event;
-use app\common\validate\system\User as UserValidate;
 
 class User extends HomeController
 {
@@ -122,7 +122,7 @@ class User extends HomeController
             $post = request()->post();
             validate(UserValidate::class)->scene('register')->check($post);
             $response = UserService::register($post);
-            return $response['response']->withBody(json_encode(ResultCode::REGISTERSUCCESS));
+            return $response['response']->withBody(json_encode(ResultCode::REGISTER_SUCCESS));
         }
 
         return view('/user/register', [
@@ -145,7 +145,7 @@ class User extends HomeController
                 'pwd'      => $password
             ]);
             $result = UserService::accountLogin($nickname, $password);
-            return $result['response']->withBody(json_encode(ResultCode::LOGINSUCCESS));
+            return $result['response']->withBody(json_encode(ResultCode::LOGIN_SUCCESS));
         }
 
         return view('/user/login', [
@@ -174,7 +174,7 @@ class User extends HomeController
                 'captcha' => $captcha
             ]);
             $result = UserService::mobileLogin($mobile, $captcha);
-            return $result['response']->withBody(json_encode(ResultCode::LOGINSUCCESS));
+            return $result['response']->withBody(json_encode(ResultCode::LOGIN_SUCCESS));
         }
 
         return $this->error('非法请求');
@@ -234,7 +234,7 @@ class User extends HomeController
                 return $this->error($e->getMessage());
             }
 
-            return $response->withBody(json_encode(ResultCode::LOGINSUCCESS));
+            return $response->withBody(json_encode(ResultCode::LOGIN_SUCCESS));
         }
 
         return $this->error('缺少参数');

@@ -13,18 +13,6 @@ declare(strict_types=1);
 namespace app\admin\controller;
 
 use app\admin\enums\AdminNoticeEnum;
-use app\common\service\notice\EmailService;
-use app\common\service\utils\FtpService;
-use Psr\SimpleCache\InvalidArgumentException;
-use support\Response;
-use think\db\exception\BindParamException;
-use support\Cache;
-use think\facade\Db;
-use Webman\Event\Event;
-use system\Random;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
 use app\AdminController;
 use app\common\model\system\AdminNotice;
 use app\common\model\system\Attachment;
@@ -33,6 +21,18 @@ use app\common\model\system\User;
 use app\common\model\system\UserGroup;
 use app\common\model\system\UserThird;
 use app\common\model\system\UserValidate;
+use app\common\service\notice\EmailService;
+use app\common\service\utils\FtpService;
+use Psr\SimpleCache\InvalidArgumentException;
+use support\Cache;
+use support\Response;
+use system\Random;
+use think\db\exception\BindParamException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
+use think\facade\Db;
+use Webman\Event\Event;
 
 class Index extends AdminController
 {

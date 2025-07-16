@@ -2,31 +2,33 @@
 
 namespace app\admin\enums;
 
+use app\common\enums\EnumDesc;
+
 /**
  * 管理员通知枚举类
  * @package app\admin\enums
  */
 class AdminNoticeEnum
 {
-    // 系统通知
+    #[EnumDesc('系统通知')]
     const NOTICE = 'notice';
 
-    // 站内消息
+    #[EnumDesc('站内消息')]
     const MESSAGE = 'message';
 
-    // 待办事项
+    #[EnumDesc('待办事项')]
     const TODO = 'todo';
 
-    // 未读
+    #[EnumDesc('未读数量')]
     const STATUS_UNREAD = 0;
 
-    // 已读
+    #[EnumDesc('已读数量')]
     const STATUS_READ = 1;
 
-    // 通知类型集合
+    #[EnumDesc('通知类型集合')]
     const COLLECTION = [self::NOTICE, self::MESSAGE, self::TODO,];
 
-    // 枚举集合
+    #[EnumDesc('枚举集合')]
     const ENUM = [
         self::NOTICE  => '系统通知',
         self::MESSAGE => '站内消息',

@@ -12,7 +12,7 @@
 namespace app\admin\controller\system;
 
 use app\AdminController;
-use app\common\model\system\UserGroup  as UserGroupModel;
+use app\common\model\system\UserGroup as UserGroupModel;
 
 /**
  * 用户组别管理

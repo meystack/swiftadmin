@@ -2,6 +2,8 @@
 
 namespace app\admin\enums;
 
+use app\common\enums\EnumDesc;
+
 /**
  * 管理员枚举类
  * @package app\admin\enums
@@ -10,33 +12,18 @@ namespace app\admin\enums;
  */
 class AdminEnum
 {
-    /**
-     * 管理员状态
-     * @var array
-     */
+    #[EnumDesc('管理员SESSION名称')]
     const ADMIN_SESSION = 'AdminLogin';
 
-    /**
-     * 管理员登录错误事件
-     * @var string
-     */
+    #[EnumDesc('管理员登录错误事件')]
     const ADMIN_LOGIN_ERROR = 'adminLoginError';
 
-    /**
-     * 管理员登录成功事件
-     * @var string
-     */
+    #[EnumDesc('管理员登录成功事件')]
     const ADMIN_LOGIN_SUCCESS = 'adminLoginSuccess';
 
-    /**
-     * 管理员权限规则
-     * @var string
-     */
+    #[EnumDesc('管理员权限规则')]
     const ADMIN_AUTH_RULES = 'rules';
 
-    /**
-     * 管理员栏目规则
-     * @var string
-     */
+    #[EnumDesc('管理员栏目规则')]
     const ADMIN_AUTH_CATES = 'cates';
 }

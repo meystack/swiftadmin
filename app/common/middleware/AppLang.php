@@ -1,9 +1,9 @@
 <?php
 namespace app\common\middleware;
 
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
 use Webman\Http\Request;
+use Webman\Http\Response;
+use Webman\MiddlewareInterface;
 
 class AppLang implements MiddlewareInterface
 {

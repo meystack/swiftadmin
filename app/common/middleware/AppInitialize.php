@@ -12,9 +12,10 @@ declare (strict_types=1);
 
 namespace app\common\middleware;
 use Webman\Event\Event;
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
 use Webman\Http\Request;
+use Webman\Http\Response;
+use Webman\MiddlewareInterface;
+
 /**
  * 应用全局中间件
  * Class AppInitialize

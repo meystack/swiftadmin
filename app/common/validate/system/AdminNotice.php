@@ -4,8 +4,8 @@ declare (strict_types=1);
 namespace app\common\validate\system;
 
 use app\admin\enums\AdminNoticeEnum;
-use think\Validate;
 use app\common\model\system\Admin as AdminModel;
+use think\Validate;
 
 class AdminNotice extends Validate
 {

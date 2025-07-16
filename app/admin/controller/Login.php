@@ -4,10 +4,10 @@ namespace app\admin\controller;
 
 use app\admin\enums\AdminEnum;
 use app\admin\service\LoginService;
-use app\common\exception\OperateException;
-use support\Response;
 use app\AdminController;
+use app\common\exception\OperateException;
 use app\common\model\system\Admin;
+use support\Response;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;

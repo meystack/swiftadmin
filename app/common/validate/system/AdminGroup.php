@@ -4,8 +4,8 @@ declare (strict_types=1);
 namespace app\common\validate\system;
 
 use app\admin\service\AuthService;
-use think\Validate;
 use app\common\model\system\AdminGroup as AdminGroupModel;
+use think\Validate;
 
 class AdminGroup extends Validate
 {

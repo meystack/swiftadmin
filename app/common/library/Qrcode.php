@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace app\common\library;
 
-use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 use Endroid\QrCode\Label\Alignment\LabelAlignmentCenter;

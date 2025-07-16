@@ -4,7 +4,6 @@ namespace app\admin\controller\system;
 
 use app\AdminController;
 use app\common\model\system\AdminLog as LoginLogModel;
-use Webman\Http\Request;
 
 /**
  * login_log

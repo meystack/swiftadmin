@@ -14,7 +14,6 @@ namespace app\admin\service;
 use app\admin\enums\AdminEnum;
 use app\common\exception\OperateException;
 use app\common\model\system\Admin;
-use app\common\model\system\AdminAccess;
 use app\common\model\system\AdminAccess as AdminAccessModel;
 use app\common\model\system\AdminGroup as AdminGroupModel;
 use think\db\exception\DataNotFoundException;

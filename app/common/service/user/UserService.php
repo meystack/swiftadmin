@@ -4,6 +4,7 @@ namespace app\common\service\user;
 
 use app\common\exception\OperateException;
 use app\common\exception\user\UserException;
+use app\common\library\ResultCode;
 use app\common\model\system\User as UserModel;
 use app\common\model\system\UserLog;
 use app\common\model\system\UserNotice;
@@ -11,11 +12,11 @@ use app\common\service\notice\EmailService;
 use app\common\service\notice\SmsService;
 use PHPMailer\PHPMailer\Exception;
 use Psr\SimpleCache\InvalidArgumentException;
+use support\Cache;
 use system\Random;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use support\Cache;
 use Webman\Event\Event;
 
 /**
@@ -31,12 +32,17 @@ class UserService
     protected static int $keepTime = 604800;
 
     /**
+     * 永久封禁
+     */
+    public const BANNED_FOREVER = -1;
+
+    /**
      * 类构造函数
      * class constructor.
      */
     public function __construct()
     {
-        self::$keepTime = config('cookie.expire');
+        self::$keepTime = config('session.lifetime');
     }
 
     /**
@@ -78,6 +84,7 @@ class UserService
                 'email'     => $post['email'] ?? '',
                 'mobile'    => $post['mobile'] ?? '',
                 'pwd'       => $post['pwd'],
+                'gender'    => $post['gender'] ?? 0,
                 'invite_id' => input('inviter', request()->cookie('inviter')),
             ];
             $userInfo = self::createUser($userInfo);
@@ -145,7 +152,7 @@ class UserService
             $maxId = UserModel::max('id');
             $userInfo = [
                 'nickname' => 'u' . ($maxId + 1),
-                'mobile'   => $mobile,
+                'mobile' => $mobile,
             ];
             return self::createUser($userInfo);
         } else if (!$userInfo['status']) {
@@ -211,9 +218,8 @@ class UserService
             ->cookie('token', $userToken, self::$keepTime, '/')
             ->cookie('nickname', $userInfo['nickname'], self::$keepTime, '/');
         Cache::set($userToken, $userInfo['id'], self::$keepTime);
-        Cache::set('user_info_' . $userInfo['id'], $userInfo, self::$keepTime);
         Event::emit("userLoginSuccess", $userInfo);
-        return ['token' => $userToken, 'id' => $userInfo['id'], 'response' => $response];
+        return ['token' => $userToken, 'id' => $userInfo['id'], 'userInfo' => $userInfo, 'response' => $response];
     }
 
     /**
@@ -236,22 +242,23 @@ class UserService
      */
     public static function logout(): void
     {
-        response()->cookie('uid', null);
-        response()->cookie('token', null);
-        response()->cookie('nickname', null);
+        response()->cookie('uid', '');
+        response()->cookie('token', '');
+        response()->cookie('nickname', '');
         Cache::delete(UserTokenService::getToken());
     }
 
     /**
      * @param array $params
      * @param int $userId
+     * @param array $fields
      * @return bool
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
      * @throws OperateException
      */
-    public static function editProfile(array $params = [], int $userId = 0): bool
+    public static function editProfile(array $params = [], int $userId = 0, array $fields = []): bool
     {
         $userInfo = UserModel::where('id', $userId)->findOrEmpty()->toArray();
         if (empty($userInfo)) {
@@ -268,8 +275,9 @@ class UserService
             }
         }
 
-        $fields = ['avatar', 'name', 'wechat', 'qq', 'idCard', 'address', 'gender'];
-        foreach ($fields as $field) {
+        $rootFields = ['avatar', 'name', 'wechat', 'qq', 'idCard', 'address', 'gender'];
+        $rootFields = array_unique(array_merge($fields, $rootFields));
+        foreach ($rootFields as $field) {
             if (isset($params[$field])) {
                 $data[$field] = $params[$field];
             }
@@ -345,8 +353,8 @@ class UserService
         $pwd = encryptPwd($pwd, $salt);
         try {
             UserModel::update([
-                'id'   => $userId,
-                'pwd'  => $pwd,
+                'id' => $userId,
+                'pwd' => $pwd,
                 'salt' => $salt,
             ]);
         } catch (\Exception $e) {
@@ -466,6 +474,27 @@ class UserService
 
         $unread = UserNotice::where(['user_id' => $userId, 'status' => 0])->count();
         return ['msgInfo' => $msgInfo, 'unread' => $unread];
+    }
+
+    /**
+     * 判断是否封禁用户
+     * @param array $userInfo
+     * @return void
+     * @throws OperateException
+     */
+    public static function isBanned(array $userInfo): void
+    {
+        // 判断当前用户是否已经禁用
+        $bannedTime = $userInfo['banned_time'] ?? '-1';
+
+        if ($bannedTime === self::BANNED_FOREVER) {
+            throw new OperateException('您的账号已被永久封禁！', ResultCode::STATUS_EXCEPTION['code']);
+        }
+
+        if ($bannedTime > 0 && $bannedTime > time()) {
+            $bannedTime = date('Y-m-d H:i:s', $bannedTime);
+            throw new OperateException('您的账号已禁言至 ' . $bannedTime, ResultCode::STATUS_EXCEPTION['code']);
+        }
     }
 
     /**

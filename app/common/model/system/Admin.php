@@ -15,9 +15,6 @@ namespace app\common\model\system;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use think\db\Query;
-use think\Model;
-use app\common\library\ParseData;
 use think\model\relation\HasOne;
 
 /**

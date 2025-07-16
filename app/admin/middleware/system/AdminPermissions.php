@@ -4,15 +4,15 @@ namespace app\admin\middleware\system;
 
 use app\admin\enums\AdminEnum;
 use app\admin\service\AuthService;
-use support\View;
 use app\common\model\system\SystemLog;
 use Psr\SimpleCache\InvalidArgumentException;
+use support\View;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
 use think\db\exception\ModelNotFoundException;
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
 use Webman\Http\Request;
+use Webman\Http\Response;
+use Webman\MiddlewareInterface;
 
 /**
  * 管理员权限

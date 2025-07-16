@@ -6,9 +6,9 @@ use app\common\library\ResultCode;
 use app\common\service\user\UserTokenService;
 use Psr\SimpleCache\InvalidArgumentException;
 use support\View;
-use Webman\MiddlewareInterface;
-use Webman\Http\Response;
 use Webman\Http\Request;
+use Webman\Http\Response;
+use Webman\MiddlewareInterface;
 
 /**
  * 前端权限
@@ -75,7 +75,7 @@ class IndexPermissions implements MiddlewareInterface
         } else {
             if ($this->needLogin && !in_array($action, $this->noNeedLogin)) {
                 if (\request()->isAjax()) {
-                    return json(ResultCode::PLEASELOGININ);
+                    return json(ResultCode::PLEASE_LOGIN);
                 } else {
                     return redirect('/index/user/login');
                 }

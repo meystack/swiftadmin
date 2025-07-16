@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace app\install\controller;
 
-use support\Cache;
 use app\BaseController;
+use support\Cache;
 
 const SUCCESS = 'layui-icon-ok-circle';
 const ERROR = 'layui-icon-close-fill';

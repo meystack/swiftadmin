@@ -3,7 +3,6 @@
 
 namespace app\common\validate\system;
 
-use app\common\model\system\Dictionary as SystemDictionary;
 use think\Validate;
 
 class Dictionary extends Validate

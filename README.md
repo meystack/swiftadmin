@@ -8,6 +8,8 @@
 <a href="https://gitee.com/meystack/swiftadmin/">
 <img src="https://badgen.net/badge/License/Apache/" alt="swiftadmin"></a>
 </p>
+<p align="center">本框架已于2025年7月16日停止更新，请自行 fork 项目开发。</p>
+<p align="center">此去经年，望各位大佬 fork 如星火，各自璀璨。</p>
 
 ### 软件介绍
 

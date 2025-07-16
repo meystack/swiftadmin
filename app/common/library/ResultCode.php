@@ -22,21 +22,21 @@ class ResultCode
         'msg'    => '请求成功',
     ];
 
-    const REGISTERSUCCESS = [
+    const REGISTER_SUCCESS = [
         'code'   => 200,
-        'status' => 'REGISTERSUCCESS',
+        'status' => 'REGISTER_SUCCESS',
         'msg'    => '注册成功',
     ];
 
-    const LOGINSUCCESS = [
+    const LOGIN_SUCCESS = [
         'code'   => 200,
-        'status' => 'LOGINSUCCESS',
+        'status' => 'LOGIN_SUCCESS',
         'msg'    => '登录成功',
     ];
 
-    const LOGINOUTSUCCESS = [
+    const LOGOUT_SUCCESS = [
         'code'   => 200,
-        'status' => 'LOGINOUTSUCCESS',
+        'status' => 'LOGOUT_SUCCESS',
         'msg'    => '退出成功',
     ];
 
@@ -52,11 +52,12 @@ class ResultCode
         'msg'    => '操作失败',
     ];
 
-    const PARAMERROR = [
+    const PARAM_ERROR = [
         'code'   => -102,
-        'status' => 'PARAMERROR',
+        'status' => 'PARAM_ERROR',
         'msg'    => '请求参数错误',
     ];
+
 
     const TOKEN_INVALID = [
         'code'   => -103,
@@ -94,21 +95,21 @@ class ResultCode
         'msg'    => '调用总额已消费完',
     ];
 
-    const USPWDERROR = [
+    const USER_PASS_ERROR = [
         'code'   => -109,
-        'status' => 'USPWDERROR',
+        'status' => 'USER_PASS_ERROR',
         'msg'    => '用户名或密码错误',
     ];
 
-    const STATUSEXCEPTION = [
+    const STATUS_EXCEPTION = [
         'code'   => -110,
-        'status' => 'STATUSEXCEPTION',
+        'status' => 'STATUS_EXCEPTION',
         'msg'    => '当前用户已被禁用',
     ];
 
-    const PLEASELOGININ = [
+    const PLEASE_LOGIN = [
         'code'   => -111,
-        'status' => 'PLEASELOGININ',
+        'status' => 'PLEASE_LOGIN',
         'msg'    => '请登录后操作',
     ];
 
@@ -154,9 +155,9 @@ class ResultCode
         'msg'    => '禁止修改系统属性',
     ];
 
-    const LACKPARAME = [
+    const LACK_PARAM = [
         'code'   => -994,
-        'status' => 'LACKPARAME',
+        'status' => 'LACK_PARAM',
         'msg'    => '缺少请求参数',
     ];
 

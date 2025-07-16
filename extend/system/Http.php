@@ -28,7 +28,7 @@ class Http
      * @param bool $headerOnly
      * @return mixed|string
      */
-    public static function post(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [], bool $headerOnly = false)
+    public static function post(string $url, array $params = [], array $header = [], bool $agent = true, array $options = [], bool $headerOnly = false)
     {
         $req = self::request($url, $params, $agent, 'POST', $options, $header);
         return $headerOnly ? ($req['ret'] ? ['data' => $req['msg'], 'header' => $req['header']] : ['header' => $req['header']]) : ($req['ret'] ? $req['msg'] : '');
@@ -44,7 +44,7 @@ class Http
      * @param bool $headerOnly
      * @return mixed|string
      */
-    public static function get(string $url, array $params = [], bool $agent = true, array $options = [], array $header = [], bool $headerOnly = false)
+    public static function get(string $url, array $params = [], array $header = [], bool $agent = true, array $options = [], bool $headerOnly = false)
     {
         $req = self::request($url, $params, $agent, 'GET', $options, $header);
         return $headerOnly ? ($req['ret'] ? ['data' => $req['msg'], 'header' => $req['header']] : ['header' => $req['header']]) : ($req['ret'] ? $req['msg'] : '');
@@ -107,7 +107,7 @@ class Http
         }
 
         if (!empty($header)) {
-            $options['headers'] = array_merge($options['headers'], $header);
+            $options['headers'] = array_merge($options['headers'] ?? [], $header);
         }
 
         return new Client($options);

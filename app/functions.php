@@ -3,10 +3,11 @@
  * 全局公共函数库
  */
 
-use app\common\model\system\UserThird;
+use app\common\enums\EnumDesc;
 use app\common\model\system\Config;
-use think\helper\Str;
+use app\common\model\system\UserThird;
 use support\Cache;
+use think\helper\Str;
 use webman\Event\Event;
 
 // +----------------------------------------------------------------------
@@ -1502,5 +1503,52 @@ if (!function_exists('plugin_refresh_hooks')) {
         $parseEvents = '<?php' . PHP_EOL . 'return [array' . PHP_EOL . '];';
         write_file($eventPath, str_replace('array', $eventChars, $parseEvents));
         return system_reload();
+    }
+}
+
+if (!function_exists('getEnumConstDesc')) {
+    /**
+     * 获取CONST枚举描述
+     * @param string $enumClass
+     * @param int $value
+     * @return string
+     */
+    function getEnumConstDesc(string $enumClass, int $value): string
+    {
+        if (class_exists($enumClass)) {
+            $reflectionClass = new \ReflectionClass($enumClass);
+            $constants = $reflectionClass->getReflectionConstants();
+            foreach ($constants as $constant) {
+                $attributes = $constant->getAttributes(EnumDesc::class);
+                if ($attributes && $constant->getValue() === $value) {
+                    return $attributes[0]->newInstance()->desc;
+                }
+            }
+        }
+        return "未知类型";
+    }
+}
+
+if (!function_exists('getEnumCaseDesc')) {
+    /**
+     * 获取CASE枚举描述
+     * @param string $enumClass
+     * @param int $value
+     * @return string
+     * @throws ReflectionException
+     */
+    function getEnumCaseDesc(string $enumClass, int $value): string
+    {
+        if (class_exists($enumClass)) {
+            $reflectionEnum = new \ReflectionEnum($enumClass);
+            foreach ($reflectionEnum->getCases() as $case) {
+                $attributes = $case->getAttributes(EnumDesc::class);
+                if ($attributes && $case->getValue()->value === $value) {
+                    return $attributes[0]->newInstance()->desc;
+                }
+            }
+        }
+
+        return "未知类型";
     }
 }

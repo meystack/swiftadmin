@@ -19,6 +19,12 @@ use think\db\exception\ModelNotFoundException;
 class Ajax extends ApiController
 {
     /**
+     * 非鉴权方法
+     * @var array
+     */
+    public array $noNeedLogin = ['index', 'smsSend', 'emailSend'];
+
+    /**
      * 首页
      */
     public function index(): Response

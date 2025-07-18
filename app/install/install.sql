@@ -658,7 +658,8 @@ CREATE TABLE `__PREFIX__user`  (
 -- ----------------------------
 -- Records of __PREFIX__user
 -- ----------------------------
-INSERT INTO `__PREFIX__user` VALUES (1, 1, '创始人', '513bd12b00b512d0b879962b777b5560', 'wdONQC', NULL, NULL, '/upload/avatars/a0b923820dcc509a_100x100.png', '这个人很懒，什么都没有留下～ ', 'test@swiftadmin.net', NULL, '林自图', 0, '2022-11-04 20:04:55', '15253325632533', '河北省邯郸市中华区人民东路023号', '', 0, 100, 1983.56, '你的幸运数字是？', '1', 1, 1, 10001, 'myKDalrGjpEVxWPQcXzwFu', NULL, NULL, NULL, NULL, NULL, NULL, 1, '127.0.0.1', 1686621464, 163, NULL, '1861775580', 1657332918, NULL);
+INSERT INTO `__PREFIX__user` VALUES (1, 1, '创始人', '513bd12b00b512d0b879962b777b5560', 'wdONQC', NULL, NULL, '/upload/avatars/a0b923820dcc509a_100x100.png', '这个人很懒，什么都没有留下～ ', 'test@swiftadmin.net', NULL, '林自图', 0, '2022-11-04 20:04:55', '15253325632533', '河北省邯郸市中华区人民东路023号', '', 0, 100, 1983.56,null,null,null,null, '你的幸运数字是？', '1', 1, 1, 10001, 'myKDalrGjpEVxWPQcXzwFu', NULL, NULL, NULL, NULL, NULL, NULL, 1, '127.0.0.1', 1686621464, 163, NULL, '1861775580', 1657332918, NULL);
+
 
 -- ----------------------------
 -- Table structure for __PREFIX__user_group
